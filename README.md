@@ -3,6 +3,7 @@ Lineage with extra Mint (Personal fork of LineageOS with various tweaks that nev
 ## Features
 - Optimized Android Runtime (kanged from mvaisakh's AOSP 10 for Cedric)
 - microG Support (Patch comes from the microG project)
+- OTA Updates
 
 More to come :D
 ## Build
