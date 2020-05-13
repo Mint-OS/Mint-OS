@@ -25,7 +25,7 @@ index 0391530c483..5df70cc1bd1 100644
          <!-- The standard AOSP fused location provider -->
          <item>com.android.location.fused</item>
 +        <!-- The (faked) microg fused location provider (a free reimplementation) -->
-+        <item>com.google.android.gms</item>
++        <item>com.google.android.gms</item> <item>org.microg.nlp</item>
      </string-array>
  
      <!-- This string array can be overriden to enable test location providers initially. -->
