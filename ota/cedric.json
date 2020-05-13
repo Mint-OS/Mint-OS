@@ -1,12 +1,12 @@
 {
   "response": [
     {
-      "datetime": 0,
-      "filename": "",
+      "datetime": 1589374803,
+      "filename": "lineage-17.1-20200513-UNOFFICAL-cedric.zip",
       "id": "",
       "romtype": "unofficial",
       "size": 0,
-      "url": "/dev/null",
+      "url": "https://downloads.sourceforge.net/project/mint-os-project/Internal/Testing%20Only/lineage-17.1-20200513-UNOFFICIAL-cedric.zip",
       "version": "17.1"
     }
   ]
