@@ -1,4 +1,13 @@
 {
   "response": [
+    {
+      "datetime": 0,
+      "filename": "",
+      "id": "",
+      "romtype": "unofficial",
+      "size": 0,
+      "url": "/dev/null",
+      "version": "17.1"
+    }
   ]
 }
