@@ -1,4 +1,4 @@
-Welcome to MintOS!
+Welcome to MintOS! This website is mostly indeted for developers, so here are the links for users:
 
 ![Mint-OS Icon](https://github.com/nift4/Mint-OS/raw/master/icon.jpg)
 
