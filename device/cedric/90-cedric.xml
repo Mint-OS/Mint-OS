@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+
+<!-- Remove ATV to avoid visual artifacts -->
+  <remove-project name="device/google/atv" />
+
+<!-- LineageOS Dependency Projects -->
+  <project name="LineageOS/android_system_qcom" path="system/qcom" remote="github" revision="lineage-17.1" />
+
+<!-- Moto G5 Cedric Projects -->
+  <project name="nift4/android_device_motorola_cedric" path="device/motorola/cedric" remote="github" revision="lineage-17.1-mint" />
+  <project name="Sohamlad7/android_kernel_motorola_msm8937" path="kernel/motorola/msm8937" remote="github" revision="lineage-17.1" />
+  <project name="Sohamlad7/android_vendor_motorola_cedric" path="vendor/motorola/cedric" remote="github" revision="lineage-17.1" />
+</manifest>
