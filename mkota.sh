@@ -5,6 +5,6 @@ echo 	\"filename\": \"$1\",
 echo 	\"id\": \"`sha256sum $1 | awk '{ print $1 }'`\",
 echo 	\"romtype\": \"unoffical\",
 echo 	\"size\": `stat -c%s $1`,
-echo 	\"url\": undefined,
+echo 	\"url\": \"https://downloads.sourceforge.net/project/mint-os-project/$1\",
 echo 	\"version\": \"17.1\"
 echo }
