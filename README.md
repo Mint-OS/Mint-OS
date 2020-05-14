@@ -6,8 +6,9 @@ Lineage with extra Mint (Personal fork of LineageOS with various tweaks that nev
 - OTA Updates
 - Callrecording for everyone
 - SafetyNet passing out-of-the-box
+- Android Keyboard Gadget
 
-More to come :D (Android Keyboard Gadget is planned)
+More to come :D
 ## Build
 - Prepare for building LineageOS, and stop BEFORE doing repo sync
 - Open an second terminal in the directory where this README is located
@@ -15,5 +16,6 @@ More to come :D (Android Keyboard Gadget is planned)
 - Type `make prepare`
 - Do the repo sync from the Lineage building instructions in another terminal
 - Type `make patch`
+- Type `make -f <device codename here>.mk`
 - Continue with the Lineage build instructions in the other terminal
 - (Optional, only if you want to make your build ota-installable) Run `make ota` and add `ota/<device>_queue.json` to the array in `ota/<device>.json`
