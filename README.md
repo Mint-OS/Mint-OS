@@ -17,4 +17,4 @@ More to come :D
 - Do the repo sync from the Lineage building instructions in another terminal
 - Type `make patch`
 - Continue with the Lineage build instructions in the other terminal
-- (Optional, only if you want to make your build ota-installable) Run `make ota` and add the output to the array in `ota/<device>.json`
+- (Optional, only if you want to make your build ota-installable) Run `make ota` and `git push`
