@@ -16,4 +16,4 @@ More to come :D (Android Keyboard Gadget is planned)
 - Do the repo sync from the Lineage building instructions in another terminal
 - Type `make patch`
 - Continue with the Lineage build instructions in the other terminal
-- (Optional, only if you want to make your build ota-installable) Run `./mkota.sh <path to your rom zip> <path to ota metadata file (should be nearby to the rom zip)>`, add the download url and copy the output to your ota json (don't replace everything, add the output to the array)
+- (Optional, only if you want to make your build ota-installable) Run `./mkota.sh <path to your rom zip> <path to ota metadata file (should be nearby to the rom zip)>`, add the download url to the output and copy that to your ota json (don't replace everything, add the output to the array)
