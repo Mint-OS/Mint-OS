@@ -13,5 +13,5 @@ patch:
 	export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd art && git apply $$MINTOS_DAT/01-art.patch && cd .. && cd frameworks/base && git apply $$MINTOS_DAT/02-frameworks_base.patch && git apply $$MINTOS_DAT/03-frameworks_base-2.patch && cd ../.. && cd packages/apps/Updater && git apply $$MINTOS_DAT/04-updater.patch && cd .. && cd Dialer && git apply $$MINTOS_DAT/05-dialer.patch
 	make -f device/`cat .makedata2`/device.mk patch
 
-ota:
+genota:
 	@export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` MINTOS_DEVICE=`cat .makedata2` && cd $$MINTOS_DIR/out/target/product/$$MINTOS_DEVICE/ && $$MINTOS_DAT/mkota-wrapper.sh lineage-17.1-*.zip ota_metadata $$MINTOS_DEVICE
