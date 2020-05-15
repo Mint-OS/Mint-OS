@@ -14,4 +14,4 @@ patch:
 	make -f device/`cat .makedata2`/device.mk patch
 
 genota:
-	export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` MINTOS_DEVICE=`cat .makedata2` && cd $$MINTOS_DIR/out/target/product/$$MINTOS_DEVICE/ && chmod +x $$MINTOS_DAT/mkota-wrapper.sh && $$MINTOS_DAT/mkota-wrapper.sh lineage-17.1-*.zip ota_metadata $$MINTOS_DEVICE $$MINTOS_DAT
+	export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` MINTOS_DEVICE=`cat .makedata2` && chmod +x mkota-wrapper.sh && ./mkota-wrapper.sh $$MINTOS_DIR/out/target/product/$$MINTOS_DEVICE/lineage-17.1-*.zip $$MINTOS_DIR/out/target/product/$$MINTOS_DEVICE/ota_metadata $$MINTOS_DEVICE
