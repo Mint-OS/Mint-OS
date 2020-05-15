@@ -1,3 +1,4 @@
+#!/bin/bash
 IFS=']' read -r -a json < ota/$3.json
 chmod +x mkota.sh
 NEWDATA=`./mkota.sh $1 $2`
