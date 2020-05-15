@@ -1,13 +1,1 @@
-{
-  "response": [
-    {
-      "datetime": 0, // See OTA Support text file in out directory
-      "filename": "",
-      "id": "", // sha256sum of file
-      "romtype": "unofficial", // leave it
-      "size": 0, // in bytes
-      "url": "/dev/null", // direct download url
-      "version": "17.1"
-    }
-  ]
-}
+{"response": []}
