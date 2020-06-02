@@ -10,7 +10,12 @@ prepare:
 
 patch:
 	@echo 'Mintifying LineageOS (Step 2/2)...'
-	export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd art && git apply $$MINTOS_DAT/01-art.patch && cd .. && cd frameworks/base && git apply $$MINTOS_DAT/02-frameworks_base.patch && git apply $$MINTOS_DAT/03-frameworks_base-2.patch && git apply $$MINTOS_DAT/06-frameworks_base-3.patch && cd ../.. && cd packages/apps/Updater && git apply $$MINTOS_DAT/04-updater.patch && cd .. && cd Dialer && git apply $$MINTOS_DAT/05-dialer.patch
+	export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd art && git apply $$MINTOS_DAT/01-art.patch
+	export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd frameworks/base && git apply $$MINTOS_DAT/02-frameworks_base.patch
+	export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd frameworks/base && git apply $$MINTOS_DAT/03-frameworks_base-2.patch
+	export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd frameworks/base && git apply $$MINTOS_DAT/06-frameworks_base-3.patch
+	export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd packages/apps/Updater && git apply $$MINTOS_DAT/04-updater.patch
+	export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR &&cd Dialer && git apply $$MINTOS_DAT/05-dialer.patch
 	make -f device/`cat .makedata2`/device.mk patch
 
 genota:
