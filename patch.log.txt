@@ -1,10 +1,14 @@
 Mintifying LineageOS (Step 2/2)...
-export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd art && git apply $MINTOS_DAT/01-art.patch
-export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd frameworks/base && git apply $MINTOS_DAT/02-frameworks_base.patch
-export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd frameworks/base && git apply $MINTOS_DAT/03-frameworks_base-2.patch
-export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd packages/apps/Updater && git apply $MINTOS_DAT/04-updater.patch
-export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd packages/apps/Dialer && git apply $MINTOS_DAT/05-dialer.patch
-make -f device/`cat .makedata2`/device.mk patch
+export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd art && git apply $MINTOS_DAT/01-art.patch && echo OK
+export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd frameworks/base && git apply $MINTOS_DAT/02-frameworks_base.patch && echo OK
+OK
+export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd frameworks/base && git apply $MINTOS_DAT/03-frameworks_base-2.patch && echo OK
+OK
+export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd packages/apps/Updater && git apply $MINTOS_DAT/04-updater.patch && echo OK
+OK
+export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd packages/apps/Dialer && git apply $MINTOS_DAT/05-dialer.patch && echo OK
+OK
+make -f device/`cat .makedata2`/device.mk patch && echo OK
 make[1]: Verzeichnis „/home/kiam001/repofastmaker/android10/MintOS“ wird betreten
 patching file drivers/usb/gadget/android.c
 Hunk #1 succeeded at 74 with fuzz 2 (offset 5 lines).
@@ -37,3 +41,4 @@ patching file configs/android.hardware.camera.ar.xml
 patching file device.mk
 patching file lineage_cedric.mk
 make[1]: Verzeichnis „/home/kiam001/repofastmaker/android10/MintOS“ wird verlassen
+OK
