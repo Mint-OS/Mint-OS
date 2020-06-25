@@ -1,5 +1,5 @@
 diff --git a/Android.mk b/Android.mk
-index bebe759670..412673eb56 100644
+index bebe759..412673e 100644
 --- a/Android.mk
 +++ b/Android.mk
 @@ -371,9 +371,11 @@ include $(BUILD_PHONY_PACKAGE)
@@ -15,7 +15,7 @@ index bebe759670..412673eb56 100644
  
  # Create canonical name -> file name symlink in the symbol directory
 diff --git a/benchmark/micro-native/micro_native.cc b/benchmark/micro-native/micro_native.cc
-index dffbf3b11d..e70366cc48 100644
+index dffbf3b..e70366c 100644
 --- a/benchmark/micro-native/micro_native.cc
 +++ b/benchmark/micro-native/micro_native.cc
 @@ -38,7 +38,7 @@
@@ -54,83 +54,8 @@ index dffbf3b11d..e70366cc48 100644
    // Don't use NATIVE_METHOD because the name is mangled differently.
    { "emptyJniStaticMethod0_Critical", "()V",
          reinterpret_cast<void*>(NAME_CRITICAL_JNI_METHOD(emptyJniStaticMethod0_1Critical)) },
-diff --git a/benchmark/stringbuilder-append/info.txt b/benchmark/stringbuilder-append/info.txt
-new file mode 100644
-index 0000000000..ae588123d1
---- /dev/null
-+++ b/benchmark/stringbuilder-append/info.txt
-@@ -0,0 +1 @@
-+Benchmarks for the StringBuilder append pattern.
-diff --git a/benchmark/stringbuilder-append/src/StringBuilderAppendBenchmark.java b/benchmark/stringbuilder-append/src/StringBuilderAppendBenchmark.java
-new file mode 100644
-index 0000000000..1550e81bf7
---- /dev/null
-+++ b/benchmark/stringbuilder-append/src/StringBuilderAppendBenchmark.java
-@@ -0,0 +1,62 @@
-+/*
-+ * Copyright (C) 2019 The Android Open Source Project
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ *      http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
-+
-+public class StringBuilderAppendBenchmark {
-+    public static String string1 = "s1";
-+    public static String string2 = "s2";
-+    public static String longString1 = "This is a long string 1";
-+    public static String longString2 = "This is a long string 2";
-+    public static int int1 = 42;
-+
-+    public void timeAppendStrings(int count) {
-+        String s1 = string1;
-+        String s2 = string2;
-+        int sum = 0;
-+        for (int i = 0; i < count; ++i) {
-+            String result = s1 + s2;
-+            sum += result.length();  // Make sure the append is not optimized away.
-+        }
-+        if (sum != count * (s1.length() + s2.length())) {
-+            throw new AssertionError();
-+        }
-+    }
-+
-+    public void timeAppendLongStrings(int count) {
-+        String s1 = longString1;
-+        String s2 = longString2;
-+        int sum = 0;
-+        for (int i = 0; i < count; ++i) {
-+            String result = s1 + s2;
-+            sum += result.length();  // Make sure the append is not optimized away.
-+        }
-+        if (sum != count * (s1.length() + s2.length())) {
-+            throw new AssertionError();
-+        }
-+    }
-+
-+    public void timeAppendStringAndInt(int count) {
-+        String s1 = string1;
-+        int i1 = int1;
-+        int sum = 0;
-+        for (int i = 0; i < count; ++i) {
-+            String result = s1 + i1;
-+            sum += result.length();  // Make sure the append is not optimized away.
-+        }
-+        if (sum != count * (s1.length() + Integer.toString(i1).length())) {
-+            throw new AssertionError();
-+        }
-+    }
-+}
 diff --git a/compiler/Android.bp b/compiler/Android.bp
-index 52bd89fb7d..18479953f8 100644
+index 52bd89f..1847995 100644
 --- a/compiler/Android.bp
 +++ b/compiler/Android.bp
 @@ -388,6 +388,7 @@ art_cc_test {
@@ -142,7 +67,7 @@ index 52bd89fb7d..18479953f8 100644
          "optimizing/scheduler_test.cc",
      ],
 diff --git a/compiler/driver/compiled_method_storage.cc b/compiler/driver/compiled_method_storage.cc
-index 31062fb390..03c906b991 100644
+index 31062fb..03c906b 100644
 --- a/compiler/driver/compiled_method_storage.cc
 +++ b/compiler/driver/compiled_method_storage.cc
 @@ -216,6 +216,9 @@ CompiledMethodStorage::ThunkMapKey CompiledMethodStorage::GetThunkMapKey(
@@ -156,7 +81,7 @@ index 31062fb390..03c906b991 100644
        custom_value1 = linker_patch.GetBakerCustomValue1();
        custom_value2 = linker_patch.GetBakerCustomValue2();
 diff --git a/compiler/linker/linker_patch.h b/compiler/linker/linker_patch.h
-index f9e3930f56..1c523dee36 100644
+index f9e3930..1c523de 100644
 --- a/compiler/linker/linker_patch.h
 +++ b/compiler/linker/linker_patch.h
 @@ -52,6 +52,7 @@ class LinkerPatch {
@@ -204,7 +129,7 @@ index f9e3930f56..1c523dee36 100644
      static_assert(sizeof(method_idx_) == sizeof(cmp1_), "needed by relational operators");
      static_assert(sizeof(type_idx_) == sizeof(cmp1_), "needed by relational operators");
 diff --git a/compiler/optimizing/code_generator.cc b/compiler/optimizing/code_generator.cc
-index 2bbb570c8d..3b5699bccd 100644
+index 2bbb570..3b5699b 100644
 --- a/compiler/optimizing/code_generator.cc
 +++ b/compiler/optimizing/code_generator.cc
 @@ -64,6 +64,7 @@
@@ -274,7 +199,7 @@ index 2bbb570c8d..3b5699bccd 100644
      HInstruction* field_access,
      DataType::Type field_type,
 diff --git a/compiler/optimizing/code_generator.h b/compiler/optimizing/code_generator.h
-index f70ecb612d..3630c3696b 100644
+index f70ecb6..3630c36 100644
 --- a/compiler/optimizing/code_generator.h
 +++ b/compiler/optimizing/code_generator.h
 @@ -222,7 +222,19 @@ class CodeGenerator : public DeletableArenaObject<kArenaAllocCodeGenerator> {
@@ -326,7 +251,7 @@ index f70ecb612d..3630c3696b 100644
    DISALLOW_COPY_AND_ASSIGN(CodeGenerator);
  };
 diff --git a/compiler/optimizing/code_generator_arm64.cc b/compiler/optimizing/code_generator_arm64.cc
-index a436b98ccd..b35da62b84 100644
+index a436b98..b35da62 100644
 --- a/compiler/optimizing/code_generator_arm64.cc
 +++ b/compiler/optimizing/code_generator_arm64.cc
 @@ -224,12 +224,13 @@ void SlowPathCodeARM64::SaveLiveRegisters(CodeGenerator* codegen, LocationSummar
@@ -655,7 +580,7 @@ index a436b98ccd..b35da62b84 100644
      HUnresolvedInstanceFieldGet* instruction) {
    FieldAccessCallingConventionARM64 calling_convention;
 diff --git a/compiler/optimizing/code_generator_arm64.h b/compiler/optimizing/code_generator_arm64.h
-index ada5742fc0..66f74ef229 100644
+index ada5742..66f74ef 100644
 --- a/compiler/optimizing/code_generator_arm64.h
 +++ b/compiler/optimizing/code_generator_arm64.h
 @@ -435,10 +435,14 @@ class CodeGeneratorARM64 : public CodeGenerator {
@@ -714,7 +639,7 @@ index ada5742fc0..66f74ef229 100644
    StringToLiteralMap jit_string_patches_;
    // Patches for class literals in JIT compiled code.
 diff --git a/compiler/optimizing/code_generator_arm_vixl.cc b/compiler/optimizing/code_generator_arm_vixl.cc
-index 507c45342b..5640b019fd 100644
+index 507c453..5640b01 100644
 --- a/compiler/optimizing/code_generator_arm_vixl.cc
 +++ b/compiler/optimizing/code_generator_arm_vixl.cc
 @@ -47,7 +47,6 @@ namespace vixl32 = vixl::aarch32;
@@ -1070,7 +995,7 @@ index 507c45342b..5640b019fd 100644
        LOG(FATAL) << "Unexpected patch type " << patch.GetType();
        UNREACHABLE();
 diff --git a/compiler/optimizing/code_generator_arm_vixl.h b/compiler/optimizing/code_generator_arm_vixl.h
-index 5edca87147..f2a81339d5 100644
+index 5edca87..f2a8133 100644
 --- a/compiler/optimizing/code_generator_arm_vixl.h
 +++ b/compiler/optimizing/code_generator_arm_vixl.h
 @@ -76,8 +76,6 @@ static const size_t kParameterFpuRegistersLengthVIXL = arraysize(kParameterFpuRe
@@ -1127,7 +1052,7 @@ index 5edca87147..f2a81339d5 100644
    StringToLiteralMap jit_string_patches_;
    // Patches for class literals in JIT compiled code.
 diff --git a/compiler/optimizing/code_generator_mips.cc b/compiler/optimizing/code_generator_mips.cc
-index 72334afa40..d35e47eb36 100644
+index 72334af..d35e47e 100644
 --- a/compiler/optimizing/code_generator_mips.cc
 +++ b/compiler/optimizing/code_generator_mips.cc
 @@ -1953,7 +1953,7 @@ size_t CodeGeneratorMIPS::SaveFloatingPointRegister(size_t stack_index, uint32_t
@@ -1165,7 +1090,7 @@ index 72334afa40..d35e47eb36 100644
      HUnresolvedInstanceFieldGet* instruction) {
    FieldAccessCallingConventionMIPS calling_convention;
 diff --git a/compiler/optimizing/code_generator_mips.h b/compiler/optimizing/code_generator_mips.h
-index 50807310b6..b374d3456b 100644
+index 5080731..b374d34 100644
 --- a/compiler/optimizing/code_generator_mips.h
 +++ b/compiler/optimizing/code_generator_mips.h
 @@ -385,12 +385,16 @@ class CodeGeneratorMIPS : public CodeGenerator {
@@ -1187,7 +1112,7 @@ index 50807310b6..b374d3456b 100644
      return assembler_.GetLabelLocation(GetLabelOf(block));
    }
 diff --git a/compiler/optimizing/code_generator_mips64.cc b/compiler/optimizing/code_generator_mips64.cc
-index 0d3cb3b8ca..2ab40c8d9d 100644
+index 0d3cb3b..2ab40c8 100644
 --- a/compiler/optimizing/code_generator_mips64.cc
 +++ b/compiler/optimizing/code_generator_mips64.cc
 @@ -1814,7 +1814,7 @@ size_t CodeGeneratorMIPS64::SaveFloatingPointRegister(size_t stack_index, uint32
@@ -1225,7 +1150,7 @@ index 0d3cb3b8ca..2ab40c8d9d 100644
      HUnresolvedInstanceFieldGet* instruction) {
    FieldAccessCallingConventionMIPS64 calling_convention;
 diff --git a/compiler/optimizing/code_generator_mips64.h b/compiler/optimizing/code_generator_mips64.h
-index 52f3a62f33..e4846260ed 100644
+index 52f3a62..e484626 100644
 --- a/compiler/optimizing/code_generator_mips64.h
 +++ b/compiler/optimizing/code_generator_mips64.h
 @@ -363,12 +363,16 @@ class CodeGeneratorMIPS64 : public CodeGenerator {
@@ -1247,7 +1172,7 @@ index 52f3a62f33..e4846260ed 100644
      return assembler_.GetLabelLocation(GetLabelOf(block));
    }
 diff --git a/compiler/optimizing/code_generator_x86.cc b/compiler/optimizing/code_generator_x86.cc
-index 95118b0b6d..04b840bc45 100644
+index 95118b0..04b840b 100644
 --- a/compiler/optimizing/code_generator_x86.cc
 +++ b/compiler/optimizing/code_generator_x86.cc
 @@ -987,7 +987,7 @@ size_t CodeGeneratorX86::SaveFloatingPointRegister(size_t stack_index, uint32_t
@@ -1285,7 +1210,7 @@ index 95118b0b6d..04b840bc45 100644
      HUnresolvedInstanceFieldGet* instruction) {
    FieldAccessCallingConventionX86 calling_convention;
 diff --git a/compiler/optimizing/code_generator_x86.h b/compiler/optimizing/code_generator_x86.h
-index deeef888e2..0eeae7d566 100644
+index deeef88..0eeae7d 100644
 --- a/compiler/optimizing/code_generator_x86.h
 +++ b/compiler/optimizing/code_generator_x86.h
 @@ -353,12 +353,16 @@ class CodeGeneratorX86 : public CodeGenerator {
@@ -1307,7 +1232,7 @@ index deeef888e2..0eeae7d566 100644
      return &location_builder_;
    }
 diff --git a/compiler/optimizing/code_generator_x86_64.cc b/compiler/optimizing/code_generator_x86_64.cc
-index 7c293b8605..9551334917 100644
+index 7c293b8..9551334 100644
 --- a/compiler/optimizing/code_generator_x86_64.cc
 +++ b/compiler/optimizing/code_generator_x86_64.cc
 @@ -1245,7 +1245,7 @@ size_t CodeGeneratorX86_64::SaveFloatingPointRegister(size_t stack_index, uint32
@@ -1363,7 +1288,7 @@ index 7c293b8605..9551334917 100644
      HUnresolvedInstanceFieldGet* instruction) {
    FieldAccessCallingConventionX86_64 calling_convention;
 diff --git a/compiler/optimizing/code_generator_x86_64.h b/compiler/optimizing/code_generator_x86_64.h
-index f74e130702..6f294c735b 100644
+index f74e130..6f294c7 100644
 --- a/compiler/optimizing/code_generator_x86_64.h
 +++ b/compiler/optimizing/code_generator_x86_64.h
 @@ -333,12 +333,16 @@ class CodeGeneratorX86_64 : public CodeGenerator {
@@ -1385,7 +1310,7 @@ index f74e130702..6f294c735b 100644
      return &location_builder_;
    }
 diff --git a/compiler/optimizing/codegen_test.cc b/compiler/optimizing/codegen_test.cc
-index b5a7c137f6..e562a8e34a 100644
+index b5a7c13..e562a8e 100644
 --- a/compiler/optimizing/codegen_test.cc
 +++ b/compiler/optimizing/codegen_test.cc
 @@ -834,6 +834,7 @@ TEST_F(CodegenTest, ARM64IsaVIXLFeaturesA75) {
@@ -1451,7 +1376,7 @@ index b5a7c137f6..e562a8e34a 100644
  
  #ifdef ART_ENABLE_CODEGEN_mips
 diff --git a/compiler/optimizing/common_arm.h b/compiler/optimizing/common_arm.h
-index 7d3af9521a..320915ee57 100644
+index 7d3af95..320915e 100644
 --- a/compiler/optimizing/common_arm.h
 +++ b/compiler/optimizing/common_arm.h
 @@ -17,7 +17,6 @@
@@ -1478,7 +1403,7 @@ index 7d3af9521a..320915ee57 100644
    DCHECK(location.IsRegisterPair()) << location;
    return vixl::aarch32::Register(location.AsRegisterPairHigh<vixl::aarch32::Register>());
 diff --git a/compiler/optimizing/common_arm64.h b/compiler/optimizing/common_arm64.h
-index 5556f16740..20ec4e6bc9 100644
+index 5556f16..20ec4e6 100644
 --- a/compiler/optimizing/common_arm64.h
 +++ b/compiler/optimizing/common_arm64.h
 @@ -107,6 +107,11 @@ inline vixl::aarch64::FPRegister SRegisterFrom(Location location) {
@@ -1494,7 +1419,7 @@ index 5556f16740..20ec4e6bc9 100644
    DCHECK(DataType::IsFloatingPointType(type)) << type;
    return type == DataType::Type::kFloat64 ? DRegisterFrom(location) : SRegisterFrom(location);
 diff --git a/compiler/optimizing/constant_folding.cc b/compiler/optimizing/constant_folding.cc
-index 09e7cabfa4..2031707759 100644
+index 09e7cab..2031707 100644
 --- a/compiler/optimizing/constant_folding.cc
 +++ b/compiler/optimizing/constant_folding.cc
 @@ -217,6 +217,7 @@ void InstructionWithAbsorbingInputSimplifier::VisitBelowOrEqual(HBelowOrEqual* i
@@ -1532,7 +1457,7 @@ index 09e7cabfa4..2031707759 100644
  
  void InstructionWithAbsorbingInputSimplifier::VisitCompare(HCompare* instruction) {
 diff --git a/compiler/optimizing/instruction_simplifier.cc b/compiler/optimizing/instruction_simplifier.cc
-index ce62495ae1..63c5965415 100644
+index ce62495..63c5965 100644
 --- a/compiler/optimizing/instruction_simplifier.cc
 +++ b/compiler/optimizing/instruction_simplifier.cc
 @@ -25,6 +25,7 @@
@@ -1759,7 +1684,7 @@ index ce62495ae1..63c5965415 100644
        break;
      case Intrinsics::kStringBufferToString:
 diff --git a/compiler/optimizing/intrinsics_arm64.cc b/compiler/optimizing/intrinsics_arm64.cc
-index ec5d17a443..f84c66d02d 100644
+index ec5d17a..f84c66d 100644
 --- a/compiler/optimizing/intrinsics_arm64.cc
 +++ b/compiler/optimizing/intrinsics_arm64.cc
 @@ -54,6 +54,7 @@ using helpers::RegisterFrom;
@@ -2091,7 +2016,7 @@ index ec5d17a443..f84c66d02d 100644
  UNIMPLEMENTED_INTRINSIC(ARM64, StringBuilderToString);
  
 diff --git a/compiler/optimizing/intrinsics_arm_vixl.cc b/compiler/optimizing/intrinsics_arm_vixl.cc
-index f0aa92e981..89e5203461 100644
+index f0aa92e..89e5203 100644
 --- a/compiler/optimizing/intrinsics_arm_vixl.cc
 +++ b/compiler/optimizing/intrinsics_arm_vixl.cc
 @@ -3070,13 +3070,31 @@ UNIMPLEMENTED_INTRINSIC(ARMVIXL, ReferenceGetReferent)
@@ -2128,7 +2053,7 @@ index f0aa92e981..89e5203461 100644
  UNIMPLEMENTED_INTRINSIC(ARMVIXL, StringBuilderToString);
  
 diff --git a/compiler/optimizing/intrinsics_mips.cc b/compiler/optimizing/intrinsics_mips.cc
-index 3da0e578bf..537255f476 100644
+index 3da0e57..537255f 100644
 --- a/compiler/optimizing/intrinsics_mips.cc
 +++ b/compiler/optimizing/intrinsics_mips.cc
 @@ -2707,13 +2707,31 @@ UNIMPLEMENTED_INTRINSIC(MIPS, SystemArrayCopy)
@@ -2165,7 +2090,7 @@ index 3da0e578bf..537255f476 100644
  UNIMPLEMENTED_INTRINSIC(MIPS, StringBuilderToString);
  
 diff --git a/compiler/optimizing/intrinsics_mips64.cc b/compiler/optimizing/intrinsics_mips64.cc
-index 3e687652d3..59203945bb 100644
+index 3e68765..5920394 100644
 --- a/compiler/optimizing/intrinsics_mips64.cc
 +++ b/compiler/optimizing/intrinsics_mips64.cc
 @@ -2357,13 +2357,31 @@ UNIMPLEMENTED_INTRINSIC(MIPS64, SystemArrayCopy)
@@ -2202,7 +2127,7 @@ index 3e687652d3..59203945bb 100644
  UNIMPLEMENTED_INTRINSIC(MIPS64, StringBuilderToString);
  
 diff --git a/compiler/optimizing/intrinsics_x86.cc b/compiler/optimizing/intrinsics_x86.cc
-index de697f0f96..6d7462e3c1 100644
+index de697f0..6d7462e 100644
 --- a/compiler/optimizing/intrinsics_x86.cc
 +++ b/compiler/optimizing/intrinsics_x86.cc
 @@ -3081,13 +3081,31 @@ UNIMPLEMENTED_INTRINSIC(X86, LongHighestOneBit)
@@ -2239,7 +2164,7 @@ index de697f0f96..6d7462e3c1 100644
  UNIMPLEMENTED_INTRINSIC(X86, StringBuilderToString);
  
 diff --git a/compiler/optimizing/intrinsics_x86_64.cc b/compiler/optimizing/intrinsics_x86_64.cc
-index e79c0c9adf..0f6b00653d 100644
+index e79c0c9..0f6b006 100644
 --- a/compiler/optimizing/intrinsics_x86_64.cc
 +++ b/compiler/optimizing/intrinsics_x86_64.cc
 @@ -2748,13 +2748,31 @@ UNIMPLEMENTED_INTRINSIC(X86_64, DoubleIsInfinite)
@@ -2276,7 +2201,7 @@ index e79c0c9adf..0f6b00653d 100644
  UNIMPLEMENTED_INTRINSIC(X86_64, StringBuilderToString);
  
 diff --git a/compiler/optimizing/load_store_elimination.cc b/compiler/optimizing/load_store_elimination.cc
-index b33d0f488e..4c150dacea 100644
+index b33d0f4..4c150da 100644
 --- a/compiler/optimizing/load_store_elimination.cc
 +++ b/compiler/optimizing/load_store_elimination.cc
 @@ -23,8 +23,6 @@
@@ -2507,907 +2432,8 @@ index b33d0f488e..4c150dacea 100644
    LSEVisitor lse_visitor(graph_, heap_location_collector, side_effects_, stats_);
    for (HBasicBlock* block : graph_->GetReversePostOrder()) {
      lse_visitor.VisitBasicBlock(block);
-diff --git a/compiler/optimizing/load_store_elimination_test.cc b/compiler/optimizing/load_store_elimination_test.cc
-new file mode 100644
-index 0000000000..738037803e
---- /dev/null
-+++ b/compiler/optimizing/load_store_elimination_test.cc
-@@ -0,0 +1,893 @@
-+/*
-+ * Copyright (C) 2019 The Android Open Source Project
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ *      http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
-+
-+#include <tuple>
-+
-+#include "load_store_analysis.h"
-+#include "load_store_elimination.h"
-+#include "nodes.h"
-+#include "optimizing_unit_test.h"
-+#include "side_effects_analysis.h"
-+
-+#include "gtest/gtest.h"
-+
-+namespace art {
-+
-+class LoadStoreEliminationTest : public ImprovedOptimizingUnitTest {
-+ public:
-+  void PerformLSE() {
-+    graph_->BuildDominatorTree();
-+    SideEffectsAnalysis side_effects(graph_);
-+    side_effects.Run();
-+    LoadStoreAnalysis lsa(graph_);
-+    lsa.Run();
-+    LoadStoreElimination lse(graph_, side_effects, lsa, nullptr);
-+    lse.Run();
-+    EXPECT_TRUE(CheckGraphSkipRefTypeInfoChecks());
-+  }
-+
-+  // Create instructions shared among tests.
-+  void CreateEntryBlockInstructions() {
-+    HInstruction* c1 = graph_->GetIntConstant(1);
-+    HInstruction* c4 = graph_->GetIntConstant(4);
-+    i_add1_ = new (GetAllocator()) HAdd(DataType::Type::kInt32, i_, c1);
-+    i_add4_ = new (GetAllocator()) HAdd(DataType::Type::kInt32, i_, c4);
-+    entry_block_->AddInstruction(i_add1_);
-+    entry_block_->AddInstruction(i_add4_);
-+    entry_block_->AddInstruction(new (GetAllocator()) HGoto());
-+  }
-+
-+  // Create the major CFG used by tests:
-+  //    entry
-+  //      |
-+  //  pre_header
-+  //      |
-+  //    loop[]
-+  //      |
-+  //   return
-+  //      |
-+  //     exit
-+  void CreateTestControlFlowGraph() {
-+    pre_header_ = new (GetAllocator()) HBasicBlock(graph_);
-+    loop_ = new (GetAllocator()) HBasicBlock(graph_);
-+
-+    graph_->AddBlock(pre_header_);
-+    graph_->AddBlock(loop_);
-+
-+    entry_block_->ReplaceSuccessor(return_block_, pre_header_);
-+    pre_header_->AddSuccessor(loop_);
-+    loop_->AddSuccessor(loop_);
-+    loop_->AddSuccessor(return_block_);
-+
-+    HInstruction* c0 = graph_->GetIntConstant(0);
-+    HInstruction* c1 = graph_->GetIntConstant(1);
-+    HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+    CreateEntryBlockInstructions();
-+
-+    // pre_header block
-+    //   phi = 0;
-+    phi_ = new (GetAllocator()) HPhi(GetAllocator(), 0, 0, DataType::Type::kInt32);
-+    loop_->AddPhi(phi_);
-+    pre_header_->AddInstruction(new (GetAllocator()) HGoto());
-+    phi_->AddInput(c0);
-+
-+    // loop block:
-+    //   suspend_check
-+    //   phi++;
-+    //   if (phi >= 128)
-+    suspend_check_ = new (GetAllocator()) HSuspendCheck();
-+    HInstruction* inc_phi = new (GetAllocator()) HAdd(DataType::Type::kInt32, phi_, c1);
-+    HInstruction* cmp = new (GetAllocator()) HGreaterThanOrEqual(phi_, c128);
-+    HInstruction* hif = new (GetAllocator()) HIf(cmp);
-+    loop_->AddInstruction(suspend_check_);
-+    loop_->AddInstruction(inc_phi);
-+    loop_->AddInstruction(cmp);
-+    loop_->AddInstruction(hif);
-+    phi_->AddInput(inc_phi);
-+
-+    CreateEnvForSuspendCheck();
-+  }
-+
-+  void CreateEnvForSuspendCheck() {
-+    ArenaVector<HInstruction*> current_locals({array_, i_, j_},
-+                                              GetAllocator()->Adapter(kArenaAllocInstruction));
-+    ManuallyBuildEnvFor(suspend_check_, &current_locals);
-+  }
-+
-+  // Create the diamond-shaped CFG:
-+  //      upper
-+  //      /   \
-+  //    left  right
-+  //      \   /
-+  //      down
-+  //
-+  // Return: the basic blocks forming the CFG in the following order {upper, left, right, down}.
-+  std::tuple<HBasicBlock*, HBasicBlock*, HBasicBlock*, HBasicBlock*> CreateDiamondShapedCFG() {
-+    CreateEntryBlockInstructions();
-+
-+    HBasicBlock* upper = new (GetAllocator()) HBasicBlock(graph_);
-+    HBasicBlock* left = new (GetAllocator()) HBasicBlock(graph_);
-+    HBasicBlock* right = new (GetAllocator()) HBasicBlock(graph_);
-+
-+    graph_->AddBlock(upper);
-+    graph_->AddBlock(left);
-+    graph_->AddBlock(right);
-+
-+    entry_block_->ReplaceSuccessor(return_block_, upper);
-+    upper->AddSuccessor(left);
-+    upper->AddSuccessor(right);
-+    left->AddSuccessor(return_block_);
-+    right->AddSuccessor(return_block_);
-+
-+    HInstruction* cmp = new (GetAllocator()) HGreaterThanOrEqual(i_, j_);
-+    HInstruction* hif = new (GetAllocator()) HIf(cmp);
-+    upper->AddInstruction(cmp);
-+    upper->AddInstruction(hif);
-+
-+    left->AddInstruction(new (GetAllocator()) HGoto());
-+    right->AddInstruction(new (GetAllocator()) HGoto());
-+
-+    return std::make_tuple(upper, left, right, return_block_);
-+  }
-+
-+  // Add a HVecLoad instruction to the end of the provided basic block.
-+  //
-+  // Return: the created HVecLoad instruction.
-+  HInstruction* AddVecLoad(HBasicBlock* block, HInstruction* array, HInstruction* index) {
-+    DCHECK(block != nullptr);
-+    DCHECK(array != nullptr);
-+    DCHECK(index != nullptr);
-+    HInstruction* vload = new (GetAllocator()) HVecLoad(
-+        GetAllocator(),
-+        array,
-+        index,
-+        DataType::Type::kInt32,
-+        SideEffects::ArrayReadOfType(DataType::Type::kInt32),
-+        4,
-+        /*is_string_char_at*/ false,
-+        kNoDexPc);
-+    block->InsertInstructionBefore(vload, block->GetLastInstruction());
-+    return vload;
-+  }
-+
-+  // Add a HVecStore instruction to the end of the provided basic block.
-+  // If no vdata is specified, generate HVecStore: array[index] = [1,1,1,1].
-+  //
-+  // Return: the created HVecStore instruction.
-+  HInstruction* AddVecStore(HBasicBlock* block,
-+                            HInstruction* array,
-+                            HInstruction* index,
-+                            HInstruction* vdata = nullptr) {
-+    DCHECK(block != nullptr);
-+    DCHECK(array != nullptr);
-+    DCHECK(index != nullptr);
-+    if (vdata == nullptr) {
-+      HInstruction* c1 = graph_->GetIntConstant(1);
-+      vdata = new (GetAllocator()) HVecReplicateScalar(GetAllocator(),
-+                                                       c1,
-+                                                       DataType::Type::kInt32,
-+                                                       4,
-+                                                       kNoDexPc);
-+      block->InsertInstructionBefore(vdata, block->GetLastInstruction());
-+    }
-+    HInstruction* vstore = new (GetAllocator()) HVecStore(
-+        GetAllocator(),
-+        array,
-+        index,
-+        vdata,
-+        DataType::Type::kInt32,
-+        SideEffects::ArrayWriteOfType(DataType::Type::kInt32),
-+        4,
-+        kNoDexPc);
-+    block->InsertInstructionBefore(vstore, block->GetLastInstruction());
-+    return vstore;
-+  }
-+
-+  // Add a HArrayGet instruction to the end of the provided basic block.
-+  //
-+  // Return: the created HArrayGet instruction.
-+  HInstruction* AddArrayGet(HBasicBlock* block, HInstruction* array, HInstruction* index) {
-+    DCHECK(block != nullptr);
-+    DCHECK(array != nullptr);
-+    DCHECK(index != nullptr);
-+    HInstruction* get = new (GetAllocator()) HArrayGet(array, index, DataType::Type::kInt32, 0);
-+    block->InsertInstructionBefore(get, block->GetLastInstruction());
-+    return get;
-+  }
-+
-+  // Add a HArraySet instruction to the end of the provided basic block.
-+  // If no data is specified, generate HArraySet: array[index] = 1.
-+  //
-+  // Return: the created HArraySet instruction.
-+  HInstruction* AddArraySet(HBasicBlock* block,
-+                            HInstruction* array,
-+                            HInstruction* index,
-+                            HInstruction* data = nullptr) {
-+    DCHECK(block != nullptr);
-+    DCHECK(array != nullptr);
-+    DCHECK(index != nullptr);
-+    if (data == nullptr) {
-+      data = graph_->GetIntConstant(1);
-+    }
-+    HInstruction* store = new (GetAllocator()) HArraySet(array,
-+                                                         index,
-+                                                         data,
-+                                                         DataType::Type::kInt32,
-+                                                         0);
-+    block->InsertInstructionBefore(store, block->GetLastInstruction());
-+    return store;
-+  }
-+
-+  void CreateParameters() override {
-+    parameters_.push_back(new (GetAllocator()) HParameterValue(graph_->GetDexFile(),
-+                                                               dex::TypeIndex(0),
-+                                                               0,
-+                                                               DataType::Type::kInt32));
-+    array_ = parameters_.back();
-+    parameters_.push_back(new (GetAllocator()) HParameterValue(graph_->GetDexFile(),
-+                                                               dex::TypeIndex(1),
-+                                                               1,
-+                                                               DataType::Type::kInt32));
-+    i_ = parameters_.back();
-+    parameters_.push_back(new (GetAllocator()) HParameterValue(graph_->GetDexFile(),
-+                                                               dex::TypeIndex(1),
-+                                                               2,
-+                                                               DataType::Type::kInt32));
-+    j_ = parameters_.back();
-+  }
-+
-+  HBasicBlock* pre_header_;
-+  HBasicBlock* loop_;
-+
-+  HInstruction* array_;
-+  HInstruction* i_;
-+  HInstruction* j_;
-+  HInstruction* i_add1_;
-+  HInstruction* i_add4_;
-+  HInstruction* suspend_check_;
-+
-+  HPhi* phi_;
-+};
-+
-+TEST_F(LoadStoreEliminationTest, ArrayGetSetElimination) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c1 = graph_->GetIntConstant(1);
-+  HInstruction* c2 = graph_->GetIntConstant(2);
-+  HInstruction* c3 = graph_->GetIntConstant(3);
-+
-+  // array[1] = 1;
-+  // x = array[1];  <--- Remove.
-+  // y = array[2];
-+  // array[1] = 1;  <--- Remove, since it stores same value.
-+  // array[i] = 3;  <--- MAY alias.
-+  // array[1] = 1;  <--- Cannot remove, even if it stores the same value.
-+  AddArraySet(entry_block_, array_, c1, c1);
-+  HInstruction* load1 = AddArrayGet(entry_block_, array_, c1);
-+  HInstruction* load2 = AddArrayGet(entry_block_, array_, c2);
-+  HInstruction* store1 = AddArraySet(entry_block_, array_, c1, c1);
-+  AddArraySet(entry_block_, array_, i_, c3);
-+  HInstruction* store2 = AddArraySet(entry_block_, array_, c1, c1);
-+
-+  PerformLSE();
-+
-+  ASSERT_TRUE(IsRemoved(load1));
-+  ASSERT_FALSE(IsRemoved(load2));
-+  ASSERT_TRUE(IsRemoved(store1));
-+  ASSERT_FALSE(IsRemoved(store2));
-+}
-+
-+TEST_F(LoadStoreEliminationTest, SameHeapValue1) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c1 = graph_->GetIntConstant(1);
-+  HInstruction* c2 = graph_->GetIntConstant(2);
-+
-+  // Test LSE handling same value stores on array.
-+  // array[1] = 1;
-+  // array[2] = 1;
-+  // array[1] = 1;  <--- Can remove.
-+  // array[1] = 2;  <--- Can NOT remove.
-+  AddArraySet(entry_block_, array_, c1, c1);
-+  AddArraySet(entry_block_, array_, c2, c1);
-+  HInstruction* store1 = AddArraySet(entry_block_, array_, c1, c1);
-+  HInstruction* store2 = AddArraySet(entry_block_, array_, c1, c2);
-+
-+  PerformLSE();
-+
-+  ASSERT_TRUE(IsRemoved(store1));
-+  ASSERT_FALSE(IsRemoved(store2));
-+}
-+
-+TEST_F(LoadStoreEliminationTest, SameHeapValue2) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  // Test LSE handling same value stores on vector.
-+  // vdata = [0x1, 0x2, 0x3, 0x4, ...]
-+  // VecStore array[i...] = vdata;
-+  // VecStore array[j...] = vdata;  <--- MAY ALIAS.
-+  // VecStore array[i...] = vdata;  <--- Cannot Remove, even if it's same value.
-+  AddVecStore(entry_block_, array_, i_);
-+  AddVecStore(entry_block_, array_, j_);
-+  HInstruction* vstore = AddVecStore(entry_block_, array_, i_);
-+
-+  PerformLSE();
-+
-+  ASSERT_FALSE(IsRemoved(vstore));
-+}
-+
-+TEST_F(LoadStoreEliminationTest, SameHeapValue3) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  // VecStore array[i...] = vdata;
-+  // VecStore array[i+1...] = vdata;  <--- MAY alias due to partial overlap.
-+  // VecStore array[i...] = vdata;    <--- Cannot remove, even if it's same value.
-+  AddVecStore(entry_block_, array_, i_);
-+  AddVecStore(entry_block_, array_, i_add1_);
-+  HInstruction* vstore = AddVecStore(entry_block_, array_, i_);
-+
-+  PerformLSE();
-+
-+  ASSERT_FALSE(IsRemoved(vstore));
-+}
-+
-+TEST_F(LoadStoreEliminationTest, OverlappingLoadStore) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c1 = graph_->GetIntConstant(1);
-+
-+  // Test LSE handling array LSE when there is vector store in between.
-+  // a[i] = 1;
-+  // .. = a[i];                <-- Remove.
-+  // a[i,i+1,i+2,i+3] = data;  <-- PARTIAL OVERLAP !
-+  // .. = a[i];                <-- Cannot remove.
-+  AddArraySet(entry_block_, array_, i_, c1);
-+  HInstruction* load1 = AddArrayGet(entry_block_, array_, i_);
-+  AddVecStore(entry_block_, array_, i_);
-+  HInstruction* load2 = AddArrayGet(entry_block_, array_, i_);
-+
-+  // Test LSE handling vector load/store partial overlap.
-+  // a[i,i+1,i+2,i+3] = data;
-+  // a[i+4,i+5,i+6,i+7] = data;
-+  // .. = a[i,i+1,i+2,i+3];
-+  // .. = a[i+4,i+5,i+6,i+7];
-+  // a[i+1,i+2,i+3,i+4] = data;  <-- PARTIAL OVERLAP !
-+  // .. = a[i,i+1,i+2,i+3];
-+  // .. = a[i+4,i+5,i+6,i+7];
-+  AddVecStore(entry_block_, array_, i_);
-+  AddVecStore(entry_block_, array_, i_add4_);
-+  HInstruction* vload1 = AddVecLoad(entry_block_, array_, i_);
-+  HInstruction* vload2 = AddVecLoad(entry_block_, array_, i_add4_);
-+  AddVecStore(entry_block_, array_, i_add1_);
-+  HInstruction* vload3 = AddVecLoad(entry_block_, array_, i_);
-+  HInstruction* vload4 = AddVecLoad(entry_block_, array_, i_add4_);
-+
-+  // Test LSE handling vector LSE when there is array store in between.
-+  // a[i,i+1,i+2,i+3] = data;
-+  // a[i+1] = 1;                 <-- PARTIAL OVERLAP !
-+  // .. = a[i,i+1,i+2,i+3];
-+  AddVecStore(entry_block_, array_, i_);
-+  AddArraySet(entry_block_, array_, i_, c1);
-+  HInstruction* vload5 = AddVecLoad(entry_block_, array_, i_);
-+
-+  PerformLSE();
-+
-+  ASSERT_TRUE(IsRemoved(load1));
-+  ASSERT_FALSE(IsRemoved(load2));
-+
-+  ASSERT_TRUE(IsRemoved(vload1));
-+  ASSERT_TRUE(IsRemoved(vload2));
-+  ASSERT_FALSE(IsRemoved(vload3));
-+  ASSERT_FALSE(IsRemoved(vload4));
-+
-+  ASSERT_FALSE(IsRemoved(vload5));
-+}
-+// function (int[] a, int j) {
-+// a[j] = 1;
-+// for (int i=0; i<128; i++) {
-+//    /* doesn't do any write */
-+// }
-+// a[j] = 1;
-+TEST_F(LoadStoreEliminationTest, StoreAfterLoopWithoutSideEffects) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c1 = graph_->GetIntConstant(1);
-+
-+  // a[j] = 1
-+  AddArraySet(pre_header_, array_, j_, c1);
-+
-+  // LOOP BODY:
-+  // .. = a[i,i+1,i+2,i+3];
-+  AddVecLoad(loop_, array_, phi_);
-+
-+  // a[j] = 1;
-+  HInstruction* array_set = AddArraySet(return_block_, array_, j_, c1);
-+
-+  PerformLSE();
-+
-+  ASSERT_TRUE(IsRemoved(array_set));
-+}
-+
-+// function (int[] a, int j) {
-+//   int[] b = new int[128];
-+//   a[j] = 0;
-+//   for (int phi=0; phi<128; phi++) {
-+//     a[phi,phi+1,phi+2,phi+3] = [1,1,1,1];
-+//     b[phi,phi+1,phi+2,phi+3] = a[phi,phi+1,phi+2,phi+3];
-+//   }
-+//   a[j] = 0;
-+// }
-+TEST_F(LoadStoreEliminationTest, StoreAfterSIMDLoopWithSideEffects) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  HInstruction* array_b = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_b, pre_header_->GetLastInstruction());
-+  array_b->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  // a[j] = 0;
-+  AddArraySet(pre_header_, array_, j_, c0);
-+
-+  // LOOP BODY:
-+  // a[phi,phi+1,phi+2,phi+3] = [1,1,1,1];
-+  // b[phi,phi+1,phi+2,phi+3] = a[phi,phi+1,phi+2,phi+3];
-+  AddVecStore(loop_, array_, phi_);
-+  HInstruction* vload = AddVecLoad(loop_, array_, phi_);
-+  AddVecStore(loop_, array_b, phi_, vload->AsVecLoad());
-+
-+  // a[j] = 0;
-+  HInstruction* a_set = AddArraySet(return_block_, array_, j_, c0);
-+
-+  PerformLSE();
-+
-+  ASSERT_TRUE(IsRemoved(vload));
-+  ASSERT_FALSE(IsRemoved(a_set));  // Cannot remove due to write side-effect in the loop.
-+}
-+
-+// function (int[] a, int j) {
-+//   int[] b = new int[128];
-+//   a[j] = 0;
-+//   for (int phi=0; phi<128; phi++) {
-+//     a[phi,phi+1,phi+2,phi+3] = [1,1,1,1];
-+//     b[phi,phi+1,phi+2,phi+3] = a[phi,phi+1,phi+2,phi+3];
-+//   }
-+//   x = a[j];
-+// }
-+TEST_F(LoadStoreEliminationTest, LoadAfterSIMDLoopWithSideEffects) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  HInstruction* array_b = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_b, pre_header_->GetLastInstruction());
-+  array_b->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  // a[j] = 0;
-+  AddArraySet(pre_header_, array_, j_, c0);
-+
-+  // LOOP BODY:
-+  // a[phi,phi+1,phi+2,phi+3] = [1,1,1,1];
-+  // b[phi,phi+1,phi+2,phi+3] = a[phi,phi+1,phi+2,phi+3];
-+  AddVecStore(loop_, array_, phi_);
-+  HInstruction* vload = AddVecLoad(loop_, array_, phi_);
-+  AddVecStore(loop_, array_b, phi_, vload->AsVecLoad());
-+
-+  // x = a[j];
-+  HInstruction* load = AddArrayGet(return_block_, array_, j_);
-+
-+  PerformLSE();
-+
-+  ASSERT_TRUE(IsRemoved(vload));
-+  ASSERT_FALSE(IsRemoved(load));  // Cannot remove due to write side-effect in the loop.
-+}
-+
-+// Check that merging works correctly when there are VecStors in predecessors.
-+//
-+//                  vstore1: a[i,... i + 3] = [1,...1]
-+//                       /          \
-+//                      /            \
-+// vstore2: a[i,... i + 3] = [1,...1]  vstore3: a[i+1, ... i + 4] = [1, ... 1]
-+//                     \              /
-+//                      \            /
-+//                  vstore4: a[i,... i + 3] = [1,...1]
-+//
-+// Expected:
-+//   'vstore2' is removed.
-+//   'vstore3' is not removed.
-+//   'vstore4' is not removed. Such cases are not supported at the moment.
-+TEST_F(LoadStoreEliminationTest, MergePredecessorVecStores) {
-+  InitGraph();
-+
-+  HBasicBlock* upper;
-+  HBasicBlock* left;
-+  HBasicBlock* right;
-+  HBasicBlock* down;
-+  std::tie(upper, left, right, down) = CreateDiamondShapedCFG();
-+
-+  // upper: a[i,... i + 3] = [1,...1]
-+  HInstruction* vstore1 = AddVecStore(upper, array_, i_);
-+  HInstruction* vdata = vstore1->InputAt(2);
-+
-+  // left: a[i,... i + 3] = [1,...1]
-+  HInstruction* vstore2 = AddVecStore(left, array_, i_, vdata);
-+
-+  // right: a[i+1, ... i + 4] = [1, ... 1]
-+  HInstruction* vstore3 = AddVecStore(right, array_, i_add1_, vdata);
-+
-+  // down: a[i,... i + 3] = [1,...1]
-+  HInstruction* vstore4 = AddVecStore(down, array_, i_, vdata);
-+
-+  PerformLSE();
-+
-+  ASSERT_TRUE(IsRemoved(vstore2));
-+  ASSERT_FALSE(IsRemoved(vstore3));
-+  ASSERT_FALSE(IsRemoved(vstore4));
-+}
-+
-+// Check that merging works correctly when there are ArraySets in predecessors.
-+//
-+//          a[i] = 1
-+//        /          \
-+//       /            \
-+// store1: a[i] = 1  store2: a[i+1] = 1
-+//       \            /
-+//        \          /
-+//          store3: a[i] = 1
-+//
-+// Expected:
-+//   'store1' is removed.
-+//   'store2' is not removed.
-+//   'store3' is removed.
-+TEST_F(LoadStoreEliminationTest, MergePredecessorStores) {
-+  InitGraph();
-+
-+  HBasicBlock* upper;
-+  HBasicBlock* left;
-+  HBasicBlock* right;
-+  HBasicBlock* down;
-+  std::tie(upper, left, right, down) = CreateDiamondShapedCFG();
-+
-+  // upper: a[i,... i + 3] = [1,...1]
-+  AddArraySet(upper, array_, i_);
-+
-+  // left: a[i,... i + 3] = [1,...1]
-+  HInstruction* store1 = AddArraySet(left, array_, i_);
-+
-+  // right: a[i+1, ... i + 4] = [1, ... 1]
-+  HInstruction* store2 = AddArraySet(right, array_, i_add1_);
-+
-+  // down: a[i,... i + 3] = [1,...1]
-+  HInstruction* store3 = AddArraySet(down, array_, i_);
-+
-+  PerformLSE();
-+
-+  ASSERT_TRUE(IsRemoved(store1));
-+  ASSERT_FALSE(IsRemoved(store2));
-+  ASSERT_TRUE(IsRemoved(store3));
-+}
-+
-+// Check that redundant VStore/VLoad are removed from a SIMD loop.
-+//
-+//  LOOP BODY
-+//     vstore1: a[i,... i + 3] = [1,...1]
-+//     vload:   x = a[i,... i + 3]
-+//     vstore2: b[i,... i + 3] = x
-+//     vstore3: a[i,... i + 3] = [1,...1]
-+//
-+// Expected:
-+//   'vstore1' is not removed.
-+//   'vload' is removed.
-+//   'vstore3' is removed.
-+TEST_F(LoadStoreEliminationTest, RedundantVStoreVLoadInLoop) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
-+  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  HInstruction* array_b = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_b, pre_header_->GetLastInstruction());
-+  array_b->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  // LOOP BODY:
-+  //    a[i,... i + 3] = [1,...1]
-+  //    x = a[i,... i + 3]
-+  //    b[i,... i + 3] = x
-+  //    a[i,... i + 3] = [1,...1]
-+  HInstruction* vstore1 = AddVecStore(loop_, array_a, phi_);
-+  HInstruction* vload = AddVecLoad(loop_, array_a, phi_);
-+  AddVecStore(loop_, array_b, phi_, vload->AsVecLoad());
-+  HInstruction* vstore3 = AddVecStore(loop_, array_a, phi_, vstore1->InputAt(2));
-+
-+  PerformLSE();
-+
-+  ASSERT_FALSE(IsRemoved(vstore1));
-+  ASSERT_TRUE(IsRemoved(vload));
-+  ASSERT_TRUE(IsRemoved(vstore3));
-+}
-+
-+// Loop write side effects invalidate all stores.
-+// This causes stores after such loops not to be removed, even
-+// their values are known.
-+TEST_F(LoadStoreEliminationTest, StoreAfterLoopWithSideEffects) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c2 = graph_->GetIntConstant(2);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  // array[0] = 2;
-+  // loop:
-+  //   b[i] = array[i]
-+  // array[0] = 2
-+  AddArraySet(entry_block_, array_, c0, c2);
-+
-+  HInstruction* array_b = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_b, pre_header_->GetLastInstruction());
-+  array_b->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  HInstruction* load = AddArrayGet(loop_, array_, phi_);
-+  AddArraySet(loop_, array_b, phi_, load);
-+
-+  HInstruction* store = AddArraySet(return_block_, array_, c0, c2);
-+
-+  PerformLSE();
-+
-+  ASSERT_FALSE(IsRemoved(store));
-+}
-+
-+// As it is not allowed to use defaults for VecLoads, check if there is a new created array
-+// a VecLoad used in a loop and after it is not replaced with a default.
-+TEST_F(LoadStoreEliminationTest, VLoadDefaultValueInLoopWithoutWriteSideEffects) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
-+  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  // LOOP BODY:
-+  //    v = a[i,... i + 3]
-+  // array[0,... 3] = v
-+  HInstruction* vload = AddVecLoad(loop_, array_a, phi_);
-+  HInstruction* vstore = AddVecStore(return_block_, array_, c0, vload->AsVecLoad());
-+
-+  PerformLSE();
-+
-+  ASSERT_FALSE(IsRemoved(vload));
-+  ASSERT_FALSE(IsRemoved(vstore));
-+}
-+
-+// As it is not allowed to use defaults for VecLoads, check if there is a new created array
-+// a VecLoad is not replaced with a default.
-+TEST_F(LoadStoreEliminationTest, VLoadDefaultValue) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
-+  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  // v = a[0,... 3]
-+  // array[0,... 3] = v
-+  HInstruction* vload = AddVecLoad(pre_header_, array_a, c0);
-+  HInstruction* vstore = AddVecStore(return_block_, array_, c0, vload->AsVecLoad());
-+
-+  PerformLSE();
-+
-+  ASSERT_FALSE(IsRemoved(vload));
-+  ASSERT_FALSE(IsRemoved(vstore));
-+}
-+
-+// As it is allowed to use defaults for ordinary loads, check if there is a new created array
-+// a load used in a loop and after it is replaced with a default.
-+TEST_F(LoadStoreEliminationTest, LoadDefaultValueInLoopWithoutWriteSideEffects) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
-+  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  // LOOP BODY:
-+  //    v = a[i]
-+  // array[0] = v
-+  HInstruction* load = AddArrayGet(loop_, array_a, phi_);
-+  HInstruction* store = AddArraySet(return_block_, array_, c0, load);
-+
-+  PerformLSE();
-+
-+  ASSERT_TRUE(IsRemoved(load));
-+  ASSERT_FALSE(IsRemoved(store));
-+}
-+
-+// As it is allowed to use defaults for ordinary loads, check if there is a new created array
-+// a load is replaced with a default.
-+TEST_F(LoadStoreEliminationTest, LoadDefaultValue) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
-+  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  // v = a[0]
-+  // array[0] = v
-+  HInstruction* load = AddArrayGet(pre_header_, array_a, c0);
-+  HInstruction* store = AddArraySet(return_block_, array_, c0, load);
-+
-+  PerformLSE();
-+
-+  ASSERT_TRUE(IsRemoved(load));
-+  ASSERT_FALSE(IsRemoved(store));
-+}
-+
-+// As it is not allowed to use defaults for VecLoads but allowed for regular loads,
-+// check if there is a new created array, a VecLoad and a load used in a loop and after it,
-+// VecLoad is not replaced with a default but the load is.
-+TEST_F(LoadStoreEliminationTest, VLoadAndLoadDefaultValueInLoopWithoutWriteSideEffects) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
-+  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  // LOOP BODY:
-+  //    v = a[i,... i + 3]
-+  //    v1 = a[i]
-+  // array[0,... 3] = v
-+  // array[0] = v1
-+  HInstruction* vload = AddVecLoad(loop_, array_a, phi_);
-+  HInstruction* load = AddArrayGet(loop_, array_a, phi_);
-+  HInstruction* vstore = AddVecStore(return_block_, array_, c0, vload->AsVecLoad());
-+  HInstruction* store = AddArraySet(return_block_, array_, c0, load);
-+
-+  PerformLSE();
-+
-+  ASSERT_FALSE(IsRemoved(vload));
-+  ASSERT_TRUE(IsRemoved(load));
-+  ASSERT_FALSE(IsRemoved(vstore));
-+  ASSERT_FALSE(IsRemoved(store));
-+}
-+
-+// As it is not allowed to use defaults for VecLoads but allowed for regular loads,
-+// check if there is a new created array, a VecLoad and a load,
-+// VecLoad is not replaced with a default but the load is.
-+TEST_F(LoadStoreEliminationTest, VLoadAndLoadDefaultValue) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
-+  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  // v = a[0,... 3]
-+  // v1 = a[0]
-+  // array[0,... 3] = v
-+  // array[0] = v1
-+  HInstruction* vload = AddVecLoad(pre_header_, array_a, c0);
-+  HInstruction* load = AddArrayGet(pre_header_, array_a, c0);
-+  HInstruction* vstore = AddVecStore(return_block_, array_, c0, vload->AsVecLoad());
-+  HInstruction* store = AddArraySet(return_block_, array_, c0, load);
-+
-+  PerformLSE();
-+
-+  ASSERT_FALSE(IsRemoved(vload));
-+  ASSERT_TRUE(IsRemoved(load));
-+  ASSERT_FALSE(IsRemoved(vstore));
-+  ASSERT_FALSE(IsRemoved(store));
-+}
-+
-+// It is not allowed to use defaults for VecLoads. However it should not prevent from removing
-+// loads getting the same value.
-+// Check a load getting a known value is eliminated (a loop test case).
-+TEST_F(LoadStoreEliminationTest, VLoadDefaultValueAndVLoadInLoopWithoutWriteSideEffects) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
-+  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  // LOOP BODY:
-+  //    v = a[i,... i + 3]
-+  //    v1 = a[i,... i + 3]
-+  // array[0,... 3] = v
-+  // array[128,... 131] = v1
-+  HInstruction* vload1 = AddVecLoad(loop_, array_a, phi_);
-+  HInstruction* vload2 = AddVecLoad(loop_, array_a, phi_);
-+  HInstruction* vstore1 = AddVecStore(return_block_, array_, c0, vload1->AsVecLoad());
-+  HInstruction* vstore2 = AddVecStore(return_block_, array_, c128, vload2->AsVecLoad());
-+
-+  PerformLSE();
-+
-+  ASSERT_FALSE(IsRemoved(vload1));
-+  ASSERT_TRUE(IsRemoved(vload2));
-+  ASSERT_FALSE(IsRemoved(vstore1));
-+  ASSERT_FALSE(IsRemoved(vstore2));
-+}
-+
-+// It is not allowed to use defaults for VecLoads. However it should not prevent from removing
-+// loads getting the same value.
-+// Check a load getting a known value is eliminated.
-+TEST_F(LoadStoreEliminationTest, VLoadDefaultValueAndVLoad) {
-+  InitGraph();
-+  CreateTestControlFlowGraph();
-+
-+  HInstruction* c0 = graph_->GetIntConstant(0);
-+  HInstruction* c128 = graph_->GetIntConstant(128);
-+
-+  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
-+  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
-+  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
-+
-+  // v = a[0,... 3]
-+  // v1 = a[0,... 3]
-+  // array[0,... 3] = v
-+  // array[128,... 131] = v1
-+  HInstruction* vload1 = AddVecLoad(pre_header_, array_a, c0);
-+  HInstruction* vload2 = AddVecLoad(pre_header_, array_a, c0);
-+  HInstruction* vstore1 = AddVecStore(return_block_, array_, c0, vload1->AsVecLoad());
-+  HInstruction* vstore2 = AddVecStore(return_block_, array_, c128, vload2->AsVecLoad());
-+
-+  PerformLSE();
-+
-+  ASSERT_FALSE(IsRemoved(vload1));
-+  ASSERT_TRUE(IsRemoved(vload2));
-+  ASSERT_FALSE(IsRemoved(vstore1));
-+  ASSERT_FALSE(IsRemoved(vstore2));
-+}
-+
-+}  // namespace art
 diff --git a/compiler/optimizing/nodes.h b/compiler/optimizing/nodes.h
-index fedad0c69a..cb53ae3ada 100644
+index fedad0c..cb53ae3 100644
 --- a/compiler/optimizing/nodes.h
 +++ b/compiler/optimizing/nodes.h
 @@ -1438,6 +1438,7 @@ class HLoopInformationOutwardIterator : public ValueObject {
@@ -3493,7 +2519,7 @@ index fedad0c69a..cb53ae3ada 100644
   public:
    HUnresolvedInstanceFieldGet(HInstruction* obj,
 diff --git a/compiler/optimizing/nodes_vector.h b/compiler/optimizing/nodes_vector.h
-index efe4d6b000..e8170482e9 100644
+index efe4d6b..e817048 100644
 --- a/compiler/optimizing/nodes_vector.h
 +++ b/compiler/optimizing/nodes_vector.h
 @@ -1155,6 +1155,8 @@ class HVecStore final : public HVecMemoryOperation {
@@ -3506,7 +2532,7 @@ index efe4d6b000..e8170482e9 100644
  
   protected:
 diff --git a/compiler/optimizing/register_allocation_resolver.cc b/compiler/optimizing/register_allocation_resolver.cc
-index b1f0a1add9..1786048b12 100644
+index b1f0a1a..1786048 100644
 --- a/compiler/optimizing/register_allocation_resolver.cc
 +++ b/compiler/optimizing/register_allocation_resolver.cc
 @@ -274,7 +274,7 @@ void RegisterAllocationResolver::UpdateSafepointLiveRegisters() {
@@ -3519,7 +2545,7 @@ index b1f0a1add9..1786048b12 100644
    for (HInstruction* instruction : safepoints) {
      LocationSummary* locations = instruction->GetLocations();
 diff --git a/compiler/optimizing/scheduler.cc b/compiler/optimizing/scheduler.cc
-index fdef45ec8b..f722cf91a7 100644
+index fdef45e..f722cf9 100644
 --- a/compiler/optimizing/scheduler.cc
 +++ b/compiler/optimizing/scheduler.cc
 @@ -43,34 +43,37 @@ void SchedulingGraph::AddDependency(SchedulingNode* node,
@@ -3881,7 +2907,7 @@ index fdef45ec8b..f722cf91a7 100644
      HInstruction* instruction = it.Current();
      CHECK_EQ(instruction->GetBlock(), block)
 diff --git a/compiler/optimizing/scheduler.h b/compiler/optimizing/scheduler.h
-index d2dbeca924..f7180a02d7 100644
+index d2dbeca..f7180a0 100644
 --- a/compiler/optimizing/scheduler.h
 +++ b/compiler/optimizing/scheduler.h
 @@ -21,6 +21,7 @@
@@ -4088,7 +3114,7 @@ index d2dbeca924..f7180a02d7 100644
   public:
    HInstructionScheduling(HGraph* graph,
 diff --git a/compiler/optimizing/scheduler_test.cc b/compiler/optimizing/scheduler_test.cc
-index e0e265a04c..4c47f2ee57 100644
+index e0e265a..4c47f2e 100644
 --- a/compiler/optimizing/scheduler_test.cc
 +++ b/compiler/optimizing/scheduler_test.cc
 @@ -146,9 +146,7 @@ class SchedulerTest : public OptimizingUnitTest {
@@ -4154,7 +3180,7 @@ index e0e265a04c..4c47f2ee57 100644
  };
  
 diff --git a/compiler/optimizing/stack_map_stream.cc b/compiler/optimizing/stack_map_stream.cc
-index 60ca61c133..e21e21cdf3 100644
+index 60ca61c..e21e21c 100644
 --- a/compiler/optimizing/stack_map_stream.cc
 +++ b/compiler/optimizing/stack_map_stream.cc
 @@ -52,6 +52,15 @@ void StackMapStream::BeginMethod(size_t frame_size_in_bytes,
@@ -4190,7 +3216,7 @@ index 60ca61c133..e21e21cdf3 100644
    out.WriteVarint(core_spill_mask_);
    out.WriteVarint(fp_spill_mask_);
 diff --git a/compiler/optimizing/stack_map_stream.h b/compiler/optimizing/stack_map_stream.h
-index 01c6bf9e0e..20dd32e308 100644
+index 01c6bf9..20dd32e 100644
 --- a/compiler/optimizing/stack_map_stream.h
 +++ b/compiler/optimizing/stack_map_stream.h
 @@ -99,6 +99,7 @@ class StackMapStream : public DeletableArenaObject<kArenaAllocStackMapStream> {
@@ -4202,7 +3228,7 @@ index 01c6bf9e0e..20dd32e308 100644
    uint32_t core_spill_mask_ = 0;
    uint32_t fp_spill_mask_ = 0;
 diff --git a/compiler/utils/arm/assembler_arm_vixl.h b/compiler/utils/arm/assembler_arm_vixl.h
-index 98c0191679..59d7eddc63 100644
+index 98c0191..59d7edd 100644
 --- a/compiler/utils/arm/assembler_arm_vixl.h
 +++ b/compiler/utils/arm/assembler_arm_vixl.h
 @@ -22,6 +22,7 @@
@@ -4229,7 +3255,7 @@ index 98c0191679..59d7eddc63 100644
   public:
    // Most methods fit in a 1KB code buffer, which results in more optimal alloc/realloc and
 diff --git a/compiler/utils/arm/jni_macro_assembler_arm_vixl.cc b/compiler/utils/arm/jni_macro_assembler_arm_vixl.cc
-index c6c764e3a9..47a067b2a7 100644
+index c6c764e..47a067b 100644
 --- a/compiler/utils/arm/jni_macro_assembler_arm_vixl.cc
 +++ b/compiler/utils/arm/jni_macro_assembler_arm_vixl.cc
 @@ -68,14 +68,6 @@ void ArmVIXLJNIMacroAssembler::FinalizeCode() {
@@ -4248,7 +3274,7 @@ index c6c764e3a9..47a067b2a7 100644
  
  void ArmVIXLJNIMacroAssembler::BuildFrame(size_t frame_size,
 diff --git a/compiler/utils/arm64/assembler_arm64.cc b/compiler/utils/arm64/assembler_arm64.cc
-index d7ade058a4..d722e00646 100644
+index d7ade05..d722e00 100644
 --- a/compiler/utils/arm64/assembler_arm64.cc
 +++ b/compiler/utils/arm64/assembler_arm64.cc
 @@ -49,6 +49,7 @@ static void SetVIXLCPUFeaturesFromART(vixl::aarch64::MacroAssembler* vixl_masm_,
@@ -4276,7 +3302,7 @@ index d7ade058a4..d722e00646 100644
    int size = registers.GetRegisterSizeInBytes();
    const Register sp = vixl_masm_.StackPointer();
 diff --git a/compiler/utils/arm64/assembler_arm64.h b/compiler/utils/arm64/assembler_arm64.h
-index 9e01a70ea9..594c6b4b75 100644
+index 9e01a70..594c6b4 100644
 --- a/compiler/utils/arm64/assembler_arm64.h
 +++ b/compiler/utils/arm64/assembler_arm64.h
 @@ -25,6 +25,7 @@
@@ -4304,7 +3330,7 @@ index 9e01a70ea9..594c6b4b75 100644
  
  enum LoadOperandType {
 diff --git a/dex2oat/linker/arm/relative_patcher_arm_base.cc b/dex2oat/linker/arm/relative_patcher_arm_base.cc
-index 828dc5d7c3..35e799ac73 100644
+index 828dc5d..35e799a 100644
 --- a/dex2oat/linker/arm/relative_patcher_arm_base.cc
 +++ b/dex2oat/linker/arm/relative_patcher_arm_base.cc
 @@ -386,6 +386,12 @@ ArmBaseRelativePatcher::ThunkKey ArmBaseRelativePatcher::GetMethodCallKey() {
@@ -4344,7 +3370,7 @@ index 828dc5d7c3..35e799ac73 100644
        if (lb == thunks_.end() || thunks_.key_comp()(key, lb->first)) {
          uint32_t max_next_offset = CalculateMaxNextOffset(patch_offset, key);
 diff --git a/dex2oat/linker/arm/relative_patcher_arm_base.h b/dex2oat/linker/arm/relative_patcher_arm_base.h
-index 0eb4417771..bf3e81f6b9 100644
+index 0eb4417..bf3e81f 100644
 --- a/dex2oat/linker/arm/relative_patcher_arm_base.h
 +++ b/dex2oat/linker/arm/relative_patcher_arm_base.h
 @@ -44,6 +44,7 @@ class ArmBaseRelativePatcher : public RelativePatcher {
@@ -4364,7 +3390,7 @@ index 0eb4417771..bf3e81f6b9 100644
  
    uint32_t ReserveSpaceInternal(uint32_t offset,
 diff --git a/dex2oat/linker/arm/relative_patcher_thumb2.cc b/dex2oat/linker/arm/relative_patcher_thumb2.cc
-index 697fb09f73..72b93ec1f0 100644
+index 697fb09..72b93ec 100644
 --- a/dex2oat/linker/arm/relative_patcher_thumb2.cc
 +++ b/dex2oat/linker/arm/relative_patcher_thumb2.cc
 @@ -58,28 +58,10 @@ void Thumb2RelativePatcher::PatchCall(std::vector<uint8_t>* code,
@@ -4461,7 +3487,7 @@ index 697fb09f73..72b93ec1f0 100644
    DCHECK_LE(offset + 4u, code->size());
    DCHECK_ALIGNED(offset, 2u);
 diff --git a/dex2oat/linker/arm/relative_patcher_thumb2.h b/dex2oat/linker/arm/relative_patcher_thumb2.h
-index dbf64a13da..d360482d2a 100644
+index dbf64a1..d360482 100644
 --- a/dex2oat/linker/arm/relative_patcher_thumb2.h
 +++ b/dex2oat/linker/arm/relative_patcher_thumb2.h
 @@ -42,6 +42,9 @@ class Thumb2RelativePatcher final : public ArmBaseRelativePatcher {
@@ -4486,7 +3512,7 @@ index dbf64a13da..d360482d2a 100644
  
    template <typename Vector>
 diff --git a/dex2oat/linker/arm/relative_patcher_thumb2_test.cc b/dex2oat/linker/arm/relative_patcher_thumb2_test.cc
-index 04a897ef48..296bf61cbc 100644
+index 04a897e..296bf61 100644
 --- a/dex2oat/linker/arm/relative_patcher_thumb2_test.cc
 +++ b/dex2oat/linker/arm/relative_patcher_thumb2_test.cc
 @@ -225,7 +225,8 @@ class Thumb2RelativePatcherTest : public RelativePatcherTest {
@@ -4536,7 +3562,7 @@ index 04a897ef48..296bf61cbc 100644
      0,  1,  2,  3,  4,  5,  6,  7,
      9, 10, 11,                      // r8 (rMR), IP, SP, LR and PC are reserved.
 diff --git a/dex2oat/linker/arm64/relative_patcher_arm64.cc b/dex2oat/linker/arm64/relative_patcher_arm64.cc
-index ee8d4d1a7f..2260f66d1f 100644
+index ee8d4d1..2260f66 100644
 --- a/dex2oat/linker/arm64/relative_patcher_arm64.cc
 +++ b/dex2oat/linker/arm64/relative_patcher_arm64.cc
 @@ -58,6 +58,7 @@ constexpr uint32_t kAdrpThunkSize = 8u;
@@ -4666,7 +3692,7 @@ index ee8d4d1a7f..2260f66d1f 100644
    return
        (static_cast<uint32_t>(addr[0]) << 0) +
 diff --git a/dex2oat/linker/arm64/relative_patcher_arm64.h b/dex2oat/linker/arm64/relative_patcher_arm64.h
-index e95d0fee6f..9ad2c961bd 100644
+index e95d0fe..9ad2c96 100644
 --- a/dex2oat/linker/arm64/relative_patcher_arm64.h
 +++ b/dex2oat/linker/arm64/relative_patcher_arm64.h
 @@ -47,6 +47,9 @@ class Arm64RelativePatcher final : public ArmBaseRelativePatcher {
@@ -4693,7 +3719,7 @@ index e95d0fee6f..9ad2c961bd 100644
  
    template <typename Alloc>
 diff --git a/dex2oat/linker/arm64/relative_patcher_arm64_test.cc b/dex2oat/linker/arm64/relative_patcher_arm64_test.cc
-index 9e54bbf9c7..8bae5d47f1 100644
+index 9e54bbf..8bae5d4 100644
 --- a/dex2oat/linker/arm64/relative_patcher_arm64_test.cc
 +++ b/dex2oat/linker/arm64/relative_patcher_arm64_test.cc
 @@ -198,7 +198,8 @@ class Arm64RelativePatcherTest : public RelativePatcherTest {
@@ -4744,7 +3770,7 @@ index 9e54bbf9c7..8bae5d47f1 100644
    uint32_t valid_regs[] = {
        0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
 diff --git a/dex2oat/linker/mips/relative_patcher_mips.cc b/dex2oat/linker/mips/relative_patcher_mips.cc
-index 69e0846cb7..4f4dc48ab4 100644
+index 69e0846..4f4dc48 100644
 --- a/dex2oat/linker/mips/relative_patcher_mips.cc
 +++ b/dex2oat/linker/mips/relative_patcher_mips.cc
 @@ -86,6 +86,12 @@ void MipsRelativePatcher::PatchPcRelativeReference(std::vector<uint8_t>* code,
@@ -4761,7 +3787,7 @@ index 69e0846cb7..4f4dc48ab4 100644
                                                        const LinkerPatch& patch ATTRIBUTE_UNUSED,
                                                        uint32_t patch_offset ATTRIBUTE_UNUSED) {
 diff --git a/dex2oat/linker/mips/relative_patcher_mips.h b/dex2oat/linker/mips/relative_patcher_mips.h
-index 4c385a3fec..7cdac4511f 100644
+index 4c385a3..7cdac45 100644
 --- a/dex2oat/linker/mips/relative_patcher_mips.h
 +++ b/dex2oat/linker/mips/relative_patcher_mips.h
 @@ -41,6 +41,9 @@ class MipsRelativePatcher final : public RelativePatcher {
@@ -4775,7 +3801,7 @@ index 4c385a3fec..7cdac4511f 100644
                                     const LinkerPatch& patch,
                                     uint32_t patch_offset) override;
 diff --git a/dex2oat/linker/mips64/relative_patcher_mips64.cc b/dex2oat/linker/mips64/relative_patcher_mips64.cc
-index aae5746278..2992487062 100644
+index aae5746..2992487 100644
 --- a/dex2oat/linker/mips64/relative_patcher_mips64.cc
 +++ b/dex2oat/linker/mips64/relative_patcher_mips64.cc
 @@ -84,6 +84,12 @@ void Mips64RelativePatcher::PatchPcRelativeReference(std::vector<uint8_t>* code,
@@ -4792,7 +3818,7 @@ index aae5746278..2992487062 100644
                                                          const LinkerPatch& patch ATTRIBUTE_UNUSED,
                                                          uint32_t patch_offset ATTRIBUTE_UNUSED) {
 diff --git a/dex2oat/linker/mips64/relative_patcher_mips64.h b/dex2oat/linker/mips64/relative_patcher_mips64.h
-index 7b7c2ccd9f..9d27b87546 100644
+index 7b7c2cc..9d27b87 100644
 --- a/dex2oat/linker/mips64/relative_patcher_mips64.h
 +++ b/dex2oat/linker/mips64/relative_patcher_mips64.h
 @@ -39,6 +39,9 @@ class Mips64RelativePatcher final : public RelativePatcher {
@@ -4806,7 +3832,7 @@ index 7b7c2ccd9f..9d27b87546 100644
                                     const LinkerPatch& patch,
                                     uint32_t patch_offset) override;
 diff --git a/dex2oat/linker/multi_oat_relative_patcher.h b/dex2oat/linker/multi_oat_relative_patcher.h
-index 9b47a0d5b0..2daada44bc 100644
+index 9b47a0d..2daada4 100644
 --- a/dex2oat/linker/multi_oat_relative_patcher.h
 +++ b/dex2oat/linker/multi_oat_relative_patcher.h
 @@ -114,6 +114,13 @@ class MultiOatRelativePatcher final {
@@ -4824,7 +3850,7 @@ index 9b47a0d5b0..2daada44bc 100644
                                     const LinkerPatch& patch,
                                     uint32_t patch_offset) {
 diff --git a/dex2oat/linker/multi_oat_relative_patcher_test.cc b/dex2oat/linker/multi_oat_relative_patcher_test.cc
-index 274084f030..2a05816206 100644
+index 274084f..2a05816 100644
 --- a/dex2oat/linker/multi_oat_relative_patcher_test.cc
 +++ b/dex2oat/linker/multi_oat_relative_patcher_test.cc
 @@ -94,6 +94,12 @@ class MultiOatRelativePatcherTest : public testing::Test {
@@ -4841,7 +3867,7 @@ index 274084f030..2a05816206 100644
                                       const LinkerPatch& patch ATTRIBUTE_UNUSED,
                                       uint32_t patch_offset ATTRIBUTE_UNUSED) override {
 diff --git a/dex2oat/linker/oat_writer.cc b/dex2oat/linker/oat_writer.cc
-index 6b2388337a..eec494018c 100644
+index 6b23883..eec4940 100644
 --- a/dex2oat/linker/oat_writer.cc
 +++ b/dex2oat/linker/oat_writer.cc
 @@ -1812,6 +1812,12 @@ class OatWriter::WriteCodeMethodVisitor : public OrderedMethodVisitor {
@@ -4858,7 +3884,7 @@ index 6b2388337a..eec494018c 100644
                writer_->relative_patcher_->PatchBakerReadBarrierBranch(&patched_code_,
                                                                        patch,
 diff --git a/dex2oat/linker/oat_writer_test.cc b/dex2oat/linker/oat_writer_test.cc
-index c46aa18703..2142727dae 100644
+index c46aa18..2142727 100644
 --- a/dex2oat/linker/oat_writer_test.cc
 +++ b/dex2oat/linker/oat_writer_test.cc
 @@ -469,7 +469,7 @@ TEST_F(OatTest, OatHeaderSizeCheck) {
@@ -4871,7 +3897,7 @@ index c46aa18703..2142727dae 100644
  }
  
 diff --git a/dex2oat/linker/relative_patcher.cc b/dex2oat/linker/relative_patcher.cc
-index 4db0e8a94e..f746cfbd45 100644
+index 4db0e8a..f746cfb 100644
 --- a/dex2oat/linker/relative_patcher.cc
 +++ b/dex2oat/linker/relative_patcher.cc
 @@ -77,6 +77,12 @@ std::unique_ptr<RelativePatcher> RelativePatcher::Create(
@@ -4888,7 +3914,7 @@ index 4db0e8a94e..f746cfbd45 100644
                                       const LinkerPatch& patch ATTRIBUTE_UNUSED,
                                       uint32_t patch_offset ATTRIBUTE_UNUSED) override {
 diff --git a/dex2oat/linker/relative_patcher.h b/dex2oat/linker/relative_patcher.h
-index e8e15c9ea8..c05445c196 100644
+index e8e15c9..c05445c 100644
 --- a/dex2oat/linker/relative_patcher.h
 +++ b/dex2oat/linker/relative_patcher.h
 @@ -137,6 +137,11 @@ class RelativePatcher {
@@ -4904,7 +3930,7 @@ index e8e15c9ea8..c05445c196 100644
    virtual void PatchBakerReadBarrierBranch(std::vector<uint8_t>* code,
                                             const LinkerPatch& patch,
 diff --git a/dex2oat/linker/relative_patcher_test.h b/dex2oat/linker/relative_patcher_test.h
-index dead38d3df..dc53ac4321 100644
+index dead38d..dc53ac4 100644
 --- a/dex2oat/linker/relative_patcher_test.h
 +++ b/dex2oat/linker/relative_patcher_test.h
 @@ -174,8 +174,10 @@ class RelativePatcherTest : public testing::Test {
@@ -4975,7 +4001,7 @@ index dead38d3df..dc53ac4321 100644
        const uint32_t custom_value1_;
        const uint32_t custom_value2_;
 diff --git a/dex2oat/linker/x86/relative_patcher_x86.cc b/dex2oat/linker/x86/relative_patcher_x86.cc
-index cdd2cef13a..332350692e 100644
+index cdd2cef..3323506 100644
 --- a/dex2oat/linker/x86/relative_patcher_x86.cc
 +++ b/dex2oat/linker/x86/relative_patcher_x86.cc
 @@ -57,6 +57,12 @@ void X86RelativePatcher::PatchPcRelativeReference(std::vector<uint8_t>* code,
@@ -4992,7 +4018,7 @@ index cdd2cef13a..332350692e 100644
                                                       const LinkerPatch& patch ATTRIBUTE_UNUSED,
                                                       uint32_t patch_offset ATTRIBUTE_UNUSED) {
 diff --git a/dex2oat/linker/x86/relative_patcher_x86.h b/dex2oat/linker/x86/relative_patcher_x86.h
-index 3da62fb23b..589a4989f4 100644
+index 3da62fb..589a498 100644
 --- a/dex2oat/linker/x86/relative_patcher_x86.h
 +++ b/dex2oat/linker/x86/relative_patcher_x86.h
 @@ -30,6 +30,9 @@ class X86RelativePatcher final : public X86BaseRelativePatcher {
@@ -5006,7 +4032,7 @@ index 3da62fb23b..589a4989f4 100644
                                     const LinkerPatch& patch,
                                     uint32_t patch_offset) override;
 diff --git a/dex2oat/linker/x86_64/relative_patcher_x86_64.cc b/dex2oat/linker/x86_64/relative_patcher_x86_64.cc
-index c80f6a92f2..0b9d07e9cf 100644
+index c80f6a9..0b9d07e 100644
 --- a/dex2oat/linker/x86_64/relative_patcher_x86_64.cc
 +++ b/dex2oat/linker/x86_64/relative_patcher_x86_64.cc
 @@ -35,6 +35,12 @@ void X86_64RelativePatcher::PatchPcRelativeReference(std::vector<uint8_t>* code,
@@ -5023,7 +4049,7 @@ index c80f6a92f2..0b9d07e9cf 100644
                                                          const LinkerPatch& patch ATTRIBUTE_UNUSED,
                                                          uint32_t patch_offset ATTRIBUTE_UNUSED) {
 diff --git a/dex2oat/linker/x86_64/relative_patcher_x86_64.h b/dex2oat/linker/x86_64/relative_patcher_x86_64.h
-index a82fef3b56..7b99bd881f 100644
+index a82fef3..7b99bd8 100644
 --- a/dex2oat/linker/x86_64/relative_patcher_x86_64.h
 +++ b/dex2oat/linker/x86_64/relative_patcher_x86_64.h
 @@ -30,6 +30,9 @@ class X86_64RelativePatcher final : public X86BaseRelativePatcher {
@@ -5037,7 +4063,7 @@ index a82fef3b56..7b99bd881f 100644
                                     const LinkerPatch& patch,
                                     uint32_t patch_offset) override;
 diff --git a/libartbase/base/bit_memory_region.h b/libartbase/base/bit_memory_region.h
-index 1f1011ea58..637332e07f 100644
+index 1f1011e..637332e 100644
 --- a/libartbase/base/bit_memory_region.h
 +++ b/libartbase/base/bit_memory_region.h
 @@ -252,6 +252,27 @@ class BitMemoryReader {
@@ -5069,7 +4095,7 @@ index 1f1011ea58..637332e07f 100644
    // Represents all of the bits which were read so far. There is no upper bound.
    // Therefore, by definition, the "cursor" is always at the end of the region.
 diff --git a/libartbase/base/bit_table.h b/libartbase/base/bit_table.h
-index d6a1d7bb18..6c91ce51be 100644
+index d6a1d7b..6c91ce5 100644
 --- a/libartbase/base/bit_table.h
 +++ b/libartbase/base/bit_table.h
 @@ -51,9 +51,11 @@ class BitTableBase {
@@ -5086,7 +4112,7 @@ index d6a1d7bb18..6c91ce51be 100644
        }
      }
 diff --git a/libdexfile/dex/dex_file_verifier.cc b/libdexfile/dex/dex_file_verifier.cc
-index 86a28e5a3e..52700a69c8 100644
+index 86a28e5..52700a6 100644
 --- a/libdexfile/dex/dex_file_verifier.cc
 +++ b/libdexfile/dex/dex_file_verifier.cc
 @@ -18,6 +18,7 @@
@@ -5112,7 +4138,7 @@ index 86a28e5a3e..52700a69c8 100644
    for (; count != 0u; --count) {
      const size_t current_offset = offset;
 diff --git a/libelffile/dwarf/debug_frame_opcode_writer.h b/libelffile/dwarf/debug_frame_opcode_writer.h
-index b255f9c1f4..65ca6bf1f4 100644
+index b255f9c..65ca6bf 100644
 --- a/libelffile/dwarf/debug_frame_opcode_writer.h
 +++ b/libelffile/dwarf/debug_frame_opcode_writer.h
 @@ -80,8 +80,10 @@ class DebugFrameOpCodeWriter : private Writer<Vector> {
@@ -5129,7 +4155,7 @@ index b255f9c1f4..65ca6bf1f4 100644
      if (UNLIKELY(enabled_)) {
        for (int i = 0; reg_mask != 0u; reg_mask >>= 1, i++) {
 diff --git a/runtime/Android.bp b/runtime/Android.bp
-index 7bf662c652..41e5734195 100644
+index 7bf662c..41e5734 100644
 --- a/runtime/Android.bp
 +++ b/runtime/Android.bp
 @@ -195,6 +195,7 @@ libart_cc_defaults {
@@ -5149,7 +4175,7 @@ index 7bf662c652..41e5734195 100644
          "entrypoints/quick/quick_throw_entrypoints.cc",
          "entrypoints/quick/quick_trampoline_entrypoints.cc",
 diff --git a/runtime/arch/arm/quick_entrypoints_arm.S b/runtime/arch/arm/quick_entrypoints_arm.S
-index b57e119fbe..196a24b793 100644
+index b57e119..196a24b 100644
 --- a/runtime/arch/arm/quick_entrypoints_arm.S
 +++ b/runtime/arch/arm/quick_entrypoints_arm.S
 @@ -2215,6 +2215,17 @@ ENTRY art_quick_l2f
@@ -5171,7 +4197,7 @@ index b57e119fbe..196a24b793 100644
  .ifc \reg, \reg_if
      cbz \reg, \dest
 diff --git a/runtime/arch/arm64/quick_entrypoints_arm64.S b/runtime/arch/arm64/quick_entrypoints_arm64.S
-index cb74ee81f2..d2d9c69dca 100644
+index cb74ee8..d2d9c69 100644
 --- a/runtime/arch/arm64/quick_entrypoints_arm64.S
 +++ b/runtime/arch/arm64/quick_entrypoints_arm64.S
 @@ -2468,6 +2468,17 @@ ENTRY art_quick_indexof
@@ -5193,7 +4219,7 @@ index cb74ee81f2..d2d9c69dca 100644
       * Create a function `name` calling the ReadBarrier::Mark routine,
       * getting its argument and returning its result through W register
 diff --git a/runtime/arch/mips/quick_entrypoints_mips.S b/runtime/arch/mips/quick_entrypoints_mips.S
-index b10d1fc849..5697185f55 100644
+index b10d1fc..5697185 100644
 --- a/runtime/arch/mips/quick_entrypoints_mips.S
 +++ b/runtime/arch/mips/quick_entrypoints_mips.S
 @@ -2694,6 +2694,16 @@ ENTRY_NO_GP art_quick_string_compareto
@@ -5214,7 +4240,7 @@ index b10d1fc849..5697185f55 100644
       * Create a function `name` calling the ReadBarrier::Mark routine,
       * getting its argument and returning its result through register
 diff --git a/runtime/arch/mips64/quick_entrypoints_mips64.S b/runtime/arch/mips64/quick_entrypoints_mips64.S
-index ebf1d5b0b4..c54e7bb7f1 100644
+index ebf1d5b..c54e7bb 100644
 --- a/runtime/arch/mips64/quick_entrypoints_mips64.S
 +++ b/runtime/arch/mips64/quick_entrypoints_mips64.S
 @@ -2476,6 +2476,16 @@ ENTRY_NO_GP art_quick_indexof
@@ -5235,7 +4261,7 @@ index ebf1d5b0b4..c54e7bb7f1 100644
       * Create a function `name` calling the ReadBarrier::Mark routine,
       * getting its argument and returning its result through register
 diff --git a/runtime/arch/x86/quick_entrypoints_x86.S b/runtime/arch/x86/quick_entrypoints_x86.S
-index 306c4ebd9b..b8ccd8e025 100644
+index 306c4eb..b8ccd8e 100644
 --- a/runtime/arch/x86/quick_entrypoints_x86.S
 +++ b/runtime/arch/x86/quick_entrypoints_x86.S
 @@ -2246,6 +2246,25 @@ DEFINE_FUNCTION art_quick_string_compareto
@@ -5265,7 +4291,7 @@ index 306c4ebd9b..b8ccd8e025 100644
  // getting its argument and returning its result through register
  // `reg`, saving and restoring all caller-save registers.
 diff --git a/runtime/arch/x86_64/quick_entrypoints_x86_64.S b/runtime/arch/x86_64/quick_entrypoints_x86_64.S
-index 39bf6e8d6c..1177477b9e 100644
+index 39bf6e8..1177477 100644
 --- a/runtime/arch/x86_64/quick_entrypoints_x86_64.S
 +++ b/runtime/arch/x86_64/quick_entrypoints_x86_64.S
 @@ -2201,6 +2201,16 @@ DEFINE_FUNCTION art_quick_instance_of
@@ -5285,105 +4311,8 @@ index 39bf6e8d6c..1177477b9e 100644
  // Create a function `name` calling the ReadBarrier::Mark routine,
  // getting its argument and returning its result through register
  // `reg`, saving and restoring all caller-save registers.
-diff --git a/runtime/class_loader_context.cc b/runtime/class_loader_context.cc
-index 34fd146527..925f25ea2b 100644
---- a/runtime/class_loader_context.cc
-+++ b/runtime/class_loader_context.cc
-@@ -1163,6 +1163,18 @@ ClassLoaderContext::VerificationResult ClassLoaderContext::VerifyClassLoaderCont
-   return VerificationResult::kVerifies;
- }
- 
-+// Returns true if absolute `path` ends with relative `suffix` starting at
-+// a directory name boundary, i.e. after a '/'. For example, "foo/bar"
-+// is a valid suffix of "/data/foo/bar" but not "/data-foo/bar".
-+static inline bool AbsolutePathHasRelativeSuffix(const std::string& path,
-+                                                 const std::string& suffix) {
-+  DCHECK(IsAbsoluteLocation(path));
-+  DCHECK(!IsAbsoluteLocation(suffix));
-+  return (path.size() > suffix.size()) &&
-+         (path[path.size() - suffix.size() - 1u] == '/') &&
-+         (std::string_view(path).substr(/*pos*/ path.size() - suffix.size()) == suffix);
-+}
-+
- bool ClassLoaderContext::ClassLoaderInfoMatch(
-     const ClassLoaderInfo& info,
-     const ClassLoaderInfo& expected_info,
-@@ -1197,40 +1209,34 @@ bool ClassLoaderContext::ClassLoaderInfoMatch(
-       // and the other as an absolute one.
-       bool is_dex_name_absolute = IsAbsoluteLocation(info.classpath[k]);
-       bool is_expected_dex_name_absolute = IsAbsoluteLocation(expected_info.classpath[k]);
--      std::string dex_name;
--      std::string expected_dex_name;
-+      bool dex_names_match = false;
-+
- 
-       if (is_dex_name_absolute == is_expected_dex_name_absolute) {
-         // If both locations are absolute or relative then compare them as they are.
-         // This is usually the case for: shared libraries and secondary dex files.
--        dex_name = info.classpath[k];
--        expected_dex_name = expected_info.classpath[k];
-+        dex_names_match = (info.classpath[k] == expected_info.classpath[k]);
-       } else if (is_dex_name_absolute) {
-         // The runtime name is absolute but the compiled name (the expected one) is relative.
-         // This is the case for split apks which depend on base or on other splits.
--        dex_name = info.classpath[k];
--        OatFile::ResolveRelativeEncodedDexLocation(info.classpath[k].c_str(),
--                                                   expected_info.classpath[k],
--                                                   &expected_dex_name);
-+        dex_names_match =
-+            AbsolutePathHasRelativeSuffix(info.classpath[k], expected_info.classpath[k]);
-       } else if (is_expected_dex_name_absolute) {
-         // The runtime name is relative but the compiled name is absolute.
-         // There is no expected use case that would end up here as dex files are always loaded
-         // with their absolute location. However, be tolerant and do the best effort (in case
-         // there are unexpected new use case...).
--        OatFile::ResolveRelativeEncodedDexLocation(expected_info.classpath[k].c_str(),
--                                                   info.classpath[k],
--                                                   &dex_name);
--        expected_dex_name = expected_info.classpath[k];
-+        dex_names_match =
-+            AbsolutePathHasRelativeSuffix(expected_info.classpath[k], info.classpath[k]);
-       } else {
-         // Both locations are relative. In this case there's not much we can be sure about
-         // except that the names are the same. The checksum will ensure that the files are
-         // are same. This should not happen outside testing and manual invocations.
--        dex_name = info.classpath[k];
--        expected_dex_name = expected_info.classpath[k];
-+        dex_names_match = (info.classpath[k] == expected_info.classpath[k]);
-       }
- 
-       // Compare the locations.
--      if (dex_name != expected_dex_name) {
-+      if (!dex_names_match) {
-         LOG(WARNING) << "ClassLoaderContext classpath element mismatch"
-             << ". expected=" << expected_info.classpath[k]
-             << ", found=" << info.classpath[k]
-diff --git a/runtime/class_loader_context_test.cc b/runtime/class_loader_context_test.cc
-index 0c36fd42c2..008327834b 100644
---- a/runtime/class_loader_context_test.cc
-+++ b/runtime/class_loader_context_test.cc
-@@ -1402,7 +1402,18 @@ TEST_F(ClassLoaderContextTest, VerifyClassLoaderContextMatchAfterEncodingMultide
- 
-   std::unique_ptr<ClassLoaderContext> context = CreateContextForClassLoader(class_loader);
- 
--  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context->EncodeContextForOatFile("")),
-+  std::string context_with_no_base_dir = context->EncodeContextForOatFile("");
-+  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context_with_no_base_dir),
-+            ClassLoaderContext::VerificationResult::kVerifies);
-+
-+  std::string dex_location = GetTestDexFileName("MultiDex");
-+  size_t pos = dex_location.rfind('/');
-+  ASSERT_NE(std::string::npos, pos);
-+  std::string parent = dex_location.substr(0, pos);
-+
-+  std::string context_with_base_dir = context->EncodeContextForOatFile(parent);
-+  ASSERT_NE(context_with_base_dir, context_with_no_base_dir);
-+  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context_with_base_dir),
-             ClassLoaderContext::VerificationResult::kVerifies);
- }
- 
 diff --git a/runtime/entrypoints/entrypoint_utils.cc b/runtime/entrypoints/entrypoint_utils.cc
-index ee2ab567b2..71196d4948 100644
+index ee2ab56..71196d4 100644
 --- a/runtime/entrypoints/entrypoint_utils.cc
 +++ b/runtime/entrypoints/entrypoint_utils.cc
 @@ -203,13 +203,15 @@ static inline ArtMethod* DoGetCalleeSaveMethodCaller(ArtMethod* outer_method,
@@ -5410,7 +4339,7 @@ index ee2ab567b2..71196d4948 100644
      }
      if (kIsDebugBuild && do_caller_check) {
 diff --git a/runtime/entrypoints/quick/quick_default_init_entrypoints.h b/runtime/entrypoints/quick/quick_default_init_entrypoints.h
-index ce12fdee5f..f5bb5a37e7 100644
+index ce12fde..f5bb5a3 100644
 --- a/runtime/entrypoints/quick/quick_default_init_entrypoints.h
 +++ b/runtime/entrypoints/quick/quick_default_init_entrypoints.h
 @@ -121,6 +121,9 @@ static void DefaultInitEntryPoints(JniEntryPoints* jpoints, QuickEntryPoints* qp
@@ -5424,7 +4353,7 @@ index ce12fdee5f..f5bb5a37e7 100644
  
  }  // namespace art
 diff --git a/runtime/entrypoints/quick/quick_entrypoints.h b/runtime/entrypoints/quick/quick_entrypoints.h
-index 243f7ec1e2..954450fe7a 100644
+index 243f7ec..954450f 100644
 --- a/runtime/entrypoints/quick/quick_entrypoints.h
 +++ b/runtime/entrypoints/quick/quick_entrypoints.h
 @@ -34,6 +34,7 @@ class Array;
@@ -5448,7 +4377,7 @@ index 243f7ec1e2..954450fe7a 100644
                             Thread* self)
      NO_THREAD_SAFETY_ANALYSIS HOT_ATTR;
 diff --git a/runtime/entrypoints/quick/quick_entrypoints_list.h b/runtime/entrypoints/quick/quick_entrypoints_list.h
-index 42b680e05a..21e248c554 100644
+index 42b680e..21e248c 100644
 --- a/runtime/entrypoints/quick/quick_entrypoints_list.h
 +++ b/runtime/entrypoints/quick/quick_entrypoints_list.h
 @@ -168,6 +168,8 @@
@@ -5460,44 +4389,8 @@ index 42b680e05a..21e248c554 100644
  \
    V(ReadBarrierJni, void, mirror::CompressedReference<mirror::Object>*, Thread*) \
    V(ReadBarrierMarkReg00, mirror::Object*, mirror::Object*) \
-diff --git a/runtime/entrypoints/quick/quick_string_builder_append_entrypoints.cc b/runtime/entrypoints/quick/quick_string_builder_append_entrypoints.cc
-new file mode 100644
-index 0000000000..9afaf439dc
---- /dev/null
-+++ b/runtime/entrypoints/quick/quick_string_builder_append_entrypoints.cc
-@@ -0,0 +1,30 @@
-+/*
-+ * Copyright (C) 2019 The Android Open Source Project
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ *      http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
-+
-+#include "quick_entrypoints.h"
-+
-+#include "string_builder_append.h"
-+#include "obj_ptr-inl.h"
-+
-+namespace art {
-+
-+extern "C" mirror::String* artStringBuilderAppend(uint32_t format,
-+                                                  const uint32_t* args,
-+                                                  Thread* self) {
-+  return StringBuilderAppend::AppendF(format, args, self).Ptr();
-+}
-+
-+}  // namespace art
 diff --git a/runtime/entrypoints/runtime_asm_entrypoints.h b/runtime/entrypoints/runtime_asm_entrypoints.h
-index fa287cb0ad..3f4e91ed91 100644
+index fa287cb..3f4e91e 100644
 --- a/runtime/entrypoints/runtime_asm_entrypoints.h
 +++ b/runtime/entrypoints/runtime_asm_entrypoints.h
 @@ -87,6 +87,8 @@ static inline const void* GetQuickInstrumentationExitPc() {
@@ -5510,7 +4403,7 @@ index fa287cb0ad..3f4e91ed91 100644
  
  #endif  // ART_RUNTIME_ENTRYPOINTS_RUNTIME_ASM_ENTRYPOINTS_H_
 diff --git a/runtime/entrypoints_order_test.cc b/runtime/entrypoints_order_test.cc
-index 040a8c5432..5b4275cbad 100644
+index 040a8c5..5b4275c 100644
 --- a/runtime/entrypoints_order_test.cc
 +++ b/runtime/entrypoints_order_test.cc
 @@ -331,7 +331,9 @@ class EntrypointsOrderTest : public CommonRuntimeTest {
@@ -5525,7 +4418,7 @@ index 040a8c5432..5b4275cbad 100644
      EXPECT_OFFSET_DIFFNP(QuickEntryPoints, pReadBarrierJni, pReadBarrierMarkReg00, sizeof(void*));
      EXPECT_OFFSET_DIFFNP(QuickEntryPoints, pReadBarrierMarkReg00, pReadBarrierMarkReg01,
 diff --git a/runtime/gc/collector/concurrent_copying.cc b/runtime/gc/collector/concurrent_copying.cc
-index 9428a0b8cd..433792755d 100644
+index 9428a0b..4337927 100644
 --- a/runtime/gc/collector/concurrent_copying.cc
 +++ b/runtime/gc/collector/concurrent_copying.cc
 @@ -446,15 +446,17 @@ class ConcurrentCopying::ThreadFlipVisitor : public Closure, public RootVisitor
@@ -5549,7 +4442,7 @@ index 9428a0b8cd..433792755d 100644
      }
      if (kUseThreadLocalAllocationStack) {
 diff --git a/runtime/gc/heap.cc b/runtime/gc/heap.cc
-index ff53f7896e..c2a3cbd20f 100644
+index ff53f78..c2a3cbd 100644
 --- a/runtime/gc/heap.cc
 +++ b/runtime/gc/heap.cc
 @@ -145,10 +145,6 @@ static const char* kRegionSpaceName = "main space (region space)";
@@ -5580,7 +4473,7 @@ index ff53f7896e..c2a3cbd20f 100644
        } else {
          // Check OOME for a non-tlab allocation.
 diff --git a/runtime/gc/heap.h b/runtime/gc/heap.h
-index 5cf197869d..3562774633 100644
+index 5cf1978..3562774 100644
 --- a/runtime/gc/heap.h
 +++ b/runtime/gc/heap.h
 @@ -127,6 +127,10 @@ static constexpr bool kUseThreadLocalAllocationStack = true;
@@ -5595,7 +4488,7 @@ index 5cf197869d..3562774633 100644
    static constexpr size_t kDefaultInitialSize = 2 * MB;
    static constexpr size_t kDefaultMaximumSize = 256 * MB;
 diff --git a/runtime/gc/space/region_space-inl.h b/runtime/gc/space/region_space-inl.h
-index 86a0a6e418..b6077aa88b 100644
+index 86a0a6e..b6077aa 100644
 --- a/runtime/gc/space/region_space-inl.h
 +++ b/runtime/gc/space/region_space-inl.h
 @@ -503,7 +503,7 @@ inline size_t RegionSpace::Region::BytesAllocated() const {
@@ -5608,7 +4501,7 @@ index 86a0a6e418..b6077aa88b 100644
        bytes = static_cast<size_t>(Top() - begin_);
      }
 diff --git a/runtime/gc/space/region_space.cc b/runtime/gc/space/region_space.cc
-index 4329a379fc..e5eb9983b1 100644
+index 823043e..b2c5a2f 100644
 --- a/runtime/gc/space/region_space.cc
 +++ b/runtime/gc/space/region_space.cc
 @@ -337,6 +337,10 @@ void RegionSpace::SetFromSpace(accounting::ReadBarrierTable* rb_table,
@@ -5710,7 +4603,7 @@ index 4329a379fc..e5eb9983b1 100644
    thread->SetTlab(nullptr, nullptr, nullptr);
  }
 diff --git a/runtime/gc/space/region_space.h b/runtime/gc/space/region_space.h
-index 26af6331cc..f7036ea888 100644
+index 26af633..f7036ea 100644
 --- a/runtime/gc/space/region_space.h
 +++ b/runtime/gc/space/region_space.h
 @@ -22,6 +22,9 @@
@@ -5782,7 +4675,7 @@ index 26af6331cc..f7036ea888 100644
    // RegionSpace::SetFromSpace and RegionSpace::ClearFromSpace.
    //
 diff --git a/runtime/hidden_api.h b/runtime/hidden_api.h
-index e6a0ed31a7..d76fcb91d5 100644
+index e6a0ed3..d76fcb9 100644
 --- a/runtime/hidden_api.h
 +++ b/runtime/hidden_api.h
 @@ -356,6 +356,15 @@ ALWAYS_INLINE inline uint32_t GetRuntimeFlags(ArtMethod* method)
@@ -5802,7 +4695,7 @@ index e6a0ed31a7..d76fcb91d5 100644
        default:
          // Remaining intrinsics are public API. We DCHECK that in SetIntrinsic().
 diff --git a/runtime/image.cc b/runtime/image.cc
-index b6bb0b15b4..08583782bd 100644
+index b6bb0b1..0858378 100644
 --- a/runtime/image.cc
 +++ b/runtime/image.cc
 @@ -29,7 +29,7 @@
@@ -5815,7 +4708,7 @@ index b6bb0b15b4..08583782bd 100644
  ImageHeader::ImageHeader(uint32_t image_reservation_size,
                           uint32_t component_count,
 diff --git a/runtime/interpreter/interpreter_intrinsics.cc b/runtime/interpreter/interpreter_intrinsics.cc
-index c8878e16df..63bd9673e6 100644
+index c8878e1..63bd967 100644
 --- a/runtime/interpreter/interpreter_intrinsics.cc
 +++ b/runtime/interpreter/interpreter_intrinsics.cc
 @@ -526,7 +526,19 @@ bool MterpHandleIntrinsic(ShadowFrame* shadow_frame,
@@ -5856,7 +4749,7 @@ index c8878e16df..63bd9673e6 100644
      INTRINSIC_CASE(VarHandleAcquireFence)
      INTRINSIC_CASE(VarHandleReleaseFence)
 diff --git a/runtime/interpreter/interpreter_switch_impl-inl.h b/runtime/interpreter/interpreter_switch_impl-inl.h
-index 36cfee418e..f74260b45a 100644
+index 36cfee4..f74260b 100644
 --- a/runtime/interpreter/interpreter_switch_impl-inl.h
 +++ b/runtime/interpreter/interpreter_switch_impl-inl.h
 @@ -2626,11 +2626,6 @@ ATTRIBUTE_NO_SANITIZE_ADDRESS void ExecuteSwitchImplCpp(SwitchImplContext* ctx)
@@ -5872,7 +4765,7 @@ index 36cfee418e..f74260b45a 100644
  
    uint32_t dex_pc = shadow_frame.GetDexPC();
 diff --git a/runtime/interpreter/shadow_frame-inl.h b/runtime/interpreter/shadow_frame-inl.h
-index 7eaad597d2..799b2d205d 100644
+index 7eaad59..799b2d2 100644
 --- a/runtime/interpreter/shadow_frame-inl.h
 +++ b/runtime/interpreter/shadow_frame-inl.h
 @@ -33,9 +33,7 @@ inline void ShadowFrame::SetVRegReference(size_t i, ObjPtr<mirror::Object> val)
@@ -5887,7 +4780,7 @@ index 7eaad597d2..799b2d205d 100644
  
  }  // namespace art
 diff --git a/runtime/interpreter/shadow_frame.h b/runtime/interpreter/shadow_frame.h
-index 3f6b729644..bd047934d7 100644
+index 3f6b729..bd04793 100644
 --- a/runtime/interpreter/shadow_frame.h
 +++ b/runtime/interpreter/shadow_frame.h
 @@ -92,12 +92,6 @@ class ShadowFrame {
@@ -6027,7 +4920,7 @@ index 3f6b729644..bd047934d7 100644
      return reinterpret_cast<const StackReference<mirror::Object>*>(vreg_end);
    }
 diff --git a/runtime/intrinsics_list.h b/runtime/intrinsics_list.h
-index 57e81a7a37..fc4734ef74 100644
+index 57e81a7..fc4734e 100644
 --- a/runtime/intrinsics_list.h
 +++ b/runtime/intrinsics_list.h
 @@ -165,6 +165,15 @@
@@ -6065,7 +4958,7 @@ index 57e81a7a37..fc4734ef74 100644
    V(StringBuilderToString, kVirtual, kNeedsEnvironmentOrCache, kAllSideEffects, kCanThrow, "Ljava/lang/StringBuilder;", "toString", "()Ljava/lang/String;") \
    V(UnsafeCASInt, kVirtual, kNeedsEnvironmentOrCache, kAllSideEffects, kCanThrow, "Lsun/misc/Unsafe;", "compareAndSwapInt", "(Ljava/lang/Object;JII)Z") \
 diff --git a/runtime/mirror/string.h b/runtime/mirror/string.h
-index c98aa6b610..4dcec1ab77 100644
+index c98aa6b..4dcec1a 100644
 --- a/runtime/mirror/string.h
 +++ b/runtime/mirror/string.h
 @@ -27,6 +27,7 @@ namespace art {
@@ -6085,7 +4978,7 @@ index c98aa6b610..4dcec1ab77 100644
  
    DISALLOW_IMPLICIT_CONSTRUCTORS(String);
 diff --git a/runtime/native/dalvik_system_DexFile.cc b/runtime/native/dalvik_system_DexFile.cc
-index eee8cfc620..6dfe62e146 100644
+index eee8cfc..6dfe62e 100644
 --- a/runtime/native/dalvik_system_DexFile.cc
 +++ b/runtime/native/dalvik_system_DexFile.cc
 @@ -897,7 +897,7 @@ static void DexFile_setTrusted(JNIEnv* env, jclass, jobject j_cookie) {
@@ -6098,7 +4991,7 @@ index eee8cfc620..6dfe62e146 100644
    NATIVE_METHOD(DexFile,
                  defineClassNative,
 diff --git a/runtime/native/dalvik_system_VMDebug.cc b/runtime/native/dalvik_system_VMDebug.cc
-index 83398ecfeb..5b08fa7c44 100644
+index 83398ec..5b08fa7 100644
 --- a/runtime/native/dalvik_system_VMDebug.cc
 +++ b/runtime/native/dalvik_system_VMDebug.cc
 @@ -623,7 +623,7 @@ static void VMDebug_setAllocTrackerStackDepth(JNIEnv* env, jclass, jint stack_de
@@ -6111,7 +5004,7 @@ index 83398ecfeb..5b08fa7c44 100644
    NATIVE_METHOD(VMDebug, countInstancesOfClasses, "([Ljava/lang/Class;Z)[J"),
    NATIVE_METHOD(VMDebug, crash, "()V"),
 diff --git a/runtime/native/dalvik_system_VMRuntime.cc b/runtime/native/dalvik_system_VMRuntime.cc
-index 399813c60e..36569c1679 100644
+index 399813c..36569c1 100644
 --- a/runtime/native/dalvik_system_VMRuntime.cc
 +++ b/runtime/native/dalvik_system_VMRuntime.cc
 @@ -723,7 +723,7 @@ static jboolean VMRuntime_hasBootImageSpaces(JNIEnv* env ATTRIBUTE_UNUSED,
@@ -6124,7 +5017,7 @@ index 399813c60e..36569c1679 100644
    NATIVE_METHOD(VMRuntime, bootClassPath, "()Ljava/lang/String;"),
    NATIVE_METHOD(VMRuntime, clampGrowthLimit, "()V"),
 diff --git a/runtime/native/dalvik_system_VMStack.cc b/runtime/native/dalvik_system_VMStack.cc
-index 32733a8409..33d352f572 100644
+index 32733a8..33d352f 100644
 --- a/runtime/native/dalvik_system_VMStack.cc
 +++ b/runtime/native/dalvik_system_VMStack.cc
 @@ -169,7 +169,7 @@ static jobjectArray VMStack_getAnnotatedThreadStackTrace(JNIEnv* env, jclass, jo
@@ -6137,7 +5030,7 @@ index 32733a8409..33d352f572 100644
    FAST_NATIVE_METHOD(VMStack, getCallingClassLoader, "()Ljava/lang/ClassLoader;"),
    FAST_NATIVE_METHOD(VMStack, getClosestUserClassLoader, "()Ljava/lang/ClassLoader;"),
 diff --git a/runtime/native/dalvik_system_ZygoteHooks.cc b/runtime/native/dalvik_system_ZygoteHooks.cc
-index de28c28851..1334df7f74 100644
+index de28c28..1334df7 100644
 --- a/runtime/native/dalvik_system_ZygoteHooks.cc
 +++ b/runtime/native/dalvik_system_ZygoteHooks.cc
 @@ -420,7 +420,7 @@ static void ZygoteHooks_stopZygoteNoThreadCreation(JNIEnv* env ATTRIBUTE_UNUSED,
@@ -6150,7 +5043,7 @@ index de28c28851..1334df7f74 100644
    NATIVE_METHOD(ZygoteHooks, nativePostZygoteFork, "()V"),
    NATIVE_METHOD(ZygoteHooks, nativePostForkSystemServer, "()V"),
 diff --git a/runtime/native/java_lang_Class.cc b/runtime/native/java_lang_Class.cc
-index 2b75c59c2a..05118751dc 100644
+index 2b75c59..0511875 100644
 --- a/runtime/native/java_lang_Class.cc
 +++ b/runtime/native/java_lang_Class.cc
 @@ -870,7 +870,7 @@ static jobject Class_newInstance(JNIEnv* env, jobject javaThis) {
@@ -6163,7 +5056,7 @@ index 2b75c59c2a..05118751dc 100644
                  "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;"),
    FAST_NATIVE_METHOD(Class, getDeclaredAnnotation,
 diff --git a/runtime/native/java_lang_Object.cc b/runtime/native/java_lang_Object.cc
-index 48540f877d..aaf934ed6d 100644
+index 48540f8..aaf934e 100644
 --- a/runtime/native/java_lang_Object.cc
 +++ b/runtime/native/java_lang_Object.cc
 @@ -52,7 +52,7 @@ static jint Object_identityHashCodeNative(JNIEnv* env, jclass, jobject javaObjec
@@ -6176,7 +5069,7 @@ index 48540f877d..aaf934ed6d 100644
    FAST_NATIVE_METHOD(Object, notify, "()V"),
    FAST_NATIVE_METHOD(Object, notifyAll, "()V"),
 diff --git a/runtime/native/java_lang_String.cc b/runtime/native/java_lang_String.cc
-index 83498f6eb0..80c8dbc3e3 100644
+index 83498f6..80c8dbc 100644
 --- a/runtime/native/java_lang_String.cc
 +++ b/runtime/native/java_lang_String.cc
 @@ -109,7 +109,7 @@ static jcharArray String_toCharArray(JNIEnv* env, jobject java_this) {
@@ -6189,7 +5082,7 @@ index 83498f6eb0..80c8dbc3e3 100644
    FAST_NATIVE_METHOD(String, compareTo, "(Ljava/lang/String;)I"),
    FAST_NATIVE_METHOD(String, concat, "(Ljava/lang/String;)Ljava/lang/String;"),
 diff --git a/runtime/native/java_lang_StringFactory.cc b/runtime/native/java_lang_StringFactory.cc
-index 13f8d5be8e..8e59466239 100644
+index 13f8d5b..8e59466 100644
 --- a/runtime/native/java_lang_StringFactory.cc
 +++ b/runtime/native/java_lang_StringFactory.cc
 @@ -89,7 +89,7 @@ static jstring StringFactory_newStringFromString(JNIEnv* env, jclass, jstring to
@@ -6202,7 +5095,7 @@ index 13f8d5be8e..8e59466239 100644
    FAST_NATIVE_METHOD(StringFactory, newStringFromChars, "(II[C)Ljava/lang/String;"),
    FAST_NATIVE_METHOD(StringFactory, newStringFromString, "(Ljava/lang/String;)Ljava/lang/String;"),
 diff --git a/runtime/native/java_lang_System.cc b/runtime/native/java_lang_System.cc
-index 63cbd2c815..e7b3894aad 100644
+index 63cbd2c..e7b3894 100644
 --- a/runtime/native/java_lang_System.cc
 +++ b/runtime/native/java_lang_System.cc
 @@ -239,7 +239,7 @@ static void System_arraycopyBooleanUnchecked(JNIEnv* env,
@@ -6215,7 +5108,7 @@ index 63cbd2c815..e7b3894aad 100644
    FAST_NATIVE_METHOD(System, arraycopyCharUnchecked, "([CI[CII)V"),
    FAST_NATIVE_METHOD(System, arraycopyByteUnchecked, "([BI[BII)V"),
 diff --git a/runtime/native/java_lang_Thread.cc b/runtime/native/java_lang_Thread.cc
-index 37b3fe642e..5f3f54a85f 100644
+index 37b3fe6..5f3f54a 100644
 --- a/runtime/native/java_lang_Thread.cc
 +++ b/runtime/native/java_lang_Thread.cc
 @@ -194,7 +194,7 @@ static void Thread_yield(JNIEnv*, jobject) {
@@ -6228,7 +5121,7 @@ index 37b3fe642e..5f3f54a85f 100644
    FAST_NATIVE_METHOD(Thread, interrupted, "()Z"),
    FAST_NATIVE_METHOD(Thread, isInterrupted, "()Z"),
 diff --git a/runtime/native/java_lang_Throwable.cc b/runtime/native/java_lang_Throwable.cc
-index b5ef7d807b..7a6a44baa5 100644
+index b5ef7d8..7a6a44b 100644
 --- a/runtime/native/java_lang_Throwable.cc
 +++ b/runtime/native/java_lang_Throwable.cc
 @@ -38,7 +38,7 @@ static jobjectArray Throwable_nativeGetStackTrace(JNIEnv* env, jclass, jobject j
@@ -6241,7 +5134,7 @@ index b5ef7d807b..7a6a44baa5 100644
    FAST_NATIVE_METHOD(Throwable, nativeGetStackTrace, "(Ljava/lang/Object;)[Ljava/lang/StackTraceElement;"),
  };
 diff --git a/runtime/native/java_lang_VMClassLoader.cc b/runtime/native/java_lang_VMClassLoader.cc
-index 11e02a2ce4..ce37a33086 100644
+index 11e02a2..ce37a33 100644
 --- a/runtime/native/java_lang_VMClassLoader.cc
 +++ b/runtime/native/java_lang_VMClassLoader.cc
 @@ -155,7 +155,7 @@ static jobjectArray VMClassLoader_getBootClassPathEntries(JNIEnv* env, jclass) {
@@ -6254,7 +5147,7 @@ index 11e02a2ce4..ce37a33086 100644
    NATIVE_METHOD(VMClassLoader, getBootClassPathEntries, "()[Ljava/lang/String;"),
  };
 diff --git a/runtime/native/java_lang_invoke_MethodHandleImpl.cc b/runtime/native/java_lang_invoke_MethodHandleImpl.cc
-index 0b26bd7c4a..6662fe49a2 100644
+index 0b26bd7..6662fe4 100644
 --- a/runtime/native/java_lang_invoke_MethodHandleImpl.cc
 +++ b/runtime/native/java_lang_invoke_MethodHandleImpl.cc
 @@ -68,7 +68,7 @@ static jobject MethodHandleImpl_getMemberInternal(JNIEnv* env, jobject thiz) {
@@ -6267,7 +5160,7 @@ index 0b26bd7c4a..6662fe49a2 100644
  };
  
 diff --git a/runtime/native/java_lang_ref_FinalizerReference.cc b/runtime/native/java_lang_ref_FinalizerReference.cc
-index 535b243411..0a8dfb6c09 100644
+index 535b243..0a8dfb6 100644
 --- a/runtime/native/java_lang_ref_FinalizerReference.cc
 +++ b/runtime/native/java_lang_ref_FinalizerReference.cc
 @@ -42,7 +42,7 @@ static jobject FinalizerReference_getReferent(JNIEnv* env, jobject javaThis) {
@@ -6280,7 +5173,7 @@ index 535b243411..0a8dfb6c09 100644
    FAST_NATIVE_METHOD(FinalizerReference, getReferent, "()Ljava/lang/Object;"),
  };
 diff --git a/runtime/native/java_lang_ref_Reference.cc b/runtime/native/java_lang_ref_Reference.cc
-index b241b1de25..89a381878c 100644
+index b241b1d..89a3818 100644
 --- a/runtime/native/java_lang_ref_Reference.cc
 +++ b/runtime/native/java_lang_ref_Reference.cc
 @@ -42,7 +42,7 @@ static void Reference_clearReferent(JNIEnv* env, jobject javaThis) {
@@ -6293,7 +5186,7 @@ index b241b1de25..89a381878c 100644
    FAST_NATIVE_METHOD(Reference, clearReferent, "()V"),
  };
 diff --git a/runtime/native/java_lang_reflect_Array.cc b/runtime/native/java_lang_reflect_Array.cc
-index ff94593cdf..e359e7d8a8 100644
+index ff94593..e359e7d 100644
 --- a/runtime/native/java_lang_reflect_Array.cc
 +++ b/runtime/native/java_lang_reflect_Array.cc
 @@ -74,7 +74,7 @@ static jobject Array_createObjectArray(JNIEnv* env, jclass, jclass javaElementCl
@@ -6306,7 +5199,7 @@ index ff94593cdf..e359e7d8a8 100644
    FAST_NATIVE_METHOD(Array, createObjectArray, "(Ljava/lang/Class;I)Ljava/lang/Object;"),
  };
 diff --git a/runtime/native/java_lang_reflect_Constructor.cc b/runtime/native/java_lang_reflect_Constructor.cc
-index f9cdc360bc..bc8c38d246 100644
+index f9cdc36..bc8c38d 100644
 --- a/runtime/native/java_lang_reflect_Constructor.cc
 +++ b/runtime/native/java_lang_reflect_Constructor.cc
 @@ -128,7 +128,7 @@ static jobject Constructor_newInstanceFromSerialization(JNIEnv* env, jclass unus
@@ -6319,7 +5212,7 @@ index f9cdc360bc..bc8c38d246 100644
    FAST_NATIVE_METHOD(Constructor, newInstance0, "([Ljava/lang/Object;)Ljava/lang/Object;"),
    FAST_NATIVE_METHOD(Constructor, newInstanceFromSerialization, "(Ljava/lang/Class;Ljava/lang/Class;)Ljava/lang/Object;"),
 diff --git a/runtime/native/java_lang_reflect_Executable.cc b/runtime/native/java_lang_reflect_Executable.cc
-index 2ce56b5153..4ba93e3dde 100644
+index 2ce56b5..4ba93e3 100644
 --- a/runtime/native/java_lang_reflect_Executable.cc
 +++ b/runtime/native/java_lang_reflect_Executable.cc
 @@ -383,7 +383,7 @@ static jint Executable_getParameterCountInternal(JNIEnv* env, jobject javaMethod
@@ -6332,7 +5225,7 @@ index 2ce56b5153..4ba93e3dde 100644
                       "(Ljava/lang/reflect/Method;)I"),
    FAST_NATIVE_METHOD(Executable, getAnnotationNative,
 diff --git a/runtime/native/java_lang_reflect_Field.cc b/runtime/native/java_lang_reflect_Field.cc
-index f21ded9c23..eefb3cc5f6 100644
+index f21ded9..eefb3cc 100644
 --- a/runtime/native/java_lang_reflect_Field.cc
 +++ b/runtime/native/java_lang_reflect_Field.cc
 @@ -505,7 +505,7 @@ static jboolean Field_isAnnotationPresentNative(JNIEnv* env,
@@ -6345,7 +5238,7 @@ index f21ded9c23..eefb3cc5f6 100644
    FAST_NATIVE_METHOD(Field, getBoolean, "(Ljava/lang/Object;)Z"),
    FAST_NATIVE_METHOD(Field, getByte,    "(Ljava/lang/Object;)B"),
 diff --git a/runtime/native/java_lang_reflect_Method.cc b/runtime/native/java_lang_reflect_Method.cc
-index 4525157d6e..e435ee7d3d 100644
+index 4525157..e435ee7 100644
 --- a/runtime/native/java_lang_reflect_Method.cc
 +++ b/runtime/native/java_lang_reflect_Method.cc
 @@ -84,7 +84,7 @@ static jobject Method_invoke(JNIEnv* env, jobject javaMethod, jobject javaReceiv
@@ -6358,7 +5251,7 @@ index 4525157d6e..e435ee7d3d 100644
    FAST_NATIVE_METHOD(Method, getExceptionTypes, "()[Ljava/lang/Class;"),
    FAST_NATIVE_METHOD(Method, invoke, "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;"),
 diff --git a/runtime/native/java_lang_reflect_Parameter.cc b/runtime/native/java_lang_reflect_Parameter.cc
-index 263a56796f..92bf9078a4 100644
+index 263a567..92bf907 100644
 --- a/runtime/native/java_lang_reflect_Parameter.cc
 +++ b/runtime/native/java_lang_reflect_Parameter.cc
 @@ -98,7 +98,7 @@ static jobject Parameter_getAnnotationNative(JNIEnv* env,
@@ -6371,7 +5264,7 @@ index 263a56796f..92bf9078a4 100644
        Parameter,
        getAnnotationNative,
 diff --git a/runtime/native/java_lang_reflect_Proxy.cc b/runtime/native/java_lang_reflect_Proxy.cc
-index f723ed223d..c2b533de5d 100644
+index f723ed2..c2b533d 100644
 --- a/runtime/native/java_lang_reflect_Proxy.cc
 +++ b/runtime/native/java_lang_reflect_Proxy.cc
 @@ -37,7 +37,7 @@ static jclass Proxy_generateProxy(JNIEnv* env, jclass, jstring name, jobjectArra
@@ -6384,7 +5277,7 @@ index f723ed223d..c2b533de5d 100644
  };
  
 diff --git a/runtime/native/java_util_concurrent_atomic_AtomicLong.cc b/runtime/native/java_util_concurrent_atomic_AtomicLong.cc
-index fa288edcb8..299ac5a61d 100644
+index fa288ed..299ac5a 100644
 --- a/runtime/native/java_util_concurrent_atomic_AtomicLong.cc
 +++ b/runtime/native/java_util_concurrent_atomic_AtomicLong.cc
 @@ -30,7 +30,7 @@ static jboolean AtomicLong_VMSupportsCS8(JNIEnv*, jclass) {
@@ -6397,7 +5290,7 @@ index fa288edcb8..299ac5a61d 100644
  };
  
 diff --git a/runtime/native/libcore_util_CharsetUtils.cc b/runtime/native/libcore_util_CharsetUtils.cc
-index 95e0d79cd9..b86bda4672 100644
+index 95e0d79..b86bda4 100644
 --- a/runtime/native/libcore_util_CharsetUtils.cc
 +++ b/runtime/native/libcore_util_CharsetUtils.cc
 @@ -252,7 +252,7 @@ static jbyteArray CharsetUtils_toUtf8Bytes(JNIEnv* env, jclass, jstring java_str
@@ -6410,7 +5303,7 @@ index 95e0d79cd9..b86bda4672 100644
    FAST_NATIVE_METHOD(CharsetUtils, isoLatin1BytesToChars, "([BII[C)V"),
    FAST_NATIVE_METHOD(CharsetUtils, toAsciiBytes, "(Ljava/lang/String;II)[B"),
 diff --git a/runtime/native/org_apache_harmony_dalvik_ddmc_DdmServer.cc b/runtime/native/org_apache_harmony_dalvik_ddmc_DdmServer.cc
-index 419aed8578..ccbef4f3f4 100644
+index 419aed8..ccbef4f 100644
 --- a/runtime/native/org_apache_harmony_dalvik_ddmc_DdmServer.cc
 +++ b/runtime/native/org_apache_harmony_dalvik_ddmc_DdmServer.cc
 @@ -38,7 +38,7 @@ static void DdmServer_nativeSendChunk(JNIEnv* env, jclass, jint type,
@@ -6423,7 +5316,7 @@ index 419aed8578..ccbef4f3f4 100644
  };
  
 diff --git a/runtime/native/org_apache_harmony_dalvik_ddmc_DdmVmInternal.cc b/runtime/native/org_apache_harmony_dalvik_ddmc_DdmVmInternal.cc
-index 028675d448..2ca9089e72 100644
+index 028675d..2ca9089 100644
 --- a/runtime/native/org_apache_harmony_dalvik_ddmc_DdmVmInternal.cc
 +++ b/runtime/native/org_apache_harmony_dalvik_ddmc_DdmVmInternal.cc
 @@ -175,7 +175,7 @@ static void DdmVmInternal_threadNotify(JNIEnv*, jclass, jboolean enable) {
@@ -6436,7 +5329,7 @@ index 028675d448..2ca9089e72 100644
    FAST_NATIVE_METHOD(DdmVmInternal, getRecentAllocations, "()[B"),
    FAST_NATIVE_METHOD(DdmVmInternal, getRecentAllocationStatus, "()Z"),
 diff --git a/runtime/native/sun_misc_Unsafe.cc b/runtime/native/sun_misc_Unsafe.cc
-index 5014f340cd..bb9226d1fa 100644
+index 5014f34..bb9226d 100644
 --- a/runtime/native/sun_misc_Unsafe.cc
 +++ b/runtime/native/sun_misc_Unsafe.cc
 @@ -541,7 +541,7 @@ static void Unsafe_unpark(JNIEnv* env, jobject, jobject jthread) {
@@ -6449,7 +5342,7 @@ index 5014f340cd..bb9226d1fa 100644
    FAST_NATIVE_METHOD(Unsafe, compareAndSwapLong, "(Ljava/lang/Object;JJJ)Z"),
    FAST_NATIVE_METHOD(Unsafe, compareAndSwapObject, "(Ljava/lang/Object;JLjava/lang/Object;Ljava/lang/Object;)Z"),
 diff --git a/runtime/oat.h b/runtime/oat.h
-index 15059a8a96..f4b5a6ea55 100644
+index 15059a8..f4b5a6e 100644
 --- a/runtime/oat.h
 +++ b/runtime/oat.h
 @@ -32,8 +32,8 @@ class InstructionSetFeatures;
@@ -6464,7 +5357,7 @@ index 15059a8a96..f4b5a6ea55 100644
    static constexpr const char* kDex2OatCmdLineKey = "dex2oat-cmdline";
    static constexpr const char* kDebuggableKey = "debuggable";
 diff --git a/runtime/stack.cc b/runtime/stack.cc
-index 80a563b57f..8b0c7cece7 100644
+index 80a563b..8b0c7ce 100644
 --- a/runtime/stack.cc
 +++ b/runtime/stack.cc
 @@ -813,8 +813,8 @@ void StackVisitor::WalkStack(bool include_transitions) {
@@ -6479,7 +5372,7 @@ index 80a563b57f..8b0c7cece7 100644
            current_code_info_ = CodeInfo(cur_oat_quick_method_header_,
                                          CodeInfo::DecodeFlags::InlineInfoOnly);
 diff --git a/runtime/stack_map.cc b/runtime/stack_map.cc
-index 62dec15c57..eef737862d 100644
+index 62dec15..eef7378 100644
 --- a/runtime/stack_map.cc
 +++ b/runtime/stack_map.cc
 @@ -35,7 +35,7 @@ CodeInfo::CodeInfo(const OatQuickMethodHeader* header, DecodeFlags flags)
@@ -6524,7 +5417,7 @@ index 62dec15c57..eef737862d 100644
      << " CoreSpillMask:" << std::hex << core_spill_mask_
      << " FpSpillMask:" << std::hex << fp_spill_mask_
 diff --git a/runtime/stack_map.h b/runtime/stack_map.h
-index 87133cf59c..a9714674de 100644
+index 87133cf..a971467 100644
 --- a/runtime/stack_map.h
 +++ b/runtime/stack_map.h
 @@ -438,12 +438,15 @@ class CodeInfo {
@@ -6578,451 +5471,8 @@ index 87133cf59c..a9714674de 100644
  };
  
  #undef ELEMENT_BYTE_OFFSET_AFTER
-diff --git a/runtime/string_builder_append.cc b/runtime/string_builder_append.cc
-new file mode 100644
-index 0000000000..5a34e9368a
---- /dev/null
-+++ b/runtime/string_builder_append.cc
-@@ -0,0 +1,364 @@
-+/*
-+ * Copyright (C) 2019 The Android Open Source Project
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ *      http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
-+
-+#include "string_builder_append.h"
-+
-+#include "base/casts.h"
-+#include "base/logging.h"
-+#include "common_throws.h"
-+#include "gc/heap.h"
-+#include "mirror/string-alloc-inl.h"
-+#include "obj_ptr-inl.h"
-+#include "runtime.h"
-+
-+namespace art {
-+
-+class StringBuilderAppend::Builder {
-+ public:
-+  Builder(uint32_t format, const uint32_t* args, Thread* self)
-+      : format_(format),
-+        args_(args),
-+        hs_(self) {}
-+
-+  int32_t CalculateLengthWithFlag() REQUIRES_SHARED(Locks::mutator_lock_);
-+
-+  void operator()(ObjPtr<mirror::Object> obj, size_t usable_size) const
-+      REQUIRES_SHARED(Locks::mutator_lock_);
-+
-+ private:
-+  static size_t Uint64Length(uint64_t value);
-+
-+  static size_t Int64Length(int64_t value) {
-+    uint64_t v = static_cast<uint64_t>(value);
-+    return (value >= 0) ? Uint64Length(v) : 1u + Uint64Length(-v);
-+  }
-+
-+  static size_t RemainingSpace(ObjPtr<mirror::String> new_string, const uint8_t* data)
-+      REQUIRES_SHARED(Locks::mutator_lock_) {
-+    DCHECK(new_string->IsCompressed());
-+    DCHECK_GE(new_string->GetLength(), data - new_string->GetValueCompressed());
-+    return new_string->GetLength() - (data - new_string->GetValueCompressed());
-+  }
-+
-+  static size_t RemainingSpace(ObjPtr<mirror::String> new_string, const uint16_t* data)
-+      REQUIRES_SHARED(Locks::mutator_lock_) {
-+    DCHECK(!new_string->IsCompressed());
-+    DCHECK_GE(new_string->GetLength(), data - new_string->GetValue());
-+    return new_string->GetLength() - (data - new_string->GetValue());
-+  }
-+
-+  template <typename CharType, size_t size>
-+  static CharType* AppendLiteral(ObjPtr<mirror::String> new_string,
-+                                 CharType* data,
-+                                 const char (&literal)[size]) REQUIRES_SHARED(Locks::mutator_lock_);
-+
-+  template <typename CharType>
-+  static CharType* AppendString(ObjPtr<mirror::String> new_string,
-+                                CharType* data,
-+                                ObjPtr<mirror::String> str) REQUIRES_SHARED(Locks::mutator_lock_);
-+
-+  template <typename CharType>
-+  static CharType* AppendInt64(ObjPtr<mirror::String> new_string,
-+                               CharType* data,
-+                               int64_t value) REQUIRES_SHARED(Locks::mutator_lock_);
-+
-+  template <typename CharType>
-+  void StoreData(ObjPtr<mirror::String> new_string, CharType* data) const
-+      REQUIRES_SHARED(Locks::mutator_lock_);
-+
-+  static constexpr char kNull[] = "null";
-+  static constexpr size_t kNullLength = sizeof(kNull) - 1u;
-+  static constexpr char kTrue[] = "true";
-+  static constexpr size_t kTrueLength = sizeof(kTrue) - 1u;
-+  static constexpr char kFalse[] = "false";
-+  static constexpr size_t kFalseLength = sizeof(kFalse) - 1u;
-+
-+  // The format and arguments to append.
-+  const uint32_t format_;
-+  const uint32_t* const args_;
-+
-+  // References are moved to the handle scope during CalculateLengthWithFlag().
-+  StackHandleScope<kMaxArgs> hs_;
-+
-+  // The length and flag to store when the AppendBuilder is used as a pre-fence visitor.
-+  int32_t length_with_flag_ = 0u;
-+};
-+
-+inline size_t StringBuilderAppend::Builder::Uint64Length(uint64_t value)  {
-+  if (value == 0u) {
-+    return 1u;
-+  }
-+  // Calculate floor(log2(value)).
-+  size_t log2_value = BitSizeOf<uint64_t>() - 1u - CLZ(value);
-+  // Calculate an estimate of floor(log10(value)).
-+  //   log10(2) = 0.301029996 > 0.296875 = 19/64
-+  //   floor(log10(v)) == floor(log2(v) * log10(2))
-+  //                   >= floor(log2(v) * 19/64)
-+  //                   >= floor(floor(log2(v)) * 19/64)
-+  // This estimate is no more that one off from the actual value because log2(value) < 64 and thus
-+  //   log2(v) * log10(2) - log2(v) * 19/64 < 64*(log10(2) - 19/64)
-+  // for the first approximation and
-+  //   log2(v) * 19/64 - floor(log2(v)) * 19/64 < 19/64
-+  // for the second one. Together,
-+  //   64*(log10(2) - 19/64) + 19/64 = 0.56278 < 1 .
-+  size_t log10_value_estimate = log2_value * 19u / 64u;
-+  static constexpr uint64_t bounds[] = {
-+      UINT64_C(9),
-+      UINT64_C(99),
-+      UINT64_C(999),
-+      UINT64_C(9999),
-+      UINT64_C(99999),
-+      UINT64_C(999999),
-+      UINT64_C(9999999),
-+      UINT64_C(99999999),
-+      UINT64_C(999999999),
-+      UINT64_C(9999999999),
-+      UINT64_C(99999999999),
-+      UINT64_C(999999999999),
-+      UINT64_C(9999999999999),
-+      UINT64_C(99999999999999),
-+      UINT64_C(999999999999999),
-+      UINT64_C(9999999999999999),
-+      UINT64_C(99999999999999999),
-+      UINT64_C(999999999999999999),
-+      UINT64_C(9999999999999999999),
-+  };
-+  // Add 1 for the lowest digit, add another 1 if the estimate was too low.
-+  DCHECK_LT(log10_value_estimate, std::size(bounds));
-+  size_t adjustment = (value > bounds[log10_value_estimate]) ? 2u : 1u;
-+  return log10_value_estimate + adjustment;
-+}
-+
-+template <typename CharType, size_t size>
-+inline CharType* StringBuilderAppend::Builder::AppendLiteral(ObjPtr<mirror::String> new_string,
-+                                                             CharType* data,
-+                                                             const char (&literal)[size]) {
-+  static_assert(size >= 2, "We need something to append.");
-+
-+  // Literals are zero-terminated.
-+  constexpr size_t length = size - 1u;
-+  DCHECK_EQ(literal[length], '\0');
-+
-+  DCHECK_LE(length, RemainingSpace(new_string, data));
-+  for (size_t i = 0; i != length; ++i) {
-+    data[i] = literal[i];
-+  }
-+  return data + length;
-+}
-+
-+template <typename CharType>
-+inline CharType* StringBuilderAppend::Builder::AppendString(ObjPtr<mirror::String> new_string,
-+                                                            CharType* data,
-+                                                            ObjPtr<mirror::String> str) {
-+  size_t length = dchecked_integral_cast<size_t>(str->GetLength());
-+  DCHECK_LE(length, RemainingSpace(new_string, data));
-+  if (sizeof(CharType) == sizeof(uint8_t) || str->IsCompressed()) {
-+    DCHECK(str->IsCompressed());
-+    const uint8_t* value = str->GetValueCompressed();
-+    for (size_t i = 0; i != length; ++i) {
-+      data[i] = value[i];
-+    }
-+  } else {
-+    const uint16_t* value = str->GetValue();
-+    for (size_t i = 0; i != length; ++i) {
-+      data[i] = dchecked_integral_cast<CharType>(value[i]);
-+    }
-+  }
-+  return data + length;
-+}
-+
-+template <typename CharType>
-+inline CharType* StringBuilderAppend::Builder::AppendInt64(ObjPtr<mirror::String> new_string,
-+                                                           CharType* data,
-+                                                           int64_t value) {
-+  DCHECK_GE(RemainingSpace(new_string, data), Int64Length(value));
-+  uint64_t v = static_cast<uint64_t>(value);
-+  if (value < 0) {
-+    *data = '-';
-+    ++data;
-+    v = -v;
-+  }
-+  size_t length = Uint64Length(v);
-+  // Write the digits from the end, do not write the most significant digit
-+  // in the loop to avoid an unnecessary division.
-+  for (size_t i = 1; i != length; ++i) {
-+    uint64_t digit = v % UINT64_C(10);
-+    v /= UINT64_C(10);
-+    data[length - i] = '0' + static_cast<char>(digit);
-+  }
-+  DCHECK_LE(v, 10u);
-+  *data = '0' + static_cast<char>(v);
-+  return data + length;
-+}
-+
-+inline int32_t StringBuilderAppend::Builder::CalculateLengthWithFlag() {
-+  static_assert(static_cast<size_t>(Argument::kEnd) == 0u, "kEnd must be 0.");
-+  bool compressible = mirror::kUseStringCompression;
-+  uint64_t length = 0u;
-+  const uint32_t* current_arg = args_;
-+  for (uint32_t f = format_; f != 0u; f >>= kBitsPerArg) {
-+    DCHECK_LE(f & kArgMask, static_cast<uint32_t>(Argument::kLast));
-+    switch (static_cast<Argument>(f & kArgMask)) {
-+      case Argument::kString: {
-+        Handle<mirror::String> str =
-+            hs_.NewHandle(reinterpret_cast32<mirror::String*>(*current_arg));
-+        if (str != nullptr) {
-+          length += str->GetLength();
-+          compressible = compressible && str->IsCompressed();
-+        } else {
-+          length += kNullLength;
-+        }
-+        break;
-+      }
-+      case Argument::kBoolean: {
-+        length += (*current_arg != 0u) ? kTrueLength : kFalseLength;
-+        break;
-+      }
-+      case Argument::kChar: {
-+        length += 1u;
-+        compressible = compressible &&
-+            mirror::String::IsASCII(reinterpret_cast<const uint16_t*>(current_arg)[0]);
-+        break;
-+      }
-+      case Argument::kInt: {
-+        length += Int64Length(static_cast<int32_t>(*current_arg));
-+        break;
-+      }
-+      case Argument::kLong: {
-+        current_arg = AlignUp(current_arg, sizeof(int64_t));
-+        length += Int64Length(*reinterpret_cast<const int64_t*>(current_arg));
-+        ++current_arg;  // Skip the low word, let the common code skip the high word.
-+        break;
-+      }
-+
-+      case Argument::kStringBuilder:
-+      case Argument::kCharArray:
-+      case Argument::kObject:
-+      case Argument::kFloat:
-+      case Argument::kDouble:
-+        LOG(FATAL) << "Unimplemented arg format: 0x" << std::hex
-+            << (f & kArgMask) << " full format: 0x" << std::hex << format_;
-+        UNREACHABLE();
-+      default:
-+        LOG(FATAL) << "Unexpected arg format: 0x" << std::hex
-+            << (f & kArgMask) << " full format: 0x" << std::hex << format_;
-+        UNREACHABLE();
-+    }
-+    ++current_arg;
-+    DCHECK_LE(hs_.NumberOfReferences(), kMaxArgs);
-+  }
-+
-+  if (length > std::numeric_limits<int32_t>::max()) {
-+    // We cannot allocate memory for the entire result.
-+    hs_.Self()->ThrowNewException("Ljava/lang/OutOfMemoryError;",
-+                                  "Out of memory for StringBuilder append.");
-+    return -1;
-+  }
-+
-+  length_with_flag_ = mirror::String::GetFlaggedCount(length, compressible);
-+  return length_with_flag_;
-+}
-+
-+template <typename CharType>
-+inline void StringBuilderAppend::Builder::StoreData(ObjPtr<mirror::String> new_string,
-+                                                    CharType* data) const {
-+  size_t handle_index = 0u;
-+  const uint32_t* current_arg = args_;
-+  for (uint32_t f = format_; f != 0u; f >>= kBitsPerArg) {
-+    DCHECK_LE(f & kArgMask, static_cast<uint32_t>(Argument::kLast));
-+    switch (static_cast<Argument>(f & kArgMask)) {
-+      case Argument::kString: {
-+        ObjPtr<mirror::String> str =
-+            ObjPtr<mirror::String>::DownCast(hs_.GetReference(handle_index));
-+        ++handle_index;
-+        if (str != nullptr) {
-+          data = AppendString(new_string, data, str);
-+        } else {
-+          data = AppendLiteral(new_string, data, kNull);
-+        }
-+        break;
-+      }
-+      case Argument::kBoolean: {
-+        if (*current_arg != 0u) {
-+          data = AppendLiteral(new_string, data, kTrue);
-+        } else {
-+          data = AppendLiteral(new_string, data, kFalse);
-+        }
-+        break;
-+      }
-+      case Argument::kChar: {
-+        DCHECK_GE(RemainingSpace(new_string, data), 1u);
-+        *data = *reinterpret_cast<const CharType*>(current_arg);
-+        ++data;
-+        break;
-+      }
-+      case Argument::kInt: {
-+        data = AppendInt64(new_string, data, static_cast<int32_t>(*current_arg));
-+        break;
-+      }
-+      case Argument::kLong: {
-+        current_arg = AlignUp(current_arg, sizeof(int64_t));
-+        data = AppendInt64(new_string, data, *reinterpret_cast<const int64_t*>(current_arg));
-+        ++current_arg;  // Skip the low word, let the common code skip the high word.
-+        break;
-+      }
-+
-+      case Argument::kStringBuilder:
-+      case Argument::kCharArray:
-+      case Argument::kFloat:
-+      case Argument::kDouble:
-+        LOG(FATAL) << "Unimplemented arg format: 0x" << std::hex
-+            << (f & kArgMask) << " full format: 0x" << std::hex << format_;
-+        UNREACHABLE();
-+      default:
-+        LOG(FATAL) << "Unexpected arg format: 0x" << std::hex
-+            << (f & kArgMask) << " full format: 0x" << std::hex << format_;
-+        UNREACHABLE();
-+    }
-+    ++current_arg;
-+    DCHECK_LE(handle_index, hs_.NumberOfReferences());
-+  }
-+  DCHECK_EQ(RemainingSpace(new_string, data), 0u) << std::hex << format_;
-+}
-+
-+inline void StringBuilderAppend::Builder::operator()(ObjPtr<mirror::Object> obj,
-+                                                     size_t usable_size ATTRIBUTE_UNUSED) const {
-+  ObjPtr<mirror::String> new_string = ObjPtr<mirror::String>::DownCast(obj);
-+  new_string->SetCount(length_with_flag_);
-+  if (mirror::String::IsCompressed(length_with_flag_)) {
-+    StoreData(new_string, new_string->GetValueCompressed());
-+  } else {
-+    StoreData(new_string, new_string->GetValue());
-+  }
-+}
-+
-+ObjPtr<mirror::String> StringBuilderAppend::AppendF(uint32_t format,
-+                                                    const uint32_t* args,
-+                                                    Thread* self) {
-+  Builder builder(format, args, self);
-+  self->AssertNoPendingException();
-+  int32_t length_with_flag = builder.CalculateLengthWithFlag();
-+  if (self->IsExceptionPending()) {
-+    return nullptr;
-+  }
-+  gc::AllocatorType allocator_type = Runtime::Current()->GetHeap()->GetCurrentAllocator();
-+  ObjPtr<mirror::String> result = mirror::String::Alloc</*kIsInstrumented=*/ true>(
-+      self, length_with_flag, allocator_type, builder);
-+
-+  return result;
-+}
-+
-+}  // namespace art
-diff --git a/runtime/string_builder_append.h b/runtime/string_builder_append.h
-new file mode 100644
-index 0000000000..fee64198f9
---- /dev/null
-+++ b/runtime/string_builder_append.h
-@@ -0,0 +1,67 @@
-+/*
-+ * Copyright (C) 2019 The Android Open Source Project
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ *      http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
-+
-+#ifndef ART_RUNTIME_STRING_BUILDER_APPEND_H_
-+#define ART_RUNTIME_STRING_BUILDER_APPEND_H_
-+
-+#include <stddef.h>
-+#include <stdint.h>
-+
-+#include "base/bit_utils.h"
-+#include "base/locks.h"
-+#include "obj_ptr.h"
-+
-+namespace art {
-+
-+class Thread;
-+
-+namespace mirror {
-+class String;
-+}  // namespace mirror
-+
-+class StringBuilderAppend {
-+ public:
-+  enum class Argument : uint8_t {
-+    kEnd = 0u,
-+    kObject,
-+    kStringBuilder,
-+    kString,
-+    kCharArray,
-+    kBoolean,
-+    kChar,
-+    kInt,
-+    kLong,
-+    kFloat,
-+    kDouble,
-+    kLast = kDouble
-+  };
-+
-+  static constexpr size_t kBitsPerArg =
-+      MinimumBitsToStore(static_cast<size_t>(Argument::kLast));
-+  static constexpr size_t kMaxArgs = BitSizeOf<uint32_t>() / kBitsPerArg;
-+  static_assert(kMaxArgs * kBitsPerArg == BitSizeOf<uint32_t>(), "Expecting no extra bits.");
-+  static constexpr uint32_t kArgMask = MaxInt<uint32_t>(kBitsPerArg);
-+
-+  static ObjPtr<mirror::String> AppendF(uint32_t format, const uint32_t* args, Thread* self)
-+      REQUIRES_SHARED(Locks::mutator_lock_);
-+
-+ private:
-+  class Builder;
-+};
-+
-+}  // namespace art
-+
-+#endif  // ART_RUNTIME_STRING_BUILDER_APPEND_H_
 diff --git a/runtime/thread.cc b/runtime/thread.cc
-index be0e30ad11..f089c304e2 100644
+index be0e30a..f089c30 100644
 --- a/runtime/thread.cc
 +++ b/runtime/thread.cc
 @@ -3708,7 +3708,6 @@ class ReferenceMapVisitor : public StackVisitor {
@@ -7034,7 +5484,7 @@ index be0e30ad11..f089c304e2 100644
      for (size_t reg = 0; reg < num_regs; ++reg) {
        mirror::Object* ref = shadow_frame->GetVRegReference(reg);
 diff --git a/runtime/thread.h b/runtime/thread.h
-index ae04600c60..fe2391247e 100644
+index ae04600..fe23912 100644
 --- a/runtime/thread.h
 +++ b/runtime/thread.h
 @@ -1130,7 +1130,9 @@ class Thread {
@@ -7049,7 +5499,7 @@ index ae04600c60..fe2391247e 100644
    // equal to a valid pointer.
    // TODO: does this need to atomic?  I don't think so.
 diff --git a/test/004-JniTest/jni_test.cc b/test/004-JniTest/jni_test.cc
-index 540e6ce357..405ccd45c1 100644
+index 540e6ce..405ccd4 100644
 --- a/test/004-JniTest/jni_test.cc
 +++ b/test/004-JniTest/jni_test.cc
 @@ -33,7 +33,7 @@ static JavaVM* jvm = nullptr;
@@ -7062,7 +5512,7 @@ index 540e6ce357..405ccd45c1 100644
    {"intCriticalNativeMethod", "(III)I", reinterpret_cast<void*>(Java_Main_intCriticalNativeMethod) },
  };
 diff --git a/test/139-register-natives/regnative.cc b/test/139-register-natives/regnative.cc
-index d9c8b31ac7..083c14c1ec 100644
+index d9c8b31..083c14c 100644
 --- a/test/139-register-natives/regnative.cc
 +++ b/test/139-register-natives/regnative.cc
 @@ -22,7 +22,7 @@ namespace art {
@@ -7074,136 +5524,8 @@ index d9c8b31ac7..083c14c1ec 100644
      { "foo", "()V", reinterpret_cast<void*>(foo) }
  };
  
-diff --git a/test/1960-checker-bounds-codegen/expected.txt b/test/1960-checker-bounds-codegen/expected.txt
-new file mode 100644
-index 0000000000..b0aad4deb5
---- /dev/null
-+++ b/test/1960-checker-bounds-codegen/expected.txt
-@@ -0,0 +1 @@
-+passed
-diff --git a/test/1960-checker-bounds-codegen/info.txt b/test/1960-checker-bounds-codegen/info.txt
-new file mode 100644
-index 0000000000..1a4f84fc7a
---- /dev/null
-+++ b/test/1960-checker-bounds-codegen/info.txt
-@@ -0,0 +1 @@
-+Test code generation for BoundsCheck.
-diff --git a/test/1960-checker-bounds-codegen/src/Main.java b/test/1960-checker-bounds-codegen/src/Main.java
-new file mode 100644
-index 0000000000..a84d67f694
---- /dev/null
-+++ b/test/1960-checker-bounds-codegen/src/Main.java
-@@ -0,0 +1,108 @@
-+/*
-+ * Copyright (C) 2019 The Android Open Source Project
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ *      http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
-+
-+/**
-+ * Test code generation for BoundsCheck.
-+ */
-+public class Main {
-+  // Constant index, variable length.
-+  /// CHECK-START-ARM64: int Main.constantIndex(int[]) disassembly (after)
-+  /// CHECK:                     BoundsCheck
-+  /// CHECK:                     cmp {{w\d+}}, #0x0
-+  /// CHECK:                     b.ls #+0x{{[0-9a-f]+}} (addr 0x<<SLOW:[0-9a-f]+>>)
-+  /// CHECK:                     BoundsCheckSlowPathARM64
-+  /// CHECK-NEXT:                0x{{0*}}<<SLOW>>:
-+  /// CHECK-START-ARM: int Main.constantIndex(int[]) disassembly (after)
-+  /// CHECK:                     BoundsCheck
-+  /// CHECK:                     cmp {{r\d+}}, #0
-+  /// CHECK:                     bls.w <<SLOW:0x[0-9a-f]+>>
-+  /// CHECK:                     BoundsCheckSlowPathARMVIXL
-+  /// CHECK-NEXT:                <<SLOW>>:
-+  public static int constantIndex(int[] a) {
-+    try {
-+      a[0] = 42;
-+    } catch (ArrayIndexOutOfBoundsException expected) {
-+      return -1;
-+    }
-+    return a.length;
-+  }
-+
-+  // Constant length, variable index.
-+  /// CHECK-START-ARM64: int Main.constantLength(int) disassembly (after)
-+  /// CHECK:                     BoundsCheck
-+  /// CHECK:                     cmp {{w\d+}}, #0xa
-+  /// CHECK:                     b.hs #+0x{{[0-9a-f]+}} (addr 0x<<SLOW:[0-9a-f]+>>)
-+  /// CHECK:                     BoundsCheckSlowPathARM64
-+  /// CHECK-NEXT:                0x{{0*}}<<SLOW>>:
-+  /// CHECK-START-ARM: int Main.constantLength(int) disassembly (after)
-+  /// CHECK:                     BoundsCheck
-+  /// CHECK:                     cmp {{r\d+}}, #10
-+  /// CHECK:                     bcs.w <<SLOW:0x[0-9a-f]+>>
-+  /// CHECK:                     BoundsCheckSlowPathARMVIXL
-+  /// CHECK-NEXT:                <<SLOW>>:
-+  public static int constantLength(int index) {
-+    int[] a = new int[10];
-+    try {
-+      a[index] = 1;
-+    } catch (ArrayIndexOutOfBoundsException expected) {
-+      return -1;
-+    }
-+    return index;
-+  }
-+
-+  // Constant index and length, out of bounds access. Check that we only have
-+  // the slow path.
-+  /// CHECK-START-ARM64: int Main.constantIndexAndLength() disassembly (after)
-+  /// CHECK:                     BoundsCheck
-+  /// CHECK-NOT:                 cmp
-+  /// CHECK:                     b #+0x{{[0-9a-f]+}} (addr 0x<<SLOW:[0-9a-f]+>>)
-+  /// CHECK:                     BoundsCheckSlowPathARM64
-+  /// CHECK-NEXT:                0x{{0*}}<<SLOW>>:
-+  /// CHECK-START-ARM: int Main.constantIndexAndLength() disassembly (after)
-+  /// CHECK:                     BoundsCheck
-+  /// CHECK-NOT:                 cmp
-+  /// CHECK:                     b <<SLOW:0x[0-9a-f]+>>
-+  /// CHECK:                     BoundsCheckSlowPathARMVIXL
-+  /// CHECK-NEXT:                <<SLOW>>:
-+  public static int constantIndexAndLength() {
-+    try {
-+      int[] a = new int[5];
-+      a[10] = 42;
-+    } catch (ArrayIndexOutOfBoundsException expected) {
-+      return -1;
-+    }
-+    return 0;
-+  }
-+
-+  public static void main(String[] args) {
-+    int[] a = new int[10];
-+    int[] b = new int[0];
-+    expectEquals(a.length, constantIndex(a));
-+    expectEquals(-1, constantIndex(b));
-+    expectEquals(0, constantLength(0));
-+    expectEquals(9, constantLength(9));
-+    expectEquals(-1, constantLength(10));
-+    expectEquals(-1, constantLength(-2));
-+    expectEquals(-1, constantIndexAndLength());
-+    System.out.println("passed");
-+  }
-+
-+  private static void expectEquals(int expected, int result) {
-+    if (expected != result) {
-+      throw new Error("Expected: " + expected + ", found: " + result);
-+    }
-+  }
-+}
 diff --git a/test/442-checker-constant-folding/src/Main.java b/test/442-checker-constant-folding/src/Main.java
-index 3d9294304d..45157abf1a 100644
+index 3d92943..45157ab 100644
 --- a/test/442-checker-constant-folding/src/Main.java
 +++ b/test/442-checker-constant-folding/src/Main.java
 @@ -864,6 +864,23 @@ public class Main {
@@ -7231,7 +5553,7 @@ index 3d9294304d..45157abf1a 100644
    /**
     * Exercise constant folding on logical or.
 diff --git a/test/521-checker-array-set-null/src/Main.java b/test/521-checker-array-set-null/src/Main.java
-index 74bb73f04b..f166b92fa4 100644
+index 74bb73f..f166b92 100644
 --- a/test/521-checker-array-set-null/src/Main.java
 +++ b/test/521-checker-array-set-null/src/Main.java
 @@ -22,19 +22,19 @@ public class Main {
@@ -7257,301 +5579,8 @@ index 74bb73f04b..f166b92fa4 100644
    public static void testWithSame(Object[] o) {
      o[0] = o[1];
    }
-diff --git a/test/530-checker-lse-simd/expected.txt b/test/530-checker-lse-simd/expected.txt
-new file mode 100644
-index 0000000000..03bb57b545
---- /dev/null
-+++ b/test/530-checker-lse-simd/expected.txt
-@@ -0,0 +1,7 @@
-+1
-+3
-+1
-+2
-+2
-+1
-+1
-diff --git a/test/530-checker-lse-simd/info.txt b/test/530-checker-lse-simd/info.txt
-new file mode 100644
-index 0000000000..61b47411ba
---- /dev/null
-+++ b/test/530-checker-lse-simd/info.txt
-@@ -0,0 +1 @@
-+Checker test for testing load-store elimination in presence of VecLoad and VecStore.
-diff --git a/test/530-checker-lse-simd/src/Main.java b/test/530-checker-lse-simd/src/Main.java
-new file mode 100644
-index 0000000000..12dd29708b
---- /dev/null
-+++ b/test/530-checker-lse-simd/src/Main.java
-@@ -0,0 +1,267 @@
-+/*
-+ * Copyright (C) 2019 The Android Open Source Project
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ *      http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
-+
-+public class Main {
-+  // Based on Linpack.matgen
-+  // Load-store elimination did not work when a function had SIMD code.
-+  // In the test below loop B is vectorized.
-+  // Check that a redundant ArrayGet is eliminated in loop A.
-+
-+  /// CHECK-START: double Main.$noinline$vecgen(double[], double[], int) load_store_elimination (before)
-+  /// CHECK:      Rem
-+  /// CHECK-NEXT: TypeConversion
-+  /// CHECK-NEXT: Sub
-+  /// CHECK-NEXT: Mul
-+  /// CHECK-NEXT: ArraySet
-+  /// CHECK-NEXT: ArrayGet
-+  /// CHECK-NEXT: LessThanOrEqual
-+  /// CHECK-NEXT: Select
-+  /// CHECK-NEXT: Add
-+  /// CHECK-NEXT: Goto loop:{{B\d+}}
-+
-+  /// CHECK-START: double Main.$noinline$vecgen(double[], double[], int) load_store_elimination (after)
-+  /// CHECK:      Rem
-+  /// CHECK-NEXT: TypeConversion
-+  /// CHECK-NEXT: Sub
-+  /// CHECK-NEXT: Mul
-+  /// CHECK-NEXT: ArraySet
-+  /// CHECK-NEXT: LessThanOrEqual
-+  /// CHECK-NEXT: Select
-+  /// CHECK-NEXT: Add
-+  /// CHECK-NEXT: Goto loop:{{B\d+}}
-+  static double $noinline$vecgen(double a[], double b[], int n) {
-+    double norma = 0.0;
-+    int init = 1325;
-+    // Loop A
-+    for (int i = 0; i < n; ++i) {
-+      init = 3125*init % 65536;
-+      a[i] = (init - 32768.0)/16384.0;
-+      norma = (a[i] > norma) ? a[i] : norma; // ArrayGet should be removed by LSE.
-+    }
-+
-+    // Loop B
-+    for (int i = 0; i < n; ++i) {
-+      b[i] += a[i];
-+    }
-+
-+    return norma;
-+  }
-+
-+
-+  static void test01() {
-+    double a[] = new double[1024];
-+    double norma = $noinline$vecgen(a, a, a.length);
-+    System.out.println((int)norma);
-+    System.out.println((int)a[1023]);
-+  }
-+
-+  // Check LSE works when a function has SIMD code.
-+  //
-+  /// CHECK-START: double Main.$noinline$test02(double[], int) load_store_elimination (before)
-+  /// CHECK:      BoundsCheck loop:none
-+  /// CHECK-NEXT: ArrayGet
-+  /// CHECK-NEXT: Mul
-+  /// CHECK-NEXT: ArraySet
-+  /// CHECK-NEXT: ArrayGet
-+  /// CHECK-NEXT: ArrayLength
-+  /// CHECK-NEXT: BelowOrEqual
-+  //
-+  /// CHECK:      ArrayGet loop:none
-+  /// CHECK-NEXT: Return
-+
-+  /// CHECK-START: double Main.$noinline$test02(double[], int) load_store_elimination (after)
-+  /// CHECK:      BoundsCheck loop:none
-+  /// CHECK-NEXT: ArrayGet
-+  /// CHECK-NEXT: Mul
-+  /// CHECK-NEXT: ArraySet
-+  /// CHECK-NEXT: ArrayLength
-+  /// CHECK-NEXT: BelowOrEqual
-+  //
-+  /// CHECK:      ArrayGet loop:none
-+  /// CHECK-NEXT: Return
-+  static double $noinline$test02(double a[], int n) {
-+    double b[] = new double[n];
-+    a[0] = a[0] / 2;
-+
-+    double norma = a[0]; // ArrayGet should be removed by LSE.
-+
-+    // The following loop is vectorized.
-+    for (int i = 0; i < 128; ++i) {
-+      b[i] += a[i];
-+    }
-+
-+    norma = a[0];
-+    return norma;
-+  }
-+
-+  static void test02() {
-+    double a[] = new double[128];
-+    java.util.Arrays.fill(a, 2.0);
-+    double norma = $noinline$test02(a, a.length);
-+    System.out.println((int)norma);
-+  }
-+
-+  // Check LSE works when a function has SIMD code.
-+  //
-+  /// CHECK-START: double Main.$noinline$test03(int) load_store_elimination (before)
-+  /// CHECK:      ArrayGet loop:none
-+  /// CHECK-NEXT: Return
-+
-+  /// CHECK-START: double Main.$noinline$test03(int) load_store_elimination (after)
-+  /// CHECK-NOT:  ArrayGet loop:none
-+  static double $noinline$test03(int n) {
-+    double a[] = new double[n];
-+    double b[] = new double[n];
-+
-+    a[0] = 2.0;
-+
-+    // The following loop is vectorized.
-+    for (int i = 0; i < 128; ++i) {
-+      b[i] += a[i];
-+    }
-+
-+    a[0] = 2.0;
-+    return a[0]; // ArrayGet should be removed by LSE.
-+  }
-+
-+  static void test03() {
-+    double norma = $noinline$test03(128);
-+    System.out.println((int)norma);
-+  }
-+
-+  // Check LSE eliminates VecLoad.
-+  //
-+  /// CHECK-START-ARM64: double[] Main.$noinline$test04(int) load_store_elimination (before)
-+  /// CHECK:             VecStore
-+  /// CHECK-NEXT:        VecLoad
-+  /// CHECK-NEXT:        VecAdd
-+  /// CHECK-NEXT:        VecStore
-+  /// CHECK-NEXT:        Add
-+  /// CHECK-NEXT:        Goto loop:{{B\d+}}
-+
-+  /// CHECK-START-ARM64: double[] Main.$noinline$test04(int) load_store_elimination (after)
-+  /// CHECK:             VecStore
-+  /// CHECK-NEXT:        VecAdd
-+  /// CHECK-NEXT:        VecStore
-+  /// CHECK-NEXT:        Add
-+  /// CHECK-NEXT:        Goto loop:{{B\d+}}
-+  static double[] $noinline$test04(int n) {
-+    double a[] = new double[n];
-+    double b[] = new double[n];
-+
-+    // The following loop is vectorized.
-+    for (int i = 0; i < n; ++i) {
-+      a[i] = 1;
-+      b[i] = a[i] + a[i]; // VecLoad should be removed by LSE.
-+    }
-+
-+    return b;
-+  }
-+
-+  static void test04() {
-+    double norma = $noinline$test04(128)[0];
-+    System.out.println((int)norma);
-+  }
-+
-+  // Check LSE eliminates VecLoad.
-+  //
-+  /// CHECK-START-ARM64: double[] Main.$noinline$test05(int) load_store_elimination (before)
-+  /// CHECK:             VecStore
-+  /// CHECK-NEXT:        VecLoad
-+  /// CHECK-NEXT:        VecStore
-+  /// CHECK-NEXT:        VecStore
-+  /// CHECK-NEXT:        Add
-+  /// CHECK-NEXT:        Goto loop:{{B\d+}}
-+
-+  /// CHECK-START-ARM64: double[] Main.$noinline$test05(int) load_store_elimination (after)
-+  /// CHECK:             VecStore
-+  /// CHECK-NEXT:        VecStore
-+  /// CHECK-NEXT:        Add
-+  /// CHECK-NEXT:        Goto loop:{{B\d+}}
-+  static double[] $noinline$test05(int n) {
-+    double a[] = new double[n];
-+    double b[] = new double[n];
-+
-+    // The following loop is vectorized.
-+    for (int i = 0; i < n; ++i) {
-+      a[i] = 1;
-+      b[i] = a[i];
-+      a[i] = 1;
-+    }
-+
-+    return b;
-+  }
-+
-+  static void test05() {
-+    double norma = $noinline$test05(128)[0];
-+    System.out.println((int)norma);
-+  }
-+
-+  // Check LSE eliminates VecLoad and ArrayGet in case of singletons and default values.
-+  //
-+  /// CHECK-START-ARM64: double[] Main.$noinline$test06(int) load_store_elimination (before)
-+  /// CHECK:             BoundsCheck loop:none
-+  /// CHECK-NEXT:        ArrayGet
-+  /// CHECK-NEXT:        Add
-+  /// CHECK-NEXT:        ArrayLength
-+  //
-+  /// CHECK:             VecLoad loop:{{B\d+}}
-+  /// CHECK-NEXT:        VecStore
-+  /// CHECK-NEXT:        VecLoad
-+  /// CHECK-NEXT:        VecLoad
-+  /// CHECK-NEXT:        VecAdd
-+  /// CHECK-NEXT:        VecAdd
-+  /// CHECK-NEXT:        VecStore
-+
-+  /// CHECK-START-ARM64: double[] Main.$noinline$test06(int) load_store_elimination (after)
-+  /// CHECK:             BoundsCheck loop:none
-+  /// CHECK-NEXT:        Add
-+  /// CHECK-NEXT:        ArrayLength
-+  //
-+  /// CHECK:             VecLoad loop:{{B\d+}}
-+  /// CHECK-NEXT:        VecStore
-+  /// CHECK-NEXT:        VecAdd
-+  /// CHECK-NEXT:        VecAdd
-+  /// CHECK-NEXT:        VecStore
-+  static double[] $noinline$test06(int n) {
-+    double a[] = new double[n];
-+    double b[] = new double[n];
-+
-+    double r = a[0] + 1.0; // ArrayGet:a[0] is eliminated and default 0.0 is used.
-+    // The following loop is vectorized.
-+    for (int i = 0; i < n; ++i) {
-+      b[i] = a[i]; // VecLoad:a[i] is not eliminated.
-+      b[i] += a[i] + r; // VecLoad:a[i] and VecLoad:b[i] are eliminated.
-+    }
-+
-+    return b;
-+  }
-+
-+  static void test06() {
-+    double norma = $noinline$test06(128)[0];
-+    System.out.println((int)norma);
-+  }
-+
-+  public static void main(String[] args) {
-+    test01();
-+    test02();
-+    test03();
-+    test04();
-+    test05();
-+    test06();
-+  }
-+}
-+
 diff --git a/test/536-checker-intrinsic-optimization/src/Main.java b/test/536-checker-intrinsic-optimization/src/Main.java
-index 83a89a6da6..f15618eedc 100644
+index 83a89a6..f15618e 100644
 --- a/test/536-checker-intrinsic-optimization/src/Main.java
 +++ b/test/536-checker-intrinsic-optimization/src/Main.java
 @@ -18,6 +18,20 @@ import java.lang.reflect.Method;
@@ -7642,133 +5671,8 @@ index 83a89a6da6..f15618eedc 100644
 +    return new String(dst, offset, srcEnd - srcBegin);
 +  }
  }
-diff --git a/test/580-fp16/expected.txt b/test/580-fp16/expected.txt
-new file mode 100644
-index 0000000000..e69de29bb2
-diff --git a/test/580-fp16/info.txt b/test/580-fp16/info.txt
-new file mode 100644
-index 0000000000..547ae227df
---- /dev/null
-+++ b/test/580-fp16/info.txt
-@@ -0,0 +1 @@
-+This test case is used to test libcore.util.FP16.
-diff --git a/test/580-fp16/src-art/Main.java b/test/580-fp16/src-art/Main.java
-new file mode 100644
-index 0000000000..a89e1000d0
---- /dev/null
-+++ b/test/580-fp16/src-art/Main.java
-@@ -0,0 +1,109 @@
-+/*
-+ * Copyright (C) 2018 The Android Open Source Project
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ *      http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
-+
-+import libcore.util.FP16;
-+
-+public class Main {
-+    public Main() {
-+    }
-+
-+    public static int TestFP16ToFloatRawIntBits(short half) {
-+        float f = FP16.toFloat(half);
-+        // Since in this test class we need to check the integer representing of
-+        // the actual float NaN values, the floatToRawIntBits() is used instead of
-+        // floatToIntBits().
-+        return Float.floatToRawIntBits(f);
-+    }
-+
-+    public static void assertEquals(short expected, short calculated) {
-+        if (expected != calculated) {
-+            throw new Error("Expected: " + expected + ", Calculated: " + calculated);
-+        }
-+    }
-+    public static void assertEquals(float expected, float calculated) {
-+        if (expected != calculated) {
-+            throw new Error("Expected: " + expected + ", Calculated: " + calculated);
-+        }
-+    }
-+
-+    public static void main(String args[]) {
-+        // Test FP16 to float
-+        for (short h = Short.MIN_VALUE; h < Short.MAX_VALUE; h++) {
-+            if (FP16.isNaN(h)) {
-+                // NaN inputs are tested below.
-+                continue;
-+            }
-+            assertEquals(h, FP16.toHalf(FP16.toFloat(h)));
-+        }
-+
-+        // These asserts check some known values and edge cases for FP16.toHalf
-+        // and have been inspired by the cts HalfTest.
-+        // Zeroes, NaN and infinities
-+        assertEquals(FP16.POSITIVE_ZERO, FP16.toHalf(0.0f));
-+        assertEquals(FP16.NEGATIVE_ZERO, FP16.toHalf(-0.0f));
-+        assertEquals(FP16.NaN, FP16.toHalf(Float.NaN));
-+        assertEquals(FP16.POSITIVE_INFINITY, FP16.toHalf(Float.POSITIVE_INFINITY));
-+        assertEquals(FP16.NEGATIVE_INFINITY, FP16.toHalf(Float.NEGATIVE_INFINITY));
-+        // Known values
-+        assertEquals((short) 0x3c01, FP16.toHalf(1.0009765625f));
-+        assertEquals((short) 0xc000, FP16.toHalf(-2.0f));
-+        assertEquals((short) 0x0400, FP16.toHalf(6.10352e-5f));
-+        assertEquals((short) 0x7bff, FP16.toHalf(65504.0f));
-+        assertEquals((short) 0x3555, FP16.toHalf(1.0f / 3.0f));
-+        // Subnormals
-+        assertEquals((short) 0x03ff, FP16.toHalf(6.09756e-5f));
-+        assertEquals(FP16.MIN_VALUE, FP16.toHalf(5.96046e-8f));
-+        assertEquals((short) 0x83ff, FP16.toHalf(-6.09756e-5f));
-+        assertEquals((short) 0x8001, FP16.toHalf(-5.96046e-8f));
-+        // Subnormals (flushed to +/-0)
-+        assertEquals(FP16.POSITIVE_ZERO, FP16.toHalf(5.96046e-9f));
-+        assertEquals(FP16.NEGATIVE_ZERO, FP16.toHalf(-5.96046e-9f));
-+        // Test for values that overflow the mantissa bits into exp bits
-+        assertEquals(0x1000, FP16.toHalf(Float.intBitsToFloat(0x39fff000)));
-+        assertEquals(0x0400, FP16.toHalf(Float.intBitsToFloat(0x387fe000)));
-+        // Floats with absolute value above +/-65519 are rounded to +/-inf
-+        // when using round-to-even
-+        assertEquals(0x7bff, FP16.toHalf(65519.0f));
-+        assertEquals(0x7bff, FP16.toHalf(65519.9f));
-+        assertEquals(FP16.POSITIVE_INFINITY, FP16.toHalf(65520.0f));
-+        assertEquals(FP16.NEGATIVE_INFINITY, FP16.toHalf(-65520.0f));
-+        // Check if numbers are rounded to nearest even when they
-+        // cannot be accurately represented by Half
-+        assertEquals(0x6800, FP16.toHalf(2049.0f));
-+        assertEquals(0x6c00, FP16.toHalf(4098.0f));
-+        assertEquals(0x7000, FP16.toHalf(8196.0f));
-+        assertEquals(0x7400, FP16.toHalf(16392.0f));
-+        assertEquals(0x7800, FP16.toHalf(32784.0f));
-+
-+        // FP16 SNaN/QNaN inputs to float
-+        // The most significant bit of mantissa:
-+        //                 V
-+        // 0xfc01: 1 11111 0000000001 (signaling NaN)
-+        // 0xfdff: 1 11111 0111111111 (signaling NaN)
-+        // 0xfe00: 1 11111 1000000000 (quiet NaN)
-+        // 0xffff: 1 11111 1111111111 (quiet NaN)
-+        // This test is inspired by Java implementation of android.util.Half.toFloat(),
-+        // where the implementation performs SNaN->QNaN conversion.
-+        assert(Float.isNaN(FP16.toFloat((short)0xfc01)));
-+        assert(Float.isNaN(FP16.toFloat((short)0xfdff)));
-+        assert(Float.isNaN(FP16.toFloat((short)0xfe00)));
-+        assert(Float.isNaN(FP16.toFloat((short)0xffff)));
-+        assertEquals(0xffc02000, TestFP16ToFloatRawIntBits((short)(0xfc01)));  // SNaN->QNaN
-+        assertEquals(0xffffe000, TestFP16ToFloatRawIntBits((short)(0xfdff)));  // SNaN->QNaN
-+        assertEquals(0xffc00000, TestFP16ToFloatRawIntBits((short)(0xfe00)));  // QNaN->QNaN
-+        assertEquals(0xffffe000, TestFP16ToFloatRawIntBits((short)(0xffff)));  // QNaN->QNaN
-+    }
-+}
 diff --git a/test/597-deopt-busy-loop/expected.txt b/test/597-deopt-busy-loop/expected.txt
-index f993efcdad..6e2fc8e25e 100644
+index f993efc..6e2fc8e 100644
 --- a/test/597-deopt-busy-loop/expected.txt
 +++ b/test/597-deopt-busy-loop/expected.txt
 @@ -1,2 +1,3 @@
@@ -7776,111 +5680,8 @@ index f993efcdad..6e2fc8e25e 100644
 -Finishing
 +Simple loop finishing
 +Float loop finishing
-diff --git a/test/597-deopt-busy-loop/src/FloatLoop.java b/test/597-deopt-busy-loop/src/FloatLoop.java
-new file mode 100644
-index 0000000000..57667a68a4
---- /dev/null
-+++ b/test/597-deopt-busy-loop/src/FloatLoop.java
-@@ -0,0 +1,97 @@
-+/*
-+ * Copyright (C) 2019 The Android Open Source Project
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ *      http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
-+
-+// This test checks that FP registers spill offset is correctly recorded in the SlowPath; by causing
-+// asynchronous deoptimization in debuggable mode we observe the FP values in the interpreter.
-+public class FloatLoop implements Runnable {
-+    static final int numberOfThreads = 2;
-+    volatile static boolean sExitFlag = false;
-+    volatile static boolean sEntered = false;
-+    int threadIndex;
-+
-+    FloatLoop(int index) {
-+        threadIndex = index;
-+    }
-+
-+    public static void main() throws Exception {
-+        final Thread[] threads = new Thread[numberOfThreads];
-+        for (int t = 0; t < threads.length; t++) {
-+            threads[t] = new Thread(new FloatLoop(t));
-+            threads[t].start();
-+        }
-+        for (Thread t : threads) {
-+            t.join();
-+        }
-+
-+        System.out.println("Float loop finishing");
-+    }
-+
-+    static final float kFloatConst0 = 256.0f;
-+    static final float kFloatConst1 = 128.0f;
-+    static final int kArraySize = 128;
-+    volatile static float floatField;
-+
-+    public void expectEqualToEither(float value, float expected0, float expected1) {
-+        if (value != expected0 && value != expected1) {
-+            throw new Error("Expected:  " + expected0 + " or "+ expected1 +
-+                            ", found: " + value);
-+        }
-+    }
-+
-+    public void $noinline$busyLoop() {
-+        Main.assertIsManaged();
-+
-+        // On Arm64:
-+        // This loop is likely to be vectorized which causes the full 16-byte Q-register to be saved
-+        // across slow paths.
-+        int[] array = new int[kArraySize];
-+        for (int i = 0; i < kArraySize; i++) {
-+            array[i]++;
-+        }
-+
-+        sEntered = true;
-+        float s0 = kFloatConst0;
-+        float s1 = kFloatConst1;
-+        for (int i = 0; !sExitFlag; i++) {
-+            if (i % 2 == 0) {
-+                s0 += 2.0;
-+                s1 += 2.0;
-+            } else {
-+                s0 -= 2.0;
-+                s1 -= 2.0;
-+            }
-+            // SuspendCheckSlowPath must record correct stack offset for spilled FP registers.
-+        }
-+        Main.assertIsInterpreted();
-+
-+        expectEqualToEither(s0, kFloatConst0, kFloatConst0 + 2.0f);
-+        expectEqualToEither(s1, kFloatConst1, kFloatConst1 + 2.0f);
-+
-+        floatField = s0 + s1;
-+    }
-+
-+    public void run() {
-+        if (threadIndex == 0) {
-+            while (!sEntered) {
-+              Thread.yield();
-+            }
-+            Main.deoptimizeAll();
-+            sExitFlag = true;
-+        } else {
-+            $noinline$busyLoop();
-+        }
-+    }
-+}
 diff --git a/test/597-deopt-busy-loop/src/Main.java b/test/597-deopt-busy-loop/src/Main.java
-index 46b6bbf4f3..d15c6c7835 100644
+index 46b6bbf..d15c6c7 100644
 --- a/test/597-deopt-busy-loop/src/Main.java
 +++ b/test/597-deopt-busy-loop/src/Main.java
 @@ -14,56 +14,22 @@
@@ -7950,76 +5751,8 @@ index 46b6bbf4f3..d15c6c7835 100644
 +        FloatLoop.main();
      }
  }
-diff --git a/test/597-deopt-busy-loop/src/SimpleLoop.java b/test/597-deopt-busy-loop/src/SimpleLoop.java
-new file mode 100644
-index 0000000000..12298a90d9
---- /dev/null
-+++ b/test/597-deopt-busy-loop/src/SimpleLoop.java
-@@ -0,0 +1,62 @@
-+/*
-+ * Copyright (C) 2017 The Android Open Source Project
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ *      http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
-+
-+public class SimpleLoop implements Runnable {
-+    static final int numberOfThreads = 2;
-+    volatile static boolean sExitFlag = false;
-+    volatile static boolean sEntered = false;
-+    int threadIndex;
-+
-+    SimpleLoop(int index) {
-+        threadIndex = index;
-+    }
-+
-+    public static void main() throws Exception {
-+        final Thread[] threads = new Thread[numberOfThreads];
-+        for (int t = 0; t < threads.length; t++) {
-+            threads[t] = new Thread(new SimpleLoop(t));
-+            threads[t].start();
-+        }
-+        for (Thread t : threads) {
-+            t.join();
-+        }
-+
-+        System.out.println("Simple loop finishing");
-+    }
-+
-+    public void $noinline$busyLoop() {
-+        Main.assertIsManaged();
-+        sEntered = true;
-+        for (;;) {
-+            if (sExitFlag) {
-+                break;
-+            }
-+        }
-+        Main.assertIsInterpreted();
-+    }
-+
-+    public void run() {
-+        if (threadIndex == 0) {
-+            while (!sEntered) {
-+              Thread.yield();
-+            }
-+            Main.deoptimizeAll();
-+            sExitFlag = true;
-+        } else {
-+            $noinline$busyLoop();
-+        }
-+    }
-+}
 diff --git a/test/624-checker-stringops/smali/Smali.smali b/test/624-checker-stringops/smali/Smali.smali
-index f8b92759c7..3252cde877 100644
+index f8b9275..3252cde 100644
 --- a/test/624-checker-stringops/smali/Smali.smali
 +++ b/test/624-checker-stringops/smali/Smali.smali
 @@ -47,17 +47,17 @@
@@ -8106,7 +5839,7 @@ index f8b92759c7..3252cde877 100644
      .registers 4
  
 diff --git a/test/624-checker-stringops/src/Main.java b/test/624-checker-stringops/src/Main.java
-index f52d81a053..055a4d7ec9 100644
+index f52d81a..055a4d7 100644
 --- a/test/624-checker-stringops/src/Main.java
 +++ b/test/624-checker-stringops/src/Main.java
 @@ -136,17 +136,17 @@ public class Main {
@@ -8175,7 +5908,7 @@ index f52d81a053..055a4d7ec9 100644
      StringBuilder b = new StringBuilder();
      for (int i = 0; i < 10; i++) {
 diff --git a/test/661-checker-simd-reduc/src/Main.java b/test/661-checker-simd-reduc/src/Main.java
-index 7b6f957b2a..c31b17cefd 100644
+index 7b6f957..c31b17c 100644
 --- a/test/661-checker-simd-reduc/src/Main.java
 +++ b/test/661-checker-simd-reduc/src/Main.java
 @@ -71,6 +71,12 @@ public class Main {
@@ -8191,282 +5924,8 @@ index 7b6f957b2a..c31b17cefd 100644
    private static int reductionInt(int[] x) {
      int sum = 0;
      for (int i = 0; i < x.length; i++) {
-diff --git a/test/697-checker-string-append/expected.txt b/test/697-checker-string-append/expected.txt
-new file mode 100644
-index 0000000000..b0aad4deb5
---- /dev/null
-+++ b/test/697-checker-string-append/expected.txt
-@@ -0,0 +1 @@
-+passed
-diff --git a/test/697-checker-string-append/info.txt b/test/697-checker-string-append/info.txt
-new file mode 100644
-index 0000000000..cb612cb024
---- /dev/null
-+++ b/test/697-checker-string-append/info.txt
-@@ -0,0 +1 @@
-+Test for String append pattern recognition.
-diff --git a/test/697-checker-string-append/src/Main.java b/test/697-checker-string-append/src/Main.java
-new file mode 100644
-index 0000000000..4f2fa19bc4
---- /dev/null
-+++ b/test/697-checker-string-append/src/Main.java
-@@ -0,0 +1,254 @@
-+/*
-+ * Copyright 2019 The Android Open Source Project
-+ *
-+ * Licensed under the Apache License, Version 2.0 (the "License");
-+ * you may not use this file except in compliance with the License.
-+ * You may obtain a copy of the License at
-+ *
-+ *      http://www.apache.org/licenses/LICENSE-2.0
-+ *
-+ * Unless required by applicable law or agreed to in writing, software
-+ * distributed under the License is distributed on an "AS IS" BASIS,
-+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-+ * See the License for the specific language governing permissions and
-+ * limitations under the License.
-+ */
-+
-+public class Main {
-+    public static void main(String[] args) {
-+        testAppendStringAndLong();
-+        testAppendStringAndInt();
-+        testAppendStringAndString();
-+        testMiscelaneous();
-+        testNoArgs();
-+        System.out.println("passed");
-+    }
-+
-+    private static final String APPEND_LONG_PREFIX = "Long/";
-+    private static final String[] APPEND_LONG_TEST_CASES = {
-+        "Long/0",
-+        "Long/1",
-+        "Long/9",
-+        "Long/10",
-+        "Long/99",
-+        "Long/100",
-+        "Long/999",
-+        "Long/1000",
-+        "Long/9999",
-+        "Long/10000",
-+        "Long/99999",
-+        "Long/100000",
-+        "Long/999999",
-+        "Long/1000000",
-+        "Long/9999999",
-+        "Long/10000000",
-+        "Long/99999999",
-+        "Long/100000000",
-+        "Long/999999999",
-+        "Long/1000000000",
-+        "Long/9999999999",
-+        "Long/10000000000",
-+        "Long/99999999999",
-+        "Long/100000000000",
-+        "Long/999999999999",
-+        "Long/1000000000000",
-+        "Long/9999999999999",
-+        "Long/10000000000000",
-+        "Long/99999999999999",
-+        "Long/100000000000000",
-+        "Long/999999999999999",
-+        "Long/1000000000000000",
-+        "Long/9999999999999999",
-+        "Long/10000000000000000",
-+        "Long/99999999999999999",
-+        "Long/100000000000000000",
-+        "Long/999999999999999999",
-+        "Long/1000000000000000000",
-+        "Long/9223372036854775807",  // Long.MAX_VALUE
-+        "Long/-1",
-+        "Long/-9",
-+        "Long/-10",
-+        "Long/-99",
-+        "Long/-100",
-+        "Long/-999",
-+        "Long/-1000",
-+        "Long/-9999",
-+        "Long/-10000",
-+        "Long/-99999",
-+        "Long/-100000",
-+        "Long/-999999",
-+        "Long/-1000000",
-+        "Long/-9999999",
-+        "Long/-10000000",
-+        "Long/-99999999",
-+        "Long/-100000000",
-+        "Long/-999999999",
-+        "Long/-1000000000",
-+        "Long/-9999999999",
-+        "Long/-10000000000",
-+        "Long/-99999999999",
-+        "Long/-100000000000",
-+        "Long/-999999999999",
-+        "Long/-1000000000000",
-+        "Long/-9999999999999",
-+        "Long/-10000000000000",
-+        "Long/-99999999999999",
-+        "Long/-100000000000000",
-+        "Long/-999999999999999",
-+        "Long/-1000000000000000",
-+        "Long/-9999999999999999",
-+        "Long/-10000000000000000",
-+        "Long/-99999999999999999",
-+        "Long/-100000000000000000",
-+        "Long/-999999999999999999",
-+        "Long/-1000000000000000000",
-+        "Long/-9223372036854775808",  // Long.MIN_VALUE
-+    };
-+
-+    /// CHECK-START: java.lang.String Main.$noinline$appendStringAndLong(java.lang.String, long) instruction_simplifier (before)
-+    /// CHECK-NOT:              StringBuilderAppend
-+
-+    /// CHECK-START: java.lang.String Main.$noinline$appendStringAndLong(java.lang.String, long) instruction_simplifier (after)
-+    /// CHECK:                  StringBuilderAppend
-+    public static String $noinline$appendStringAndLong(String s, long l) {
-+        return new StringBuilder().append(s).append(l).toString();
-+    }
-+
-+    public static void testAppendStringAndLong() {
-+        for (String expected : APPEND_LONG_TEST_CASES) {
-+            long l = Long.valueOf(expected.substring(APPEND_LONG_PREFIX.length()));
-+            String result = $noinline$appendStringAndLong(APPEND_LONG_PREFIX, l);
-+            assertEquals(expected, result);
-+        }
-+    }
-+
-+    private static final String APPEND_INT_PREFIX = "Int/";
-+    private static final String[] APPEND_INT_TEST_CASES = {
-+        "Int/0",
-+        "Int/1",
-+        "Int/9",
-+        "Int/10",
-+        "Int/99",
-+        "Int/100",
-+        "Int/999",
-+        "Int/1000",
-+        "Int/9999",
-+        "Int/10000",
-+        "Int/99999",
-+        "Int/100000",
-+        "Int/999999",
-+        "Int/1000000",
-+        "Int/9999999",
-+        "Int/10000000",
-+        "Int/99999999",
-+        "Int/100000000",
-+        "Int/999999999",
-+        "Int/1000000000",
-+        "Int/2147483647",  // Integer.MAX_VALUE
-+        "Int/-1",
-+        "Int/-9",
-+        "Int/-10",
-+        "Int/-99",
-+        "Int/-100",
-+        "Int/-999",
-+        "Int/-1000",
-+        "Int/-9999",
-+        "Int/-10000",
-+        "Int/-99999",
-+        "Int/-100000",
-+        "Int/-999999",
-+        "Int/-1000000",
-+        "Int/-9999999",
-+        "Int/-10000000",
-+        "Int/-99999999",
-+        "Int/-100000000",
-+        "Int/-999999999",
-+        "Int/-1000000000",
-+        "Int/-2147483648",  // Integer.MIN_VALUE
-+    };
-+
-+    /// CHECK-START: java.lang.String Main.$noinline$appendStringAndInt(java.lang.String, int) instruction_simplifier (before)
-+    /// CHECK-NOT:              StringBuilderAppend
-+
-+    /// CHECK-START: java.lang.String Main.$noinline$appendStringAndInt(java.lang.String, int) instruction_simplifier (after)
-+    /// CHECK:                  StringBuilderAppend
-+    public static String $noinline$appendStringAndInt(String s, int i) {
-+        return new StringBuilder().append(s).append(i).toString();
-+    }
-+
-+    public static void testAppendStringAndInt() {
-+        for (String expected : APPEND_INT_TEST_CASES) {
-+            int i = Integer.valueOf(expected.substring(APPEND_INT_PREFIX.length()));
-+            String result = $noinline$appendStringAndInt(APPEND_INT_PREFIX, i);
-+            assertEquals(expected, result);
-+        }
-+    }
-+
-+    public static String $noinline$appendStringAndString(String s1, String s2) {
-+        return new StringBuilder().append(s1).append(s2).toString();
-+    }
-+
-+    public static void testAppendStringAndString() {
-+        assertEquals("nullnull", $noinline$appendStringAndString(null, null));
-+        assertEquals("nullTEST", $noinline$appendStringAndString(null, "TEST"));
-+        assertEquals("TESTnull", $noinline$appendStringAndString("TEST", null));
-+        assertEquals("abcDEFGH", $noinline$appendStringAndString("abc", "DEFGH"));
-+        // Test with a non-ASCII character.
-+        assertEquals("test\u0131", $noinline$appendStringAndString("test", "\u0131"));
-+        assertEquals("\u0131test", $noinline$appendStringAndString("\u0131", "test"));
-+        assertEquals("\u0131test\u0131", $noinline$appendStringAndString("\u0131", "test\u0131"));
-+    }
-+
-+    /// CHECK-START: java.lang.String Main.$noinline$appendSLILC(java.lang.String, long, int, long, char) instruction_simplifier (before)
-+    /// CHECK-NOT:              StringBuilderAppend
-+
-+    /// CHECK-START: java.lang.String Main.$noinline$appendSLILC(java.lang.String, long, int, long, char) instruction_simplifier (after)
-+    /// CHECK:                  StringBuilderAppend
-+    public static String $noinline$appendSLILC(String s,
-+                                               long l1,
-+                                               int i,
-+                                               long l2,
-+                                               char c) {
-+        return new StringBuilder().append(s)
-+                                  .append(l1)
-+                                  .append(i)
-+                                  .append(l2)
-+                                  .append(c).toString();
-+    }
-+
-+    public static void testMiscelaneous() {
-+        assertEquals("x17-1q",
-+                     $noinline$appendSLILC("x", 1L, 7, -1L, 'q'));
-+        assertEquals("null17-1q",
-+                     $noinline$appendSLILC(null, 1L, 7, -1L, 'q'));
-+        assertEquals("x\u013117-1q",
-+                     $noinline$appendSLILC("x\u0131", 1L, 7, -1L, 'q'));
-+        assertEquals("x427-1q",
-+                     $noinline$appendSLILC("x", 42L, 7, -1L, 'q'));
-+        assertEquals("x1-42-1q",
-+                     $noinline$appendSLILC("x", 1L, -42, -1L, 'q'));
-+        assertEquals("x17424242q",
-+                     $noinline$appendSLILC("x", 1L, 7, 424242L, 'q'));
-+        assertEquals("x17-1\u0131",
-+                     $noinline$appendSLILC("x", 1L, 7, -1L, '\u0131'));
-+    }
-+
-+    /// CHECK-START: java.lang.String Main.$noinline$appendNothing() instruction_simplifier (before)
-+    /// CHECK-NOT:              StringBuilderAppend
-+
-+    /// CHECK-START: java.lang.String Main.$noinline$appendNothing() instruction_simplifier (after)
-+    /// CHECK-NOT:              StringBuilderAppend
-+    public static String $noinline$appendNothing() {
-+        return new StringBuilder().toString();
-+    }
-+
-+    public static void testNoArgs() {
-+        assertEquals("", $noinline$appendNothing());
-+    }
-+
-+    public static void assertEquals(String expected, String actual) {
-+        if (!expected.equals(actual)) {
-+            throw new AssertionError("Expected: " + expected + ", actual: " + actual);
-+        }
-+    }
-+}
 diff --git a/test/706-checker-scheduler/src/Main.java b/test/706-checker-scheduler/src/Main.java
-index af18193388..5a66fbbebc 100644
+index af18193..5a66fbb 100644
 --- a/test/706-checker-scheduler/src/Main.java
 +++ b/test/706-checker-scheduler/src/Main.java
 @@ -322,7 +322,7 @@ public class Main {
@@ -8606,7 +6065,7 @@ index af18193388..5a66fbbebc 100644
        System.out.println("FAIL");
      }
 diff --git a/test/knownfailures.json b/test/knownfailures.json
-index b38d4d4eb1..2432a9ddcd 100644
+index b38d4d4..2432a9d 100644
 --- a/test/knownfailures.json
 +++ b/test/knownfailures.json
 @@ -942,6 +942,7 @@
