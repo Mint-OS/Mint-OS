@@ -5285,103 +5285,111 @@ index 39bf6e8d6c..1177477b9e 100644
  // Create a function `name` calling the ReadBarrier::Mark routine,
  // getting its argument and returning its result through register
  // `reg`, saving and restoring all caller-save registers.
-diff --git a/runtime/class_loader_context.cc b/runtime/class_loader_context.cc
-index 34fd146527..925f25ea2b 100644
---- a/runtime/class_loader_context.cc
-+++ b/runtime/class_loader_context.cc
-@@ -1163,6 +1163,18 @@ ClassLoaderContext::VerificationResult ClassLoaderContext::VerifyClassLoaderCont
-   return VerificationResult::kVerifies;
- }
- 
-+// Returns true if absolute `path` ends with relative `suffix` starting at
-+// a directory name boundary, i.e. after a '/'. For example, "foo/bar"
-+// is a valid suffix of "/data/foo/bar" but not "/data-foo/bar".
-+static inline bool AbsolutePathHasRelativeSuffix(const std::string& path,
-+                                                 const std::string& suffix) {
-+  DCHECK(IsAbsoluteLocation(path));
-+  DCHECK(!IsAbsoluteLocation(suffix));
-+  return (path.size() > suffix.size()) &&
-+         (path[path.size() - suffix.size() - 1u] == '/') &&
-+         (std::string_view(path).substr(/*pos*/ path.size() - suffix.size()) == suffix);
-+}
-+
- bool ClassLoaderContext::ClassLoaderInfoMatch(
-     const ClassLoaderInfo& info,
-     const ClassLoaderInfo& expected_info,
-@@ -1197,40 +1209,34 @@ bool ClassLoaderContext::ClassLoaderInfoMatch(
-       // and the other as an absolute one.
-       bool is_dex_name_absolute = IsAbsoluteLocation(info.classpath[k]);
-       bool is_expected_dex_name_absolute = IsAbsoluteLocation(expected_info.classpath[k]);
--      std::string dex_name;
--      std::string expected_dex_name;
-+      bool dex_names_match = false;
-+
- 
-       if (is_dex_name_absolute == is_expected_dex_name_absolute) {
-         // If both locations are absolute or relative then compare them as they are.
-         // This is usually the case for: shared libraries and secondary dex files.
--        dex_name = info.classpath[k];
--        expected_dex_name = expected_info.classpath[k];
-+        dex_names_match = (info.classpath[k] == expected_info.classpath[k]);
-       } else if (is_dex_name_absolute) {
-         // The runtime name is absolute but the compiled name (the expected one) is relative.
-         // This is the case for split apks which depend on base or on other splits.
--        dex_name = info.classpath[k];
--        OatFile::ResolveRelativeEncodedDexLocation(info.classpath[k].c_str(),
--                                                   expected_info.classpath[k],
--                                                   &expected_dex_name);
-+        dex_names_match =
-+            AbsolutePathHasRelativeSuffix(info.classpath[k], expected_info.classpath[k]);
-       } else if (is_expected_dex_name_absolute) {
-         // The runtime name is relative but the compiled name is absolute.
-         // There is no expected use case that would end up here as dex files are always loaded
-         // with their absolute location. However, be tolerant and do the best effort (in case
-         // there are unexpected new use case...).
--        OatFile::ResolveRelativeEncodedDexLocation(expected_info.classpath[k].c_str(),
--                                                   info.classpath[k],
--                                                   &dex_name);
--        expected_dex_name = expected_info.classpath[k];
-+        dex_names_match =
-+            AbsolutePathHasRelativeSuffix(expected_info.classpath[k], info.classpath[k]);
-       } else {
-         // Both locations are relative. In this case there's not much we can be sure about
-         // except that the names are the same. The checksum will ensure that the files are
-         // are same. This should not happen outside testing and manual invocations.
--        dex_name = info.classpath[k];
--        expected_dex_name = expected_info.classpath[k];
-+        dex_names_match = (info.classpath[k] == expected_info.classpath[k]);
-       }
- 
-       // Compare the locations.
--      if (dex_name != expected_dex_name) {
-+      if (!dex_names_match) {
-         LOG(WARNING) << "ClassLoaderContext classpath element mismatch"
-             << ". expected=" << expected_info.classpath[k]
-             << ", found=" << info.classpath[k]
-diff --git a/runtime/class_loader_context_test.cc b/runtime/class_loader_context_test.cc
-index 0c36fd42c2..008327834b 100644
---- a/runtime/class_loader_context_test.cc
-+++ b/runtime/class_loader_context_test.cc
-@@ -1402,7 +1402,18 @@ TEST_F(ClassLoaderContextTest, VerifyClassLoaderContextMatchAfterEncodingMultide
- 
-   std::unique_ptr<ClassLoaderContext> context = CreateContextForClassLoader(class_loader);
- 
--  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context->EncodeContextForOatFile("")),
-+  std::string context_with_no_base_dir = context->EncodeContextForOatFile("");
-+  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context_with_no_base_dir),
-+            ClassLoaderContext::VerificationResult::kVerifies);
-+
-+  std::string dex_location = GetTestDexFileName("MultiDex");
-+  size_t pos = dex_location.rfind('/');
-+  ASSERT_NE(std::string::npos, pos);
-+  std::string parent = dex_location.substr(0, pos);
-+
-+  std::string context_with_base_dir = context->EncodeContextForOatFile(parent);
-+  ASSERT_NE(context_with_base_dir, context_with_no_base_dir);
-+  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context_with_base_dir),
-             ClassLoaderContext::VerificationResult::kVerifies);
- }
- 
+diff --git a/runtime/class_loader_context.cc.rej b/runtime/class_loader_context.cc.rej
+new file mode 100644
+index 0000000000..7596eb1979
+--- /dev/null
++++ b/runtime/class_loader_context.cc.rej
+@@ -0,0 +1,71 @@
++--- runtime/class_loader_context.cc
+++++ runtime/class_loader_context.cc
++@@ -1163,6 +1163,18 @@ ClassLoaderContext::VerificationResult ClassLoaderContext::VerifyClassLoaderCont
++   return VerificationResult::kVerifies;
++ }
++ 
+++// Returns true if absolute `path` ends with relative `suffix` starting at
+++// a directory name boundary, i.e. after a '/'. For example, "foo/bar"
+++// is a valid suffix of "/data/foo/bar" but not "/data-foo/bar".
+++static inline bool AbsolutePathHasRelativeSuffix(const std::string& path,
+++                                                 const std::string& suffix) {
+++  DCHECK(IsAbsoluteLocation(path));
+++  DCHECK(!IsAbsoluteLocation(suffix));
+++  return (path.size() > suffix.size()) &&
+++         (path[path.size() - suffix.size() - 1u] == '/') &&
+++         (std::string_view(path).substr(/*pos*/ path.size() - suffix.size()) == suffix);
+++}
+++
++ bool ClassLoaderContext::ClassLoaderInfoMatch(
++     const ClassLoaderInfo& info,
++     const ClassLoaderInfo& expected_info,
++@@ -1197,40 +1209,34 @@ bool ClassLoaderContext::ClassLoaderInfoMatch(
++       // and the other as an absolute one.
++       bool is_dex_name_absolute = IsAbsoluteLocation(info.classpath[k]);
++       bool is_expected_dex_name_absolute = IsAbsoluteLocation(expected_info.classpath[k]);
++-      std::string dex_name;
++-      std::string expected_dex_name;
+++      bool dex_names_match = false;
+++
++ 
++       if (is_dex_name_absolute == is_expected_dex_name_absolute) {
++         // If both locations are absolute or relative then compare them as they are.
++         // This is usually the case for: shared libraries and secondary dex files.
++-        dex_name = info.classpath[k];
++-        expected_dex_name = expected_info.classpath[k];
+++        dex_names_match = (info.classpath[k] == expected_info.classpath[k]);
++       } else if (is_dex_name_absolute) {
++         // The runtime name is absolute but the compiled name (the expected one) is relative.
++         // This is the case for split apks which depend on base or on other splits.
++-        dex_name = info.classpath[k];
++-        OatFile::ResolveRelativeEncodedDexLocation(info.classpath[k].c_str(),
++-                                                   expected_info.classpath[k],
++-                                                   &expected_dex_name);
+++        dex_names_match =
+++            AbsolutePathHasRelativeSuffix(info.classpath[k], expected_info.classpath[k]);
++       } else if (is_expected_dex_name_absolute) {
++         // The runtime name is relative but the compiled name is absolute.
++         // There is no expected use case that would end up here as dex files are always loaded
++         // with their absolute location. However, be tolerant and do the best effort (in case
++         // there are unexpected new use case...).
++-        OatFile::ResolveRelativeEncodedDexLocation(expected_info.classpath[k].c_str(),
++-                                                   info.classpath[k],
++-                                                   &dex_name);
++-        expected_dex_name = expected_info.classpath[k];
+++        dex_names_match =
+++            AbsolutePathHasRelativeSuffix(expected_info.classpath[k], info.classpath[k]);
++       } else {
++         // Both locations are relative. In this case there's not much we can be sure about
++         // except that the names are the same. The checksum will ensure that the files are
++         // are same. This should not happen outside testing and manual invocations.
++-        dex_name = info.classpath[k];
++-        expected_dex_name = expected_info.classpath[k];
+++        dex_names_match = (info.classpath[k] == expected_info.classpath[k]);
++       }
++ 
++       // Compare the locations.
++-      if (dex_name != expected_dex_name) {
+++      if (!dex_names_match) {
++         LOG(WARNING) << "ClassLoaderContext classpath element mismatch"
++             << ". expected=" << expected_info.classpath[k]
++             << ", found=" << info.classpath[k]
+diff --git a/runtime/class_loader_context_test.cc.rej b/runtime/class_loader_context_test.cc.rej
+new file mode 100644
+index 0000000000..8451b920cb
+--- /dev/null
++++ b/runtime/class_loader_context_test.cc.rej
+@@ -0,0 +1,22 @@
++--- runtime/class_loader_context_test.cc
+++++ runtime/class_loader_context_test.cc
++@@ -1402,7 +1402,18 @@ TEST_F(ClassLoaderContextTest, VerifyClassLoaderContextMatchAfterEncodingMultide
++ 
++   std::unique_ptr<ClassLoaderContext> context = CreateContextForClassLoader(class_loader);
++ 
++-  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context->EncodeContextForOatFile("")),
+++  std::string context_with_no_base_dir = context->EncodeContextForOatFile("");
+++  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context_with_no_base_dir),
+++            ClassLoaderContext::VerificationResult::kVerifies);
+++
+++  std::string dex_location = GetTestDexFileName("MultiDex");
+++  size_t pos = dex_location.rfind('/');
+++  ASSERT_NE(std::string::npos, pos);
+++  std::string parent = dex_location.substr(0, pos);
+++
+++  std::string context_with_base_dir = context->EncodeContextForOatFile(parent);
+++  ASSERT_NE(context_with_base_dir, context_with_no_base_dir);
+++  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context_with_base_dir),
++             ClassLoaderContext::VerificationResult::kVerifies);
++ }
++ 
 diff --git a/runtime/entrypoints/entrypoint_utils.cc b/runtime/entrypoints/entrypoint_utils.cc
 index ee2ab567b2..71196d4948 100644
 --- a/runtime/entrypoints/entrypoint_utils.cc
@@ -5608,7 +5616,7 @@ index 86a0a6e418..b6077aa88b 100644
        bytes = static_cast<size_t>(Top() - begin_);
      }
 diff --git a/runtime/gc/space/region_space.cc b/runtime/gc/space/region_space.cc
-index 4329a379fc..e5eb9983b1 100644
+index 823043ec75..b2c5a2f37d 100644
 --- a/runtime/gc/space/region_space.cc
 +++ b/runtime/gc/space/region_space.cc
 @@ -337,6 +337,10 @@ void RegionSpace::SetFromSpace(accounting::ReadBarrierTable* rb_table,
