@@ -54,6 +54,81 @@ index dffbf3b11d..e70366cc48 100644
    // Don't use NATIVE_METHOD because the name is mangled differently.
    { "emptyJniStaticMethod0_Critical", "()V",
          reinterpret_cast<void*>(NAME_CRITICAL_JNI_METHOD(emptyJniStaticMethod0_1Critical)) },
+diff --git a/benchmark/stringbuilder-append/info.txt b/benchmark/stringbuilder-append/info.txt
+new file mode 100644
+index 0000000000..ae588123d1
+--- /dev/null
++++ b/benchmark/stringbuilder-append/info.txt
+@@ -0,0 +1 @@
++Benchmarks for the StringBuilder append pattern.
+diff --git a/benchmark/stringbuilder-append/src/StringBuilderAppendBenchmark.java b/benchmark/stringbuilder-append/src/StringBuilderAppendBenchmark.java
+new file mode 100644
+index 0000000000..1550e81bf7
+--- /dev/null
++++ b/benchmark/stringbuilder-append/src/StringBuilderAppendBenchmark.java
+@@ -0,0 +1,62 @@
++/*
++ * Copyright (C) 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++public class StringBuilderAppendBenchmark {
++    public static String string1 = "s1";
++    public static String string2 = "s2";
++    public static String longString1 = "This is a long string 1";
++    public static String longString2 = "This is a long string 2";
++    public static int int1 = 42;
++
++    public void timeAppendStrings(int count) {
++        String s1 = string1;
++        String s2 = string2;
++        int sum = 0;
++        for (int i = 0; i < count; ++i) {
++            String result = s1 + s2;
++            sum += result.length();  // Make sure the append is not optimized away.
++        }
++        if (sum != count * (s1.length() + s2.length())) {
++            throw new AssertionError();
++        }
++    }
++
++    public void timeAppendLongStrings(int count) {
++        String s1 = longString1;
++        String s2 = longString2;
++        int sum = 0;
++        for (int i = 0; i < count; ++i) {
++            String result = s1 + s2;
++            sum += result.length();  // Make sure the append is not optimized away.
++        }
++        if (sum != count * (s1.length() + s2.length())) {
++            throw new AssertionError();
++        }
++    }
++
++    public void timeAppendStringAndInt(int count) {
++        String s1 = string1;
++        int i1 = int1;
++        int sum = 0;
++        for (int i = 0; i < count; ++i) {
++            String result = s1 + i1;
++            sum += result.length();  // Make sure the append is not optimized away.
++        }
++        if (sum != count * (s1.length() + Integer.toString(i1).length())) {
++            throw new AssertionError();
++        }
++    }
++}
 diff --git a/compiler/Android.bp b/compiler/Android.bp
 index 52bd89fb7d..18479953f8 100644
 --- a/compiler/Android.bp
@@ -2432,6 +2507,905 @@ index b33d0f488e..4c150dacea 100644
    LSEVisitor lse_visitor(graph_, heap_location_collector, side_effects_, stats_);
    for (HBasicBlock* block : graph_->GetReversePostOrder()) {
      lse_visitor.VisitBasicBlock(block);
+diff --git a/compiler/optimizing/load_store_elimination_test.cc b/compiler/optimizing/load_store_elimination_test.cc
+new file mode 100644
+index 0000000000..738037803e
+--- /dev/null
++++ b/compiler/optimizing/load_store_elimination_test.cc
+@@ -0,0 +1,893 @@
++/*
++ * Copyright (C) 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#include <tuple>
++
++#include "load_store_analysis.h"
++#include "load_store_elimination.h"
++#include "nodes.h"
++#include "optimizing_unit_test.h"
++#include "side_effects_analysis.h"
++
++#include "gtest/gtest.h"
++
++namespace art {
++
++class LoadStoreEliminationTest : public ImprovedOptimizingUnitTest {
++ public:
++  void PerformLSE() {
++    graph_->BuildDominatorTree();
++    SideEffectsAnalysis side_effects(graph_);
++    side_effects.Run();
++    LoadStoreAnalysis lsa(graph_);
++    lsa.Run();
++    LoadStoreElimination lse(graph_, side_effects, lsa, nullptr);
++    lse.Run();
++    EXPECT_TRUE(CheckGraphSkipRefTypeInfoChecks());
++  }
++
++  // Create instructions shared among tests.
++  void CreateEntryBlockInstructions() {
++    HInstruction* c1 = graph_->GetIntConstant(1);
++    HInstruction* c4 = graph_->GetIntConstant(4);
++    i_add1_ = new (GetAllocator()) HAdd(DataType::Type::kInt32, i_, c1);
++    i_add4_ = new (GetAllocator()) HAdd(DataType::Type::kInt32, i_, c4);
++    entry_block_->AddInstruction(i_add1_);
++    entry_block_->AddInstruction(i_add4_);
++    entry_block_->AddInstruction(new (GetAllocator()) HGoto());
++  }
++
++  // Create the major CFG used by tests:
++  //    entry
++  //      |
++  //  pre_header
++  //      |
++  //    loop[]
++  //      |
++  //   return
++  //      |
++  //     exit
++  void CreateTestControlFlowGraph() {
++    pre_header_ = new (GetAllocator()) HBasicBlock(graph_);
++    loop_ = new (GetAllocator()) HBasicBlock(graph_);
++
++    graph_->AddBlock(pre_header_);
++    graph_->AddBlock(loop_);
++
++    entry_block_->ReplaceSuccessor(return_block_, pre_header_);
++    pre_header_->AddSuccessor(loop_);
++    loop_->AddSuccessor(loop_);
++    loop_->AddSuccessor(return_block_);
++
++    HInstruction* c0 = graph_->GetIntConstant(0);
++    HInstruction* c1 = graph_->GetIntConstant(1);
++    HInstruction* c128 = graph_->GetIntConstant(128);
++
++    CreateEntryBlockInstructions();
++
++    // pre_header block
++    //   phi = 0;
++    phi_ = new (GetAllocator()) HPhi(GetAllocator(), 0, 0, DataType::Type::kInt32);
++    loop_->AddPhi(phi_);
++    pre_header_->AddInstruction(new (GetAllocator()) HGoto());
++    phi_->AddInput(c0);
++
++    // loop block:
++    //   suspend_check
++    //   phi++;
++    //   if (phi >= 128)
++    suspend_check_ = new (GetAllocator()) HSuspendCheck();
++    HInstruction* inc_phi = new (GetAllocator()) HAdd(DataType::Type::kInt32, phi_, c1);
++    HInstruction* cmp = new (GetAllocator()) HGreaterThanOrEqual(phi_, c128);
++    HInstruction* hif = new (GetAllocator()) HIf(cmp);
++    loop_->AddInstruction(suspend_check_);
++    loop_->AddInstruction(inc_phi);
++    loop_->AddInstruction(cmp);
++    loop_->AddInstruction(hif);
++    phi_->AddInput(inc_phi);
++
++    CreateEnvForSuspendCheck();
++  }
++
++  void CreateEnvForSuspendCheck() {
++    ArenaVector<HInstruction*> current_locals({array_, i_, j_},
++                                              GetAllocator()->Adapter(kArenaAllocInstruction));
++    ManuallyBuildEnvFor(suspend_check_, &current_locals);
++  }
++
++  // Create the diamond-shaped CFG:
++  //      upper
++  //      /   \
++  //    left  right
++  //      \   /
++  //      down
++  //
++  // Return: the basic blocks forming the CFG in the following order {upper, left, right, down}.
++  std::tuple<HBasicBlock*, HBasicBlock*, HBasicBlock*, HBasicBlock*> CreateDiamondShapedCFG() {
++    CreateEntryBlockInstructions();
++
++    HBasicBlock* upper = new (GetAllocator()) HBasicBlock(graph_);
++    HBasicBlock* left = new (GetAllocator()) HBasicBlock(graph_);
++    HBasicBlock* right = new (GetAllocator()) HBasicBlock(graph_);
++
++    graph_->AddBlock(upper);
++    graph_->AddBlock(left);
++    graph_->AddBlock(right);
++
++    entry_block_->ReplaceSuccessor(return_block_, upper);
++    upper->AddSuccessor(left);
++    upper->AddSuccessor(right);
++    left->AddSuccessor(return_block_);
++    right->AddSuccessor(return_block_);
++
++    HInstruction* cmp = new (GetAllocator()) HGreaterThanOrEqual(i_, j_);
++    HInstruction* hif = new (GetAllocator()) HIf(cmp);
++    upper->AddInstruction(cmp);
++    upper->AddInstruction(hif);
++
++    left->AddInstruction(new (GetAllocator()) HGoto());
++    right->AddInstruction(new (GetAllocator()) HGoto());
++
++    return std::make_tuple(upper, left, right, return_block_);
++  }
++
++  // Add a HVecLoad instruction to the end of the provided basic block.
++  //
++  // Return: the created HVecLoad instruction.
++  HInstruction* AddVecLoad(HBasicBlock* block, HInstruction* array, HInstruction* index) {
++    DCHECK(block != nullptr);
++    DCHECK(array != nullptr);
++    DCHECK(index != nullptr);
++    HInstruction* vload = new (GetAllocator()) HVecLoad(
++        GetAllocator(),
++        array,
++        index,
++        DataType::Type::kInt32,
++        SideEffects::ArrayReadOfType(DataType::Type::kInt32),
++        4,
++        /*is_string_char_at*/ false,
++        kNoDexPc);
++    block->InsertInstructionBefore(vload, block->GetLastInstruction());
++    return vload;
++  }
++
++  // Add a HVecStore instruction to the end of the provided basic block.
++  // If no vdata is specified, generate HVecStore: array[index] = [1,1,1,1].
++  //
++  // Return: the created HVecStore instruction.
++  HInstruction* AddVecStore(HBasicBlock* block,
++                            HInstruction* array,
++                            HInstruction* index,
++                            HInstruction* vdata = nullptr) {
++    DCHECK(block != nullptr);
++    DCHECK(array != nullptr);
++    DCHECK(index != nullptr);
++    if (vdata == nullptr) {
++      HInstruction* c1 = graph_->GetIntConstant(1);
++      vdata = new (GetAllocator()) HVecReplicateScalar(GetAllocator(),
++                                                       c1,
++                                                       DataType::Type::kInt32,
++                                                       4,
++                                                       kNoDexPc);
++      block->InsertInstructionBefore(vdata, block->GetLastInstruction());
++    }
++    HInstruction* vstore = new (GetAllocator()) HVecStore(
++        GetAllocator(),
++        array,
++        index,
++        vdata,
++        DataType::Type::kInt32,
++        SideEffects::ArrayWriteOfType(DataType::Type::kInt32),
++        4,
++        kNoDexPc);
++    block->InsertInstructionBefore(vstore, block->GetLastInstruction());
++    return vstore;
++  }
++
++  // Add a HArrayGet instruction to the end of the provided basic block.
++  //
++  // Return: the created HArrayGet instruction.
++  HInstruction* AddArrayGet(HBasicBlock* block, HInstruction* array, HInstruction* index) {
++    DCHECK(block != nullptr);
++    DCHECK(array != nullptr);
++    DCHECK(index != nullptr);
++    HInstruction* get = new (GetAllocator()) HArrayGet(array, index, DataType::Type::kInt32, 0);
++    block->InsertInstructionBefore(get, block->GetLastInstruction());
++    return get;
++  }
++
++  // Add a HArraySet instruction to the end of the provided basic block.
++  // If no data is specified, generate HArraySet: array[index] = 1.
++  //
++  // Return: the created HArraySet instruction.
++  HInstruction* AddArraySet(HBasicBlock* block,
++                            HInstruction* array,
++                            HInstruction* index,
++                            HInstruction* data = nullptr) {
++    DCHECK(block != nullptr);
++    DCHECK(array != nullptr);
++    DCHECK(index != nullptr);
++    if (data == nullptr) {
++      data = graph_->GetIntConstant(1);
++    }
++    HInstruction* store = new (GetAllocator()) HArraySet(array,
++                                                         index,
++                                                         data,
++                                                         DataType::Type::kInt32,
++                                                         0);
++    block->InsertInstructionBefore(store, block->GetLastInstruction());
++    return store;
++  }
++
++  void CreateParameters() override {
++    parameters_.push_back(new (GetAllocator()) HParameterValue(graph_->GetDexFile(),
++                                                               dex::TypeIndex(0),
++                                                               0,
++                                                               DataType::Type::kInt32));
++    array_ = parameters_.back();
++    parameters_.push_back(new (GetAllocator()) HParameterValue(graph_->GetDexFile(),
++                                                               dex::TypeIndex(1),
++                                                               1,
++                                                               DataType::Type::kInt32));
++    i_ = parameters_.back();
++    parameters_.push_back(new (GetAllocator()) HParameterValue(graph_->GetDexFile(),
++                                                               dex::TypeIndex(1),
++                                                               2,
++                                                               DataType::Type::kInt32));
++    j_ = parameters_.back();
++  }
++
++  HBasicBlock* pre_header_;
++  HBasicBlock* loop_;
++
++  HInstruction* array_;
++  HInstruction* i_;
++  HInstruction* j_;
++  HInstruction* i_add1_;
++  HInstruction* i_add4_;
++  HInstruction* suspend_check_;
++
++  HPhi* phi_;
++};
++
++TEST_F(LoadStoreEliminationTest, ArrayGetSetElimination) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c1 = graph_->GetIntConstant(1);
++  HInstruction* c2 = graph_->GetIntConstant(2);
++  HInstruction* c3 = graph_->GetIntConstant(3);
++
++  // array[1] = 1;
++  // x = array[1];  <--- Remove.
++  // y = array[2];
++  // array[1] = 1;  <--- Remove, since it stores same value.
++  // array[i] = 3;  <--- MAY alias.
++  // array[1] = 1;  <--- Cannot remove, even if it stores the same value.
++  AddArraySet(entry_block_, array_, c1, c1);
++  HInstruction* load1 = AddArrayGet(entry_block_, array_, c1);
++  HInstruction* load2 = AddArrayGet(entry_block_, array_, c2);
++  HInstruction* store1 = AddArraySet(entry_block_, array_, c1, c1);
++  AddArraySet(entry_block_, array_, i_, c3);
++  HInstruction* store2 = AddArraySet(entry_block_, array_, c1, c1);
++
++  PerformLSE();
++
++  ASSERT_TRUE(IsRemoved(load1));
++  ASSERT_FALSE(IsRemoved(load2));
++  ASSERT_TRUE(IsRemoved(store1));
++  ASSERT_FALSE(IsRemoved(store2));
++}
++
++TEST_F(LoadStoreEliminationTest, SameHeapValue1) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c1 = graph_->GetIntConstant(1);
++  HInstruction* c2 = graph_->GetIntConstant(2);
++
++  // Test LSE handling same value stores on array.
++  // array[1] = 1;
++  // array[2] = 1;
++  // array[1] = 1;  <--- Can remove.
++  // array[1] = 2;  <--- Can NOT remove.
++  AddArraySet(entry_block_, array_, c1, c1);
++  AddArraySet(entry_block_, array_, c2, c1);
++  HInstruction* store1 = AddArraySet(entry_block_, array_, c1, c1);
++  HInstruction* store2 = AddArraySet(entry_block_, array_, c1, c2);
++
++  PerformLSE();
++
++  ASSERT_TRUE(IsRemoved(store1));
++  ASSERT_FALSE(IsRemoved(store2));
++}
++
++TEST_F(LoadStoreEliminationTest, SameHeapValue2) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  // Test LSE handling same value stores on vector.
++  // vdata = [0x1, 0x2, 0x3, 0x4, ...]
++  // VecStore array[i...] = vdata;
++  // VecStore array[j...] = vdata;  <--- MAY ALIAS.
++  // VecStore array[i...] = vdata;  <--- Cannot Remove, even if it's same value.
++  AddVecStore(entry_block_, array_, i_);
++  AddVecStore(entry_block_, array_, j_);
++  HInstruction* vstore = AddVecStore(entry_block_, array_, i_);
++
++  PerformLSE();
++
++  ASSERT_FALSE(IsRemoved(vstore));
++}
++
++TEST_F(LoadStoreEliminationTest, SameHeapValue3) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  // VecStore array[i...] = vdata;
++  // VecStore array[i+1...] = vdata;  <--- MAY alias due to partial overlap.
++  // VecStore array[i...] = vdata;    <--- Cannot remove, even if it's same value.
++  AddVecStore(entry_block_, array_, i_);
++  AddVecStore(entry_block_, array_, i_add1_);
++  HInstruction* vstore = AddVecStore(entry_block_, array_, i_);
++
++  PerformLSE();
++
++  ASSERT_FALSE(IsRemoved(vstore));
++}
++
++TEST_F(LoadStoreEliminationTest, OverlappingLoadStore) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c1 = graph_->GetIntConstant(1);
++
++  // Test LSE handling array LSE when there is vector store in between.
++  // a[i] = 1;
++  // .. = a[i];                <-- Remove.
++  // a[i,i+1,i+2,i+3] = data;  <-- PARTIAL OVERLAP !
++  // .. = a[i];                <-- Cannot remove.
++  AddArraySet(entry_block_, array_, i_, c1);
++  HInstruction* load1 = AddArrayGet(entry_block_, array_, i_);
++  AddVecStore(entry_block_, array_, i_);
++  HInstruction* load2 = AddArrayGet(entry_block_, array_, i_);
++
++  // Test LSE handling vector load/store partial overlap.
++  // a[i,i+1,i+2,i+3] = data;
++  // a[i+4,i+5,i+6,i+7] = data;
++  // .. = a[i,i+1,i+2,i+3];
++  // .. = a[i+4,i+5,i+6,i+7];
++  // a[i+1,i+2,i+3,i+4] = data;  <-- PARTIAL OVERLAP !
++  // .. = a[i,i+1,i+2,i+3];
++  // .. = a[i+4,i+5,i+6,i+7];
++  AddVecStore(entry_block_, array_, i_);
++  AddVecStore(entry_block_, array_, i_add4_);
++  HInstruction* vload1 = AddVecLoad(entry_block_, array_, i_);
++  HInstruction* vload2 = AddVecLoad(entry_block_, array_, i_add4_);
++  AddVecStore(entry_block_, array_, i_add1_);
++  HInstruction* vload3 = AddVecLoad(entry_block_, array_, i_);
++  HInstruction* vload4 = AddVecLoad(entry_block_, array_, i_add4_);
++
++  // Test LSE handling vector LSE when there is array store in between.
++  // a[i,i+1,i+2,i+3] = data;
++  // a[i+1] = 1;                 <-- PARTIAL OVERLAP !
++  // .. = a[i,i+1,i+2,i+3];
++  AddVecStore(entry_block_, array_, i_);
++  AddArraySet(entry_block_, array_, i_, c1);
++  HInstruction* vload5 = AddVecLoad(entry_block_, array_, i_);
++
++  PerformLSE();
++
++  ASSERT_TRUE(IsRemoved(load1));
++  ASSERT_FALSE(IsRemoved(load2));
++
++  ASSERT_TRUE(IsRemoved(vload1));
++  ASSERT_TRUE(IsRemoved(vload2));
++  ASSERT_FALSE(IsRemoved(vload3));
++  ASSERT_FALSE(IsRemoved(vload4));
++
++  ASSERT_FALSE(IsRemoved(vload5));
++}
++// function (int[] a, int j) {
++// a[j] = 1;
++// for (int i=0; i<128; i++) {
++//    /* doesn't do any write */
++// }
++// a[j] = 1;
++TEST_F(LoadStoreEliminationTest, StoreAfterLoopWithoutSideEffects) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c1 = graph_->GetIntConstant(1);
++
++  // a[j] = 1
++  AddArraySet(pre_header_, array_, j_, c1);
++
++  // LOOP BODY:
++  // .. = a[i,i+1,i+2,i+3];
++  AddVecLoad(loop_, array_, phi_);
++
++  // a[j] = 1;
++  HInstruction* array_set = AddArraySet(return_block_, array_, j_, c1);
++
++  PerformLSE();
++
++  ASSERT_TRUE(IsRemoved(array_set));
++}
++
++// function (int[] a, int j) {
++//   int[] b = new int[128];
++//   a[j] = 0;
++//   for (int phi=0; phi<128; phi++) {
++//     a[phi,phi+1,phi+2,phi+3] = [1,1,1,1];
++//     b[phi,phi+1,phi+2,phi+3] = a[phi,phi+1,phi+2,phi+3];
++//   }
++//   a[j] = 0;
++// }
++TEST_F(LoadStoreEliminationTest, StoreAfterSIMDLoopWithSideEffects) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  HInstruction* array_b = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_b, pre_header_->GetLastInstruction());
++  array_b->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  // a[j] = 0;
++  AddArraySet(pre_header_, array_, j_, c0);
++
++  // LOOP BODY:
++  // a[phi,phi+1,phi+2,phi+3] = [1,1,1,1];
++  // b[phi,phi+1,phi+2,phi+3] = a[phi,phi+1,phi+2,phi+3];
++  AddVecStore(loop_, array_, phi_);
++  HInstruction* vload = AddVecLoad(loop_, array_, phi_);
++  AddVecStore(loop_, array_b, phi_, vload->AsVecLoad());
++
++  // a[j] = 0;
++  HInstruction* a_set = AddArraySet(return_block_, array_, j_, c0);
++
++  PerformLSE();
++
++  ASSERT_TRUE(IsRemoved(vload));
++  ASSERT_FALSE(IsRemoved(a_set));  // Cannot remove due to write side-effect in the loop.
++}
++
++// function (int[] a, int j) {
++//   int[] b = new int[128];
++//   a[j] = 0;
++//   for (int phi=0; phi<128; phi++) {
++//     a[phi,phi+1,phi+2,phi+3] = [1,1,1,1];
++//     b[phi,phi+1,phi+2,phi+3] = a[phi,phi+1,phi+2,phi+3];
++//   }
++//   x = a[j];
++// }
++TEST_F(LoadStoreEliminationTest, LoadAfterSIMDLoopWithSideEffects) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  HInstruction* array_b = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_b, pre_header_->GetLastInstruction());
++  array_b->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  // a[j] = 0;
++  AddArraySet(pre_header_, array_, j_, c0);
++
++  // LOOP BODY:
++  // a[phi,phi+1,phi+2,phi+3] = [1,1,1,1];
++  // b[phi,phi+1,phi+2,phi+3] = a[phi,phi+1,phi+2,phi+3];
++  AddVecStore(loop_, array_, phi_);
++  HInstruction* vload = AddVecLoad(loop_, array_, phi_);
++  AddVecStore(loop_, array_b, phi_, vload->AsVecLoad());
++
++  // x = a[j];
++  HInstruction* load = AddArrayGet(return_block_, array_, j_);
++
++  PerformLSE();
++
++  ASSERT_TRUE(IsRemoved(vload));
++  ASSERT_FALSE(IsRemoved(load));  // Cannot remove due to write side-effect in the loop.
++}
++
++// Check that merging works correctly when there are VecStors in predecessors.
++//
++//                  vstore1: a[i,... i + 3] = [1,...1]
++//                       /          \
++//                      /            \
++// vstore2: a[i,... i + 3] = [1,...1]  vstore3: a[i+1, ... i + 4] = [1, ... 1]
++//                     \              /
++//                      \            /
++//                  vstore4: a[i,... i + 3] = [1,...1]
++//
++// Expected:
++//   'vstore2' is removed.
++//   'vstore3' is not removed.
++//   'vstore4' is not removed. Such cases are not supported at the moment.
++TEST_F(LoadStoreEliminationTest, MergePredecessorVecStores) {
++  InitGraph();
++
++  HBasicBlock* upper;
++  HBasicBlock* left;
++  HBasicBlock* right;
++  HBasicBlock* down;
++  std::tie(upper, left, right, down) = CreateDiamondShapedCFG();
++
++  // upper: a[i,... i + 3] = [1,...1]
++  HInstruction* vstore1 = AddVecStore(upper, array_, i_);
++  HInstruction* vdata = vstore1->InputAt(2);
++
++  // left: a[i,... i + 3] = [1,...1]
++  HInstruction* vstore2 = AddVecStore(left, array_, i_, vdata);
++
++  // right: a[i+1, ... i + 4] = [1, ... 1]
++  HInstruction* vstore3 = AddVecStore(right, array_, i_add1_, vdata);
++
++  // down: a[i,... i + 3] = [1,...1]
++  HInstruction* vstore4 = AddVecStore(down, array_, i_, vdata);
++
++  PerformLSE();
++
++  ASSERT_TRUE(IsRemoved(vstore2));
++  ASSERT_FALSE(IsRemoved(vstore3));
++  ASSERT_FALSE(IsRemoved(vstore4));
++}
++
++// Check that merging works correctly when there are ArraySets in predecessors.
++//
++//          a[i] = 1
++//        /          \
++//       /            \
++// store1: a[i] = 1  store2: a[i+1] = 1
++//       \            /
++//        \          /
++//          store3: a[i] = 1
++//
++// Expected:
++//   'store1' is removed.
++//   'store2' is not removed.
++//   'store3' is removed.
++TEST_F(LoadStoreEliminationTest, MergePredecessorStores) {
++  InitGraph();
++
++  HBasicBlock* upper;
++  HBasicBlock* left;
++  HBasicBlock* right;
++  HBasicBlock* down;
++  std::tie(upper, left, right, down) = CreateDiamondShapedCFG();
++
++  // upper: a[i,... i + 3] = [1,...1]
++  AddArraySet(upper, array_, i_);
++
++  // left: a[i,... i + 3] = [1,...1]
++  HInstruction* store1 = AddArraySet(left, array_, i_);
++
++  // right: a[i+1, ... i + 4] = [1, ... 1]
++  HInstruction* store2 = AddArraySet(right, array_, i_add1_);
++
++  // down: a[i,... i + 3] = [1,...1]
++  HInstruction* store3 = AddArraySet(down, array_, i_);
++
++  PerformLSE();
++
++  ASSERT_TRUE(IsRemoved(store1));
++  ASSERT_FALSE(IsRemoved(store2));
++  ASSERT_TRUE(IsRemoved(store3));
++}
++
++// Check that redundant VStore/VLoad are removed from a SIMD loop.
++//
++//  LOOP BODY
++//     vstore1: a[i,... i + 3] = [1,...1]
++//     vload:   x = a[i,... i + 3]
++//     vstore2: b[i,... i + 3] = x
++//     vstore3: a[i,... i + 3] = [1,...1]
++//
++// Expected:
++//   'vstore1' is not removed.
++//   'vload' is removed.
++//   'vstore3' is removed.
++TEST_F(LoadStoreEliminationTest, RedundantVStoreVLoadInLoop) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
++  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  HInstruction* array_b = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_b, pre_header_->GetLastInstruction());
++  array_b->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  // LOOP BODY:
++  //    a[i,... i + 3] = [1,...1]
++  //    x = a[i,... i + 3]
++  //    b[i,... i + 3] = x
++  //    a[i,... i + 3] = [1,...1]
++  HInstruction* vstore1 = AddVecStore(loop_, array_a, phi_);
++  HInstruction* vload = AddVecLoad(loop_, array_a, phi_);
++  AddVecStore(loop_, array_b, phi_, vload->AsVecLoad());
++  HInstruction* vstore3 = AddVecStore(loop_, array_a, phi_, vstore1->InputAt(2));
++
++  PerformLSE();
++
++  ASSERT_FALSE(IsRemoved(vstore1));
++  ASSERT_TRUE(IsRemoved(vload));
++  ASSERT_TRUE(IsRemoved(vstore3));
++}
++
++// Loop write side effects invalidate all stores.
++// This causes stores after such loops not to be removed, even
++// their values are known.
++TEST_F(LoadStoreEliminationTest, StoreAfterLoopWithSideEffects) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c2 = graph_->GetIntConstant(2);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  // array[0] = 2;
++  // loop:
++  //   b[i] = array[i]
++  // array[0] = 2
++  AddArraySet(entry_block_, array_, c0, c2);
++
++  HInstruction* array_b = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_b, pre_header_->GetLastInstruction());
++  array_b->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  HInstruction* load = AddArrayGet(loop_, array_, phi_);
++  AddArraySet(loop_, array_b, phi_, load);
++
++  HInstruction* store = AddArraySet(return_block_, array_, c0, c2);
++
++  PerformLSE();
++
++  ASSERT_FALSE(IsRemoved(store));
++}
++
++// As it is not allowed to use defaults for VecLoads, check if there is a new created array
++// a VecLoad used in a loop and after it is not replaced with a default.
++TEST_F(LoadStoreEliminationTest, VLoadDefaultValueInLoopWithoutWriteSideEffects) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
++  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  // LOOP BODY:
++  //    v = a[i,... i + 3]
++  // array[0,... 3] = v
++  HInstruction* vload = AddVecLoad(loop_, array_a, phi_);
++  HInstruction* vstore = AddVecStore(return_block_, array_, c0, vload->AsVecLoad());
++
++  PerformLSE();
++
++  ASSERT_FALSE(IsRemoved(vload));
++  ASSERT_FALSE(IsRemoved(vstore));
++}
++
++// As it is not allowed to use defaults for VecLoads, check if there is a new created array
++// a VecLoad is not replaced with a default.
++TEST_F(LoadStoreEliminationTest, VLoadDefaultValue) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
++  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  // v = a[0,... 3]
++  // array[0,... 3] = v
++  HInstruction* vload = AddVecLoad(pre_header_, array_a, c0);
++  HInstruction* vstore = AddVecStore(return_block_, array_, c0, vload->AsVecLoad());
++
++  PerformLSE();
++
++  ASSERT_FALSE(IsRemoved(vload));
++  ASSERT_FALSE(IsRemoved(vstore));
++}
++
++// As it is allowed to use defaults for ordinary loads, check if there is a new created array
++// a load used in a loop and after it is replaced with a default.
++TEST_F(LoadStoreEliminationTest, LoadDefaultValueInLoopWithoutWriteSideEffects) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
++  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  // LOOP BODY:
++  //    v = a[i]
++  // array[0] = v
++  HInstruction* load = AddArrayGet(loop_, array_a, phi_);
++  HInstruction* store = AddArraySet(return_block_, array_, c0, load);
++
++  PerformLSE();
++
++  ASSERT_TRUE(IsRemoved(load));
++  ASSERT_FALSE(IsRemoved(store));
++}
++
++// As it is allowed to use defaults for ordinary loads, check if there is a new created array
++// a load is replaced with a default.
++TEST_F(LoadStoreEliminationTest, LoadDefaultValue) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
++  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  // v = a[0]
++  // array[0] = v
++  HInstruction* load = AddArrayGet(pre_header_, array_a, c0);
++  HInstruction* store = AddArraySet(return_block_, array_, c0, load);
++
++  PerformLSE();
++
++  ASSERT_TRUE(IsRemoved(load));
++  ASSERT_FALSE(IsRemoved(store));
++}
++
++// As it is not allowed to use defaults for VecLoads but allowed for regular loads,
++// check if there is a new created array, a VecLoad and a load used in a loop and after it,
++// VecLoad is not replaced with a default but the load is.
++TEST_F(LoadStoreEliminationTest, VLoadAndLoadDefaultValueInLoopWithoutWriteSideEffects) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
++  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  // LOOP BODY:
++  //    v = a[i,... i + 3]
++  //    v1 = a[i]
++  // array[0,... 3] = v
++  // array[0] = v1
++  HInstruction* vload = AddVecLoad(loop_, array_a, phi_);
++  HInstruction* load = AddArrayGet(loop_, array_a, phi_);
++  HInstruction* vstore = AddVecStore(return_block_, array_, c0, vload->AsVecLoad());
++  HInstruction* store = AddArraySet(return_block_, array_, c0, load);
++
++  PerformLSE();
++
++  ASSERT_FALSE(IsRemoved(vload));
++  ASSERT_TRUE(IsRemoved(load));
++  ASSERT_FALSE(IsRemoved(vstore));
++  ASSERT_FALSE(IsRemoved(store));
++}
++
++// As it is not allowed to use defaults for VecLoads but allowed for regular loads,
++// check if there is a new created array, a VecLoad and a load,
++// VecLoad is not replaced with a default but the load is.
++TEST_F(LoadStoreEliminationTest, VLoadAndLoadDefaultValue) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
++  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  // v = a[0,... 3]
++  // v1 = a[0]
++  // array[0,... 3] = v
++  // array[0] = v1
++  HInstruction* vload = AddVecLoad(pre_header_, array_a, c0);
++  HInstruction* load = AddArrayGet(pre_header_, array_a, c0);
++  HInstruction* vstore = AddVecStore(return_block_, array_, c0, vload->AsVecLoad());
++  HInstruction* store = AddArraySet(return_block_, array_, c0, load);
++
++  PerformLSE();
++
++  ASSERT_FALSE(IsRemoved(vload));
++  ASSERT_TRUE(IsRemoved(load));
++  ASSERT_FALSE(IsRemoved(vstore));
++  ASSERT_FALSE(IsRemoved(store));
++}
++
++// It is not allowed to use defaults for VecLoads. However it should not prevent from removing
++// loads getting the same value.
++// Check a load getting a known value is eliminated (a loop test case).
++TEST_F(LoadStoreEliminationTest, VLoadDefaultValueAndVLoadInLoopWithoutWriteSideEffects) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
++  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  // LOOP BODY:
++  //    v = a[i,... i + 3]
++  //    v1 = a[i,... i + 3]
++  // array[0,... 3] = v
++  // array[128,... 131] = v1
++  HInstruction* vload1 = AddVecLoad(loop_, array_a, phi_);
++  HInstruction* vload2 = AddVecLoad(loop_, array_a, phi_);
++  HInstruction* vstore1 = AddVecStore(return_block_, array_, c0, vload1->AsVecLoad());
++  HInstruction* vstore2 = AddVecStore(return_block_, array_, c128, vload2->AsVecLoad());
++
++  PerformLSE();
++
++  ASSERT_FALSE(IsRemoved(vload1));
++  ASSERT_TRUE(IsRemoved(vload2));
++  ASSERT_FALSE(IsRemoved(vstore1));
++  ASSERT_FALSE(IsRemoved(vstore2));
++}
++
++// It is not allowed to use defaults for VecLoads. However it should not prevent from removing
++// loads getting the same value.
++// Check a load getting a known value is eliminated.
++TEST_F(LoadStoreEliminationTest, VLoadDefaultValueAndVLoad) {
++  InitGraph();
++  CreateTestControlFlowGraph();
++
++  HInstruction* c0 = graph_->GetIntConstant(0);
++  HInstruction* c128 = graph_->GetIntConstant(128);
++
++  HInstruction* array_a = new (GetAllocator()) HNewArray(c0, c128, 0, 0);
++  pre_header_->InsertInstructionBefore(array_a, pre_header_->GetLastInstruction());
++  array_a->CopyEnvironmentFrom(suspend_check_->GetEnvironment());
++
++  // v = a[0,... 3]
++  // v1 = a[0,... 3]
++  // array[0,... 3] = v
++  // array[128,... 131] = v1
++  HInstruction* vload1 = AddVecLoad(pre_header_, array_a, c0);
++  HInstruction* vload2 = AddVecLoad(pre_header_, array_a, c0);
++  HInstruction* vstore1 = AddVecStore(return_block_, array_, c0, vload1->AsVecLoad());
++  HInstruction* vstore2 = AddVecStore(return_block_, array_, c128, vload2->AsVecLoad());
++
++  PerformLSE();
++
++  ASSERT_FALSE(IsRemoved(vload1));
++  ASSERT_TRUE(IsRemoved(vload2));
++  ASSERT_FALSE(IsRemoved(vstore1));
++  ASSERT_FALSE(IsRemoved(vstore2));
++}
++
++}  // namespace art
 diff --git a/compiler/optimizing/nodes.h b/compiler/optimizing/nodes.h
 index fedad0c69a..cb53ae3ada 100644
 --- a/compiler/optimizing/nodes.h
@@ -4311,6 +5285,103 @@ index 39bf6e8d6c..1177477b9e 100644
  // Create a function `name` calling the ReadBarrier::Mark routine,
  // getting its argument and returning its result through register
  // `reg`, saving and restoring all caller-save registers.
+diff --git a/runtime/class_loader_context.cc b/runtime/class_loader_context.cc
+index 34fd146527..925f25ea2b 100644
+--- a/runtime/class_loader_context.cc
++++ b/runtime/class_loader_context.cc
+@@ -1163,6 +1163,18 @@ ClassLoaderContext::VerificationResult ClassLoaderContext::VerifyClassLoaderCont
+   return VerificationResult::kVerifies;
+ }
+ 
++// Returns true if absolute `path` ends with relative `suffix` starting at
++// a directory name boundary, i.e. after a '/'. For example, "foo/bar"
++// is a valid suffix of "/data/foo/bar" but not "/data-foo/bar".
++static inline bool AbsolutePathHasRelativeSuffix(const std::string& path,
++                                                 const std::string& suffix) {
++  DCHECK(IsAbsoluteLocation(path));
++  DCHECK(!IsAbsoluteLocation(suffix));
++  return (path.size() > suffix.size()) &&
++         (path[path.size() - suffix.size() - 1u] == '/') &&
++         (std::string_view(path).substr(/*pos*/ path.size() - suffix.size()) == suffix);
++}
++
+ bool ClassLoaderContext::ClassLoaderInfoMatch(
+     const ClassLoaderInfo& info,
+     const ClassLoaderInfo& expected_info,
+@@ -1197,40 +1209,34 @@ bool ClassLoaderContext::ClassLoaderInfoMatch(
+       // and the other as an absolute one.
+       bool is_dex_name_absolute = IsAbsoluteLocation(info.classpath[k]);
+       bool is_expected_dex_name_absolute = IsAbsoluteLocation(expected_info.classpath[k]);
+-      std::string dex_name;
+-      std::string expected_dex_name;
++      bool dex_names_match = false;
++
+ 
+       if (is_dex_name_absolute == is_expected_dex_name_absolute) {
+         // If both locations are absolute or relative then compare them as they are.
+         // This is usually the case for: shared libraries and secondary dex files.
+-        dex_name = info.classpath[k];
+-        expected_dex_name = expected_info.classpath[k];
++        dex_names_match = (info.classpath[k] == expected_info.classpath[k]);
+       } else if (is_dex_name_absolute) {
+         // The runtime name is absolute but the compiled name (the expected one) is relative.
+         // This is the case for split apks which depend on base or on other splits.
+-        dex_name = info.classpath[k];
+-        OatFile::ResolveRelativeEncodedDexLocation(info.classpath[k].c_str(),
+-                                                   expected_info.classpath[k],
+-                                                   &expected_dex_name);
++        dex_names_match =
++            AbsolutePathHasRelativeSuffix(info.classpath[k], expected_info.classpath[k]);
+       } else if (is_expected_dex_name_absolute) {
+         // The runtime name is relative but the compiled name is absolute.
+         // There is no expected use case that would end up here as dex files are always loaded
+         // with their absolute location. However, be tolerant and do the best effort (in case
+         // there are unexpected new use case...).
+-        OatFile::ResolveRelativeEncodedDexLocation(expected_info.classpath[k].c_str(),
+-                                                   info.classpath[k],
+-                                                   &dex_name);
+-        expected_dex_name = expected_info.classpath[k];
++        dex_names_match =
++            AbsolutePathHasRelativeSuffix(expected_info.classpath[k], info.classpath[k]);
+       } else {
+         // Both locations are relative. In this case there's not much we can be sure about
+         // except that the names are the same. The checksum will ensure that the files are
+         // are same. This should not happen outside testing and manual invocations.
+-        dex_name = info.classpath[k];
+-        expected_dex_name = expected_info.classpath[k];
++        dex_names_match = (info.classpath[k] == expected_info.classpath[k]);
+       }
+ 
+       // Compare the locations.
+-      if (dex_name != expected_dex_name) {
++      if (!dex_names_match) {
+         LOG(WARNING) << "ClassLoaderContext classpath element mismatch"
+             << ". expected=" << expected_info.classpath[k]
+             << ", found=" << info.classpath[k]
+diff --git a/runtime/class_loader_context_test.cc b/runtime/class_loader_context_test.cc
+index 0c36fd42c2..008327834b 100644
+--- a/runtime/class_loader_context_test.cc
++++ b/runtime/class_loader_context_test.cc
+@@ -1402,7 +1402,18 @@ TEST_F(ClassLoaderContextTest, VerifyClassLoaderContextMatchAfterEncodingMultide
+ 
+   std::unique_ptr<ClassLoaderContext> context = CreateContextForClassLoader(class_loader);
+ 
+-  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context->EncodeContextForOatFile("")),
++  std::string context_with_no_base_dir = context->EncodeContextForOatFile("");
++  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context_with_no_base_dir),
++            ClassLoaderContext::VerificationResult::kVerifies);
++
++  std::string dex_location = GetTestDexFileName("MultiDex");
++  size_t pos = dex_location.rfind('/');
++  ASSERT_NE(std::string::npos, pos);
++  std::string parent = dex_location.substr(0, pos);
++
++  std::string context_with_base_dir = context->EncodeContextForOatFile(parent);
++  ASSERT_NE(context_with_base_dir, context_with_no_base_dir);
++  ASSERT_EQ(context->VerifyClassLoaderContextMatch(context_with_base_dir),
+             ClassLoaderContext::VerificationResult::kVerifies);
+ }
+ 
 diff --git a/runtime/entrypoints/entrypoint_utils.cc b/runtime/entrypoints/entrypoint_utils.cc
 index ee2ab567b2..71196d4948 100644
 --- a/runtime/entrypoints/entrypoint_utils.cc
@@ -4389,6 +5460,42 @@ index 42b680e05a..21e248c554 100644
  \
    V(ReadBarrierJni, void, mirror::CompressedReference<mirror::Object>*, Thread*) \
    V(ReadBarrierMarkReg00, mirror::Object*, mirror::Object*) \
+diff --git a/runtime/entrypoints/quick/quick_string_builder_append_entrypoints.cc b/runtime/entrypoints/quick/quick_string_builder_append_entrypoints.cc
+new file mode 100644
+index 0000000000..9afaf439dc
+--- /dev/null
++++ b/runtime/entrypoints/quick/quick_string_builder_append_entrypoints.cc
+@@ -0,0 +1,30 @@
++/*
++ * Copyright (C) 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#include "quick_entrypoints.h"
++
++#include "string_builder_append.h"
++#include "obj_ptr-inl.h"
++
++namespace art {
++
++extern "C" mirror::String* artStringBuilderAppend(uint32_t format,
++                                                  const uint32_t* args,
++                                                  Thread* self) {
++  return StringBuilderAppend::AppendF(format, args, self).Ptr();
++}
++
++}  // namespace art
 diff --git a/runtime/entrypoints/runtime_asm_entrypoints.h b/runtime/entrypoints/runtime_asm_entrypoints.h
 index fa287cb0ad..3f4e91ed91 100644
 --- a/runtime/entrypoints/runtime_asm_entrypoints.h
@@ -4501,7 +5608,7 @@ index 86a0a6e418..b6077aa88b 100644
        bytes = static_cast<size_t>(Top() - begin_);
      }
 diff --git a/runtime/gc/space/region_space.cc b/runtime/gc/space/region_space.cc
-index 823043ec75..b2c5a2f37d 100644
+index 4329a379fc..e5eb9983b1 100644
 --- a/runtime/gc/space/region_space.cc
 +++ b/runtime/gc/space/region_space.cc
 @@ -337,6 +337,10 @@ void RegionSpace::SetFromSpace(accounting::ReadBarrierTable* rb_table,
@@ -5471,6 +6578,449 @@ index 87133cf59c..a9714674de 100644
  };
  
  #undef ELEMENT_BYTE_OFFSET_AFTER
+diff --git a/runtime/string_builder_append.cc b/runtime/string_builder_append.cc
+new file mode 100644
+index 0000000000..5a34e9368a
+--- /dev/null
++++ b/runtime/string_builder_append.cc
+@@ -0,0 +1,364 @@
++/*
++ * Copyright (C) 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#include "string_builder_append.h"
++
++#include "base/casts.h"
++#include "base/logging.h"
++#include "common_throws.h"
++#include "gc/heap.h"
++#include "mirror/string-alloc-inl.h"
++#include "obj_ptr-inl.h"
++#include "runtime.h"
++
++namespace art {
++
++class StringBuilderAppend::Builder {
++ public:
++  Builder(uint32_t format, const uint32_t* args, Thread* self)
++      : format_(format),
++        args_(args),
++        hs_(self) {}
++
++  int32_t CalculateLengthWithFlag() REQUIRES_SHARED(Locks::mutator_lock_);
++
++  void operator()(ObjPtr<mirror::Object> obj, size_t usable_size) const
++      REQUIRES_SHARED(Locks::mutator_lock_);
++
++ private:
++  static size_t Uint64Length(uint64_t value);
++
++  static size_t Int64Length(int64_t value) {
++    uint64_t v = static_cast<uint64_t>(value);
++    return (value >= 0) ? Uint64Length(v) : 1u + Uint64Length(-v);
++  }
++
++  static size_t RemainingSpace(ObjPtr<mirror::String> new_string, const uint8_t* data)
++      REQUIRES_SHARED(Locks::mutator_lock_) {
++    DCHECK(new_string->IsCompressed());
++    DCHECK_GE(new_string->GetLength(), data - new_string->GetValueCompressed());
++    return new_string->GetLength() - (data - new_string->GetValueCompressed());
++  }
++
++  static size_t RemainingSpace(ObjPtr<mirror::String> new_string, const uint16_t* data)
++      REQUIRES_SHARED(Locks::mutator_lock_) {
++    DCHECK(!new_string->IsCompressed());
++    DCHECK_GE(new_string->GetLength(), data - new_string->GetValue());
++    return new_string->GetLength() - (data - new_string->GetValue());
++  }
++
++  template <typename CharType, size_t size>
++  static CharType* AppendLiteral(ObjPtr<mirror::String> new_string,
++                                 CharType* data,
++                                 const char (&literal)[size]) REQUIRES_SHARED(Locks::mutator_lock_);
++
++  template <typename CharType>
++  static CharType* AppendString(ObjPtr<mirror::String> new_string,
++                                CharType* data,
++                                ObjPtr<mirror::String> str) REQUIRES_SHARED(Locks::mutator_lock_);
++
++  template <typename CharType>
++  static CharType* AppendInt64(ObjPtr<mirror::String> new_string,
++                               CharType* data,
++                               int64_t value) REQUIRES_SHARED(Locks::mutator_lock_);
++
++  template <typename CharType>
++  void StoreData(ObjPtr<mirror::String> new_string, CharType* data) const
++      REQUIRES_SHARED(Locks::mutator_lock_);
++
++  static constexpr char kNull[] = "null";
++  static constexpr size_t kNullLength = sizeof(kNull) - 1u;
++  static constexpr char kTrue[] = "true";
++  static constexpr size_t kTrueLength = sizeof(kTrue) - 1u;
++  static constexpr char kFalse[] = "false";
++  static constexpr size_t kFalseLength = sizeof(kFalse) - 1u;
++
++  // The format and arguments to append.
++  const uint32_t format_;
++  const uint32_t* const args_;
++
++  // References are moved to the handle scope during CalculateLengthWithFlag().
++  StackHandleScope<kMaxArgs> hs_;
++
++  // The length and flag to store when the AppendBuilder is used as a pre-fence visitor.
++  int32_t length_with_flag_ = 0u;
++};
++
++inline size_t StringBuilderAppend::Builder::Uint64Length(uint64_t value)  {
++  if (value == 0u) {
++    return 1u;
++  }
++  // Calculate floor(log2(value)).
++  size_t log2_value = BitSizeOf<uint64_t>() - 1u - CLZ(value);
++  // Calculate an estimate of floor(log10(value)).
++  //   log10(2) = 0.301029996 > 0.296875 = 19/64
++  //   floor(log10(v)) == floor(log2(v) * log10(2))
++  //                   >= floor(log2(v) * 19/64)
++  //                   >= floor(floor(log2(v)) * 19/64)
++  // This estimate is no more that one off from the actual value because log2(value) < 64 and thus
++  //   log2(v) * log10(2) - log2(v) * 19/64 < 64*(log10(2) - 19/64)
++  // for the first approximation and
++  //   log2(v) * 19/64 - floor(log2(v)) * 19/64 < 19/64
++  // for the second one. Together,
++  //   64*(log10(2) - 19/64) + 19/64 = 0.56278 < 1 .
++  size_t log10_value_estimate = log2_value * 19u / 64u;
++  static constexpr uint64_t bounds[] = {
++      UINT64_C(9),
++      UINT64_C(99),
++      UINT64_C(999),
++      UINT64_C(9999),
++      UINT64_C(99999),
++      UINT64_C(999999),
++      UINT64_C(9999999),
++      UINT64_C(99999999),
++      UINT64_C(999999999),
++      UINT64_C(9999999999),
++      UINT64_C(99999999999),
++      UINT64_C(999999999999),
++      UINT64_C(9999999999999),
++      UINT64_C(99999999999999),
++      UINT64_C(999999999999999),
++      UINT64_C(9999999999999999),
++      UINT64_C(99999999999999999),
++      UINT64_C(999999999999999999),
++      UINT64_C(9999999999999999999),
++  };
++  // Add 1 for the lowest digit, add another 1 if the estimate was too low.
++  DCHECK_LT(log10_value_estimate, std::size(bounds));
++  size_t adjustment = (value > bounds[log10_value_estimate]) ? 2u : 1u;
++  return log10_value_estimate + adjustment;
++}
++
++template <typename CharType, size_t size>
++inline CharType* StringBuilderAppend::Builder::AppendLiteral(ObjPtr<mirror::String> new_string,
++                                                             CharType* data,
++                                                             const char (&literal)[size]) {
++  static_assert(size >= 2, "We need something to append.");
++
++  // Literals are zero-terminated.
++  constexpr size_t length = size - 1u;
++  DCHECK_EQ(literal[length], '\0');
++
++  DCHECK_LE(length, RemainingSpace(new_string, data));
++  for (size_t i = 0; i != length; ++i) {
++    data[i] = literal[i];
++  }
++  return data + length;
++}
++
++template <typename CharType>
++inline CharType* StringBuilderAppend::Builder::AppendString(ObjPtr<mirror::String> new_string,
++                                                            CharType* data,
++                                                            ObjPtr<mirror::String> str) {
++  size_t length = dchecked_integral_cast<size_t>(str->GetLength());
++  DCHECK_LE(length, RemainingSpace(new_string, data));
++  if (sizeof(CharType) == sizeof(uint8_t) || str->IsCompressed()) {
++    DCHECK(str->IsCompressed());
++    const uint8_t* value = str->GetValueCompressed();
++    for (size_t i = 0; i != length; ++i) {
++      data[i] = value[i];
++    }
++  } else {
++    const uint16_t* value = str->GetValue();
++    for (size_t i = 0; i != length; ++i) {
++      data[i] = dchecked_integral_cast<CharType>(value[i]);
++    }
++  }
++  return data + length;
++}
++
++template <typename CharType>
++inline CharType* StringBuilderAppend::Builder::AppendInt64(ObjPtr<mirror::String> new_string,
++                                                           CharType* data,
++                                                           int64_t value) {
++  DCHECK_GE(RemainingSpace(new_string, data), Int64Length(value));
++  uint64_t v = static_cast<uint64_t>(value);
++  if (value < 0) {
++    *data = '-';
++    ++data;
++    v = -v;
++  }
++  size_t length = Uint64Length(v);
++  // Write the digits from the end, do not write the most significant digit
++  // in the loop to avoid an unnecessary division.
++  for (size_t i = 1; i != length; ++i) {
++    uint64_t digit = v % UINT64_C(10);
++    v /= UINT64_C(10);
++    data[length - i] = '0' + static_cast<char>(digit);
++  }
++  DCHECK_LE(v, 10u);
++  *data = '0' + static_cast<char>(v);
++  return data + length;
++}
++
++inline int32_t StringBuilderAppend::Builder::CalculateLengthWithFlag() {
++  static_assert(static_cast<size_t>(Argument::kEnd) == 0u, "kEnd must be 0.");
++  bool compressible = mirror::kUseStringCompression;
++  uint64_t length = 0u;
++  const uint32_t* current_arg = args_;
++  for (uint32_t f = format_; f != 0u; f >>= kBitsPerArg) {
++    DCHECK_LE(f & kArgMask, static_cast<uint32_t>(Argument::kLast));
++    switch (static_cast<Argument>(f & kArgMask)) {
++      case Argument::kString: {
++        Handle<mirror::String> str =
++            hs_.NewHandle(reinterpret_cast32<mirror::String*>(*current_arg));
++        if (str != nullptr) {
++          length += str->GetLength();
++          compressible = compressible && str->IsCompressed();
++        } else {
++          length += kNullLength;
++        }
++        break;
++      }
++      case Argument::kBoolean: {
++        length += (*current_arg != 0u) ? kTrueLength : kFalseLength;
++        break;
++      }
++      case Argument::kChar: {
++        length += 1u;
++        compressible = compressible &&
++            mirror::String::IsASCII(reinterpret_cast<const uint16_t*>(current_arg)[0]);
++        break;
++      }
++      case Argument::kInt: {
++        length += Int64Length(static_cast<int32_t>(*current_arg));
++        break;
++      }
++      case Argument::kLong: {
++        current_arg = AlignUp(current_arg, sizeof(int64_t));
++        length += Int64Length(*reinterpret_cast<const int64_t*>(current_arg));
++        ++current_arg;  // Skip the low word, let the common code skip the high word.
++        break;
++      }
++
++      case Argument::kStringBuilder:
++      case Argument::kCharArray:
++      case Argument::kObject:
++      case Argument::kFloat:
++      case Argument::kDouble:
++        LOG(FATAL) << "Unimplemented arg format: 0x" << std::hex
++            << (f & kArgMask) << " full format: 0x" << std::hex << format_;
++        UNREACHABLE();
++      default:
++        LOG(FATAL) << "Unexpected arg format: 0x" << std::hex
++            << (f & kArgMask) << " full format: 0x" << std::hex << format_;
++        UNREACHABLE();
++    }
++    ++current_arg;
++    DCHECK_LE(hs_.NumberOfReferences(), kMaxArgs);
++  }
++
++  if (length > std::numeric_limits<int32_t>::max()) {
++    // We cannot allocate memory for the entire result.
++    hs_.Self()->ThrowNewException("Ljava/lang/OutOfMemoryError;",
++                                  "Out of memory for StringBuilder append.");
++    return -1;
++  }
++
++  length_with_flag_ = mirror::String::GetFlaggedCount(length, compressible);
++  return length_with_flag_;
++}
++
++template <typename CharType>
++inline void StringBuilderAppend::Builder::StoreData(ObjPtr<mirror::String> new_string,
++                                                    CharType* data) const {
++  size_t handle_index = 0u;
++  const uint32_t* current_arg = args_;
++  for (uint32_t f = format_; f != 0u; f >>= kBitsPerArg) {
++    DCHECK_LE(f & kArgMask, static_cast<uint32_t>(Argument::kLast));
++    switch (static_cast<Argument>(f & kArgMask)) {
++      case Argument::kString: {
++        ObjPtr<mirror::String> str =
++            ObjPtr<mirror::String>::DownCast(hs_.GetReference(handle_index));
++        ++handle_index;
++        if (str != nullptr) {
++          data = AppendString(new_string, data, str);
++        } else {
++          data = AppendLiteral(new_string, data, kNull);
++        }
++        break;
++      }
++      case Argument::kBoolean: {
++        if (*current_arg != 0u) {
++          data = AppendLiteral(new_string, data, kTrue);
++        } else {
++          data = AppendLiteral(new_string, data, kFalse);
++        }
++        break;
++      }
++      case Argument::kChar: {
++        DCHECK_GE(RemainingSpace(new_string, data), 1u);
++        *data = *reinterpret_cast<const CharType*>(current_arg);
++        ++data;
++        break;
++      }
++      case Argument::kInt: {
++        data = AppendInt64(new_string, data, static_cast<int32_t>(*current_arg));
++        break;
++      }
++      case Argument::kLong: {
++        current_arg = AlignUp(current_arg, sizeof(int64_t));
++        data = AppendInt64(new_string, data, *reinterpret_cast<const int64_t*>(current_arg));
++        ++current_arg;  // Skip the low word, let the common code skip the high word.
++        break;
++      }
++
++      case Argument::kStringBuilder:
++      case Argument::kCharArray:
++      case Argument::kFloat:
++      case Argument::kDouble:
++        LOG(FATAL) << "Unimplemented arg format: 0x" << std::hex
++            << (f & kArgMask) << " full format: 0x" << std::hex << format_;
++        UNREACHABLE();
++      default:
++        LOG(FATAL) << "Unexpected arg format: 0x" << std::hex
++            << (f & kArgMask) << " full format: 0x" << std::hex << format_;
++        UNREACHABLE();
++    }
++    ++current_arg;
++    DCHECK_LE(handle_index, hs_.NumberOfReferences());
++  }
++  DCHECK_EQ(RemainingSpace(new_string, data), 0u) << std::hex << format_;
++}
++
++inline void StringBuilderAppend::Builder::operator()(ObjPtr<mirror::Object> obj,
++                                                     size_t usable_size ATTRIBUTE_UNUSED) const {
++  ObjPtr<mirror::String> new_string = ObjPtr<mirror::String>::DownCast(obj);
++  new_string->SetCount(length_with_flag_);
++  if (mirror::String::IsCompressed(length_with_flag_)) {
++    StoreData(new_string, new_string->GetValueCompressed());
++  } else {
++    StoreData(new_string, new_string->GetValue());
++  }
++}
++
++ObjPtr<mirror::String> StringBuilderAppend::AppendF(uint32_t format,
++                                                    const uint32_t* args,
++                                                    Thread* self) {
++  Builder builder(format, args, self);
++  self->AssertNoPendingException();
++  int32_t length_with_flag = builder.CalculateLengthWithFlag();
++  if (self->IsExceptionPending()) {
++    return nullptr;
++  }
++  gc::AllocatorType allocator_type = Runtime::Current()->GetHeap()->GetCurrentAllocator();
++  ObjPtr<mirror::String> result = mirror::String::Alloc</*kIsInstrumented=*/ true>(
++      self, length_with_flag, allocator_type, builder);
++
++  return result;
++}
++
++}  // namespace art
+diff --git a/runtime/string_builder_append.h b/runtime/string_builder_append.h
+new file mode 100644
+index 0000000000..fee64198f9
+--- /dev/null
++++ b/runtime/string_builder_append.h
+@@ -0,0 +1,67 @@
++/*
++ * Copyright (C) 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#ifndef ART_RUNTIME_STRING_BUILDER_APPEND_H_
++#define ART_RUNTIME_STRING_BUILDER_APPEND_H_
++
++#include <stddef.h>
++#include <stdint.h>
++
++#include "base/bit_utils.h"
++#include "base/locks.h"
++#include "obj_ptr.h"
++
++namespace art {
++
++class Thread;
++
++namespace mirror {
++class String;
++}  // namespace mirror
++
++class StringBuilderAppend {
++ public:
++  enum class Argument : uint8_t {
++    kEnd = 0u,
++    kObject,
++    kStringBuilder,
++    kString,
++    kCharArray,
++    kBoolean,
++    kChar,
++    kInt,
++    kLong,
++    kFloat,
++    kDouble,
++    kLast = kDouble
++  };
++
++  static constexpr size_t kBitsPerArg =
++      MinimumBitsToStore(static_cast<size_t>(Argument::kLast));
++  static constexpr size_t kMaxArgs = BitSizeOf<uint32_t>() / kBitsPerArg;
++  static_assert(kMaxArgs * kBitsPerArg == BitSizeOf<uint32_t>(), "Expecting no extra bits.");
++  static constexpr uint32_t kArgMask = MaxInt<uint32_t>(kBitsPerArg);
++
++  static ObjPtr<mirror::String> AppendF(uint32_t format, const uint32_t* args, Thread* self)
++      REQUIRES_SHARED(Locks::mutator_lock_);
++
++ private:
++  class Builder;
++};
++
++}  // namespace art
++
++#endif  // ART_RUNTIME_STRING_BUILDER_APPEND_H_
 diff --git a/runtime/thread.cc b/runtime/thread.cc
 index be0e30ad11..f089c304e2 100644
 --- a/runtime/thread.cc
@@ -5524,6 +7074,134 @@ index d9c8b31ac7..083c14c1ec 100644
      { "foo", "()V", reinterpret_cast<void*>(foo) }
  };
  
+diff --git a/test/1960-checker-bounds-codegen/expected.txt b/test/1960-checker-bounds-codegen/expected.txt
+new file mode 100644
+index 0000000000..b0aad4deb5
+--- /dev/null
++++ b/test/1960-checker-bounds-codegen/expected.txt
+@@ -0,0 +1 @@
++passed
+diff --git a/test/1960-checker-bounds-codegen/info.txt b/test/1960-checker-bounds-codegen/info.txt
+new file mode 100644
+index 0000000000..1a4f84fc7a
+--- /dev/null
++++ b/test/1960-checker-bounds-codegen/info.txt
+@@ -0,0 +1 @@
++Test code generation for BoundsCheck.
+diff --git a/test/1960-checker-bounds-codegen/src/Main.java b/test/1960-checker-bounds-codegen/src/Main.java
+new file mode 100644
+index 0000000000..a84d67f694
+--- /dev/null
++++ b/test/1960-checker-bounds-codegen/src/Main.java
+@@ -0,0 +1,108 @@
++/*
++ * Copyright (C) 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++/**
++ * Test code generation for BoundsCheck.
++ */
++public class Main {
++  // Constant index, variable length.
++  /// CHECK-START-ARM64: int Main.constantIndex(int[]) disassembly (after)
++  /// CHECK:                     BoundsCheck
++  /// CHECK:                     cmp {{w\d+}}, #0x0
++  /// CHECK:                     b.ls #+0x{{[0-9a-f]+}} (addr 0x<<SLOW:[0-9a-f]+>>)
++  /// CHECK:                     BoundsCheckSlowPathARM64
++  /// CHECK-NEXT:                0x{{0*}}<<SLOW>>:
++  /// CHECK-START-ARM: int Main.constantIndex(int[]) disassembly (after)
++  /// CHECK:                     BoundsCheck
++  /// CHECK:                     cmp {{r\d+}}, #0
++  /// CHECK:                     bls.w <<SLOW:0x[0-9a-f]+>>
++  /// CHECK:                     BoundsCheckSlowPathARMVIXL
++  /// CHECK-NEXT:                <<SLOW>>:
++  public static int constantIndex(int[] a) {
++    try {
++      a[0] = 42;
++    } catch (ArrayIndexOutOfBoundsException expected) {
++      return -1;
++    }
++    return a.length;
++  }
++
++  // Constant length, variable index.
++  /// CHECK-START-ARM64: int Main.constantLength(int) disassembly (after)
++  /// CHECK:                     BoundsCheck
++  /// CHECK:                     cmp {{w\d+}}, #0xa
++  /// CHECK:                     b.hs #+0x{{[0-9a-f]+}} (addr 0x<<SLOW:[0-9a-f]+>>)
++  /// CHECK:                     BoundsCheckSlowPathARM64
++  /// CHECK-NEXT:                0x{{0*}}<<SLOW>>:
++  /// CHECK-START-ARM: int Main.constantLength(int) disassembly (after)
++  /// CHECK:                     BoundsCheck
++  /// CHECK:                     cmp {{r\d+}}, #10
++  /// CHECK:                     bcs.w <<SLOW:0x[0-9a-f]+>>
++  /// CHECK:                     BoundsCheckSlowPathARMVIXL
++  /// CHECK-NEXT:                <<SLOW>>:
++  public static int constantLength(int index) {
++    int[] a = new int[10];
++    try {
++      a[index] = 1;
++    } catch (ArrayIndexOutOfBoundsException expected) {
++      return -1;
++    }
++    return index;
++  }
++
++  // Constant index and length, out of bounds access. Check that we only have
++  // the slow path.
++  /// CHECK-START-ARM64: int Main.constantIndexAndLength() disassembly (after)
++  /// CHECK:                     BoundsCheck
++  /// CHECK-NOT:                 cmp
++  /// CHECK:                     b #+0x{{[0-9a-f]+}} (addr 0x<<SLOW:[0-9a-f]+>>)
++  /// CHECK:                     BoundsCheckSlowPathARM64
++  /// CHECK-NEXT:                0x{{0*}}<<SLOW>>:
++  /// CHECK-START-ARM: int Main.constantIndexAndLength() disassembly (after)
++  /// CHECK:                     BoundsCheck
++  /// CHECK-NOT:                 cmp
++  /// CHECK:                     b <<SLOW:0x[0-9a-f]+>>
++  /// CHECK:                     BoundsCheckSlowPathARMVIXL
++  /// CHECK-NEXT:                <<SLOW>>:
++  public static int constantIndexAndLength() {
++    try {
++      int[] a = new int[5];
++      a[10] = 42;
++    } catch (ArrayIndexOutOfBoundsException expected) {
++      return -1;
++    }
++    return 0;
++  }
++
++  public static void main(String[] args) {
++    int[] a = new int[10];
++    int[] b = new int[0];
++    expectEquals(a.length, constantIndex(a));
++    expectEquals(-1, constantIndex(b));
++    expectEquals(0, constantLength(0));
++    expectEquals(9, constantLength(9));
++    expectEquals(-1, constantLength(10));
++    expectEquals(-1, constantLength(-2));
++    expectEquals(-1, constantIndexAndLength());
++    System.out.println("passed");
++  }
++
++  private static void expectEquals(int expected, int result) {
++    if (expected != result) {
++      throw new Error("Expected: " + expected + ", found: " + result);
++    }
++  }
++}
 diff --git a/test/442-checker-constant-folding/src/Main.java b/test/442-checker-constant-folding/src/Main.java
 index 3d9294304d..45157abf1a 100644
 --- a/test/442-checker-constant-folding/src/Main.java
@@ -5579,6 +7257,299 @@ index 74bb73f04b..f166b92fa4 100644
    public static void testWithSame(Object[] o) {
      o[0] = o[1];
    }
+diff --git a/test/530-checker-lse-simd/expected.txt b/test/530-checker-lse-simd/expected.txt
+new file mode 100644
+index 0000000000..03bb57b545
+--- /dev/null
++++ b/test/530-checker-lse-simd/expected.txt
+@@ -0,0 +1,7 @@
++1
++3
++1
++2
++2
++1
++1
+diff --git a/test/530-checker-lse-simd/info.txt b/test/530-checker-lse-simd/info.txt
+new file mode 100644
+index 0000000000..61b47411ba
+--- /dev/null
++++ b/test/530-checker-lse-simd/info.txt
+@@ -0,0 +1 @@
++Checker test for testing load-store elimination in presence of VecLoad and VecStore.
+diff --git a/test/530-checker-lse-simd/src/Main.java b/test/530-checker-lse-simd/src/Main.java
+new file mode 100644
+index 0000000000..12dd29708b
+--- /dev/null
++++ b/test/530-checker-lse-simd/src/Main.java
+@@ -0,0 +1,267 @@
++/*
++ * Copyright (C) 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++public class Main {
++  // Based on Linpack.matgen
++  // Load-store elimination did not work when a function had SIMD code.
++  // In the test below loop B is vectorized.
++  // Check that a redundant ArrayGet is eliminated in loop A.
++
++  /// CHECK-START: double Main.$noinline$vecgen(double[], double[], int) load_store_elimination (before)
++  /// CHECK:      Rem
++  /// CHECK-NEXT: TypeConversion
++  /// CHECK-NEXT: Sub
++  /// CHECK-NEXT: Mul
++  /// CHECK-NEXT: ArraySet
++  /// CHECK-NEXT: ArrayGet
++  /// CHECK-NEXT: LessThanOrEqual
++  /// CHECK-NEXT: Select
++  /// CHECK-NEXT: Add
++  /// CHECK-NEXT: Goto loop:{{B\d+}}
++
++  /// CHECK-START: double Main.$noinline$vecgen(double[], double[], int) load_store_elimination (after)
++  /// CHECK:      Rem
++  /// CHECK-NEXT: TypeConversion
++  /// CHECK-NEXT: Sub
++  /// CHECK-NEXT: Mul
++  /// CHECK-NEXT: ArraySet
++  /// CHECK-NEXT: LessThanOrEqual
++  /// CHECK-NEXT: Select
++  /// CHECK-NEXT: Add
++  /// CHECK-NEXT: Goto loop:{{B\d+}}
++  static double $noinline$vecgen(double a[], double b[], int n) {
++    double norma = 0.0;
++    int init = 1325;
++    // Loop A
++    for (int i = 0; i < n; ++i) {
++      init = 3125*init % 65536;
++      a[i] = (init - 32768.0)/16384.0;
++      norma = (a[i] > norma) ? a[i] : norma; // ArrayGet should be removed by LSE.
++    }
++
++    // Loop B
++    for (int i = 0; i < n; ++i) {
++      b[i] += a[i];
++    }
++
++    return norma;
++  }
++
++
++  static void test01() {
++    double a[] = new double[1024];
++    double norma = $noinline$vecgen(a, a, a.length);
++    System.out.println((int)norma);
++    System.out.println((int)a[1023]);
++  }
++
++  // Check LSE works when a function has SIMD code.
++  //
++  /// CHECK-START: double Main.$noinline$test02(double[], int) load_store_elimination (before)
++  /// CHECK:      BoundsCheck loop:none
++  /// CHECK-NEXT: ArrayGet
++  /// CHECK-NEXT: Mul
++  /// CHECK-NEXT: ArraySet
++  /// CHECK-NEXT: ArrayGet
++  /// CHECK-NEXT: ArrayLength
++  /// CHECK-NEXT: BelowOrEqual
++  //
++  /// CHECK:      ArrayGet loop:none
++  /// CHECK-NEXT: Return
++
++  /// CHECK-START: double Main.$noinline$test02(double[], int) load_store_elimination (after)
++  /// CHECK:      BoundsCheck loop:none
++  /// CHECK-NEXT: ArrayGet
++  /// CHECK-NEXT: Mul
++  /// CHECK-NEXT: ArraySet
++  /// CHECK-NEXT: ArrayLength
++  /// CHECK-NEXT: BelowOrEqual
++  //
++  /// CHECK:      ArrayGet loop:none
++  /// CHECK-NEXT: Return
++  static double $noinline$test02(double a[], int n) {
++    double b[] = new double[n];
++    a[0] = a[0] / 2;
++
++    double norma = a[0]; // ArrayGet should be removed by LSE.
++
++    // The following loop is vectorized.
++    for (int i = 0; i < 128; ++i) {
++      b[i] += a[i];
++    }
++
++    norma = a[0];
++    return norma;
++  }
++
++  static void test02() {
++    double a[] = new double[128];
++    java.util.Arrays.fill(a, 2.0);
++    double norma = $noinline$test02(a, a.length);
++    System.out.println((int)norma);
++  }
++
++  // Check LSE works when a function has SIMD code.
++  //
++  /// CHECK-START: double Main.$noinline$test03(int) load_store_elimination (before)
++  /// CHECK:      ArrayGet loop:none
++  /// CHECK-NEXT: Return
++
++  /// CHECK-START: double Main.$noinline$test03(int) load_store_elimination (after)
++  /// CHECK-NOT:  ArrayGet loop:none
++  static double $noinline$test03(int n) {
++    double a[] = new double[n];
++    double b[] = new double[n];
++
++    a[0] = 2.0;
++
++    // The following loop is vectorized.
++    for (int i = 0; i < 128; ++i) {
++      b[i] += a[i];
++    }
++
++    a[0] = 2.0;
++    return a[0]; // ArrayGet should be removed by LSE.
++  }
++
++  static void test03() {
++    double norma = $noinline$test03(128);
++    System.out.println((int)norma);
++  }
++
++  // Check LSE eliminates VecLoad.
++  //
++  /// CHECK-START-ARM64: double[] Main.$noinline$test04(int) load_store_elimination (before)
++  /// CHECK:             VecStore
++  /// CHECK-NEXT:        VecLoad
++  /// CHECK-NEXT:        VecAdd
++  /// CHECK-NEXT:        VecStore
++  /// CHECK-NEXT:        Add
++  /// CHECK-NEXT:        Goto loop:{{B\d+}}
++
++  /// CHECK-START-ARM64: double[] Main.$noinline$test04(int) load_store_elimination (after)
++  /// CHECK:             VecStore
++  /// CHECK-NEXT:        VecAdd
++  /// CHECK-NEXT:        VecStore
++  /// CHECK-NEXT:        Add
++  /// CHECK-NEXT:        Goto loop:{{B\d+}}
++  static double[] $noinline$test04(int n) {
++    double a[] = new double[n];
++    double b[] = new double[n];
++
++    // The following loop is vectorized.
++    for (int i = 0; i < n; ++i) {
++      a[i] = 1;
++      b[i] = a[i] + a[i]; // VecLoad should be removed by LSE.
++    }
++
++    return b;
++  }
++
++  static void test04() {
++    double norma = $noinline$test04(128)[0];
++    System.out.println((int)norma);
++  }
++
++  // Check LSE eliminates VecLoad.
++  //
++  /// CHECK-START-ARM64: double[] Main.$noinline$test05(int) load_store_elimination (before)
++  /// CHECK:             VecStore
++  /// CHECK-NEXT:        VecLoad
++  /// CHECK-NEXT:        VecStore
++  /// CHECK-NEXT:        VecStore
++  /// CHECK-NEXT:        Add
++  /// CHECK-NEXT:        Goto loop:{{B\d+}}
++
++  /// CHECK-START-ARM64: double[] Main.$noinline$test05(int) load_store_elimination (after)
++  /// CHECK:             VecStore
++  /// CHECK-NEXT:        VecStore
++  /// CHECK-NEXT:        Add
++  /// CHECK-NEXT:        Goto loop:{{B\d+}}
++  static double[] $noinline$test05(int n) {
++    double a[] = new double[n];
++    double b[] = new double[n];
++
++    // The following loop is vectorized.
++    for (int i = 0; i < n; ++i) {
++      a[i] = 1;
++      b[i] = a[i];
++      a[i] = 1;
++    }
++
++    return b;
++  }
++
++  static void test05() {
++    double norma = $noinline$test05(128)[0];
++    System.out.println((int)norma);
++  }
++
++  // Check LSE eliminates VecLoad and ArrayGet in case of singletons and default values.
++  //
++  /// CHECK-START-ARM64: double[] Main.$noinline$test06(int) load_store_elimination (before)
++  /// CHECK:             BoundsCheck loop:none
++  /// CHECK-NEXT:        ArrayGet
++  /// CHECK-NEXT:        Add
++  /// CHECK-NEXT:        ArrayLength
++  //
++  /// CHECK:             VecLoad loop:{{B\d+}}
++  /// CHECK-NEXT:        VecStore
++  /// CHECK-NEXT:        VecLoad
++  /// CHECK-NEXT:        VecLoad
++  /// CHECK-NEXT:        VecAdd
++  /// CHECK-NEXT:        VecAdd
++  /// CHECK-NEXT:        VecStore
++
++  /// CHECK-START-ARM64: double[] Main.$noinline$test06(int) load_store_elimination (after)
++  /// CHECK:             BoundsCheck loop:none
++  /// CHECK-NEXT:        Add
++  /// CHECK-NEXT:        ArrayLength
++  //
++  /// CHECK:             VecLoad loop:{{B\d+}}
++  /// CHECK-NEXT:        VecStore
++  /// CHECK-NEXT:        VecAdd
++  /// CHECK-NEXT:        VecAdd
++  /// CHECK-NEXT:        VecStore
++  static double[] $noinline$test06(int n) {
++    double a[] = new double[n];
++    double b[] = new double[n];
++
++    double r = a[0] + 1.0; // ArrayGet:a[0] is eliminated and default 0.0 is used.
++    // The following loop is vectorized.
++    for (int i = 0; i < n; ++i) {
++      b[i] = a[i]; // VecLoad:a[i] is not eliminated.
++      b[i] += a[i] + r; // VecLoad:a[i] and VecLoad:b[i] are eliminated.
++    }
++
++    return b;
++  }
++
++  static void test06() {
++    double norma = $noinline$test06(128)[0];
++    System.out.println((int)norma);
++  }
++
++  public static void main(String[] args) {
++    test01();
++    test02();
++    test03();
++    test04();
++    test05();
++    test06();
++  }
++}
++
 diff --git a/test/536-checker-intrinsic-optimization/src/Main.java b/test/536-checker-intrinsic-optimization/src/Main.java
 index 83a89a6da6..f15618eedc 100644
 --- a/test/536-checker-intrinsic-optimization/src/Main.java
@@ -5671,6 +7642,131 @@ index 83a89a6da6..f15618eedc 100644
 +    return new String(dst, offset, srcEnd - srcBegin);
 +  }
  }
+diff --git a/test/580-fp16/expected.txt b/test/580-fp16/expected.txt
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/test/580-fp16/info.txt b/test/580-fp16/info.txt
+new file mode 100644
+index 0000000000..547ae227df
+--- /dev/null
++++ b/test/580-fp16/info.txt
+@@ -0,0 +1 @@
++This test case is used to test libcore.util.FP16.
+diff --git a/test/580-fp16/src-art/Main.java b/test/580-fp16/src-art/Main.java
+new file mode 100644
+index 0000000000..a89e1000d0
+--- /dev/null
++++ b/test/580-fp16/src-art/Main.java
+@@ -0,0 +1,109 @@
++/*
++ * Copyright (C) 2018 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++import libcore.util.FP16;
++
++public class Main {
++    public Main() {
++    }
++
++    public static int TestFP16ToFloatRawIntBits(short half) {
++        float f = FP16.toFloat(half);
++        // Since in this test class we need to check the integer representing of
++        // the actual float NaN values, the floatToRawIntBits() is used instead of
++        // floatToIntBits().
++        return Float.floatToRawIntBits(f);
++    }
++
++    public static void assertEquals(short expected, short calculated) {
++        if (expected != calculated) {
++            throw new Error("Expected: " + expected + ", Calculated: " + calculated);
++        }
++    }
++    public static void assertEquals(float expected, float calculated) {
++        if (expected != calculated) {
++            throw new Error("Expected: " + expected + ", Calculated: " + calculated);
++        }
++    }
++
++    public static void main(String args[]) {
++        // Test FP16 to float
++        for (short h = Short.MIN_VALUE; h < Short.MAX_VALUE; h++) {
++            if (FP16.isNaN(h)) {
++                // NaN inputs are tested below.
++                continue;
++            }
++            assertEquals(h, FP16.toHalf(FP16.toFloat(h)));
++        }
++
++        // These asserts check some known values and edge cases for FP16.toHalf
++        // and have been inspired by the cts HalfTest.
++        // Zeroes, NaN and infinities
++        assertEquals(FP16.POSITIVE_ZERO, FP16.toHalf(0.0f));
++        assertEquals(FP16.NEGATIVE_ZERO, FP16.toHalf(-0.0f));
++        assertEquals(FP16.NaN, FP16.toHalf(Float.NaN));
++        assertEquals(FP16.POSITIVE_INFINITY, FP16.toHalf(Float.POSITIVE_INFINITY));
++        assertEquals(FP16.NEGATIVE_INFINITY, FP16.toHalf(Float.NEGATIVE_INFINITY));
++        // Known values
++        assertEquals((short) 0x3c01, FP16.toHalf(1.0009765625f));
++        assertEquals((short) 0xc000, FP16.toHalf(-2.0f));
++        assertEquals((short) 0x0400, FP16.toHalf(6.10352e-5f));
++        assertEquals((short) 0x7bff, FP16.toHalf(65504.0f));
++        assertEquals((short) 0x3555, FP16.toHalf(1.0f / 3.0f));
++        // Subnormals
++        assertEquals((short) 0x03ff, FP16.toHalf(6.09756e-5f));
++        assertEquals(FP16.MIN_VALUE, FP16.toHalf(5.96046e-8f));
++        assertEquals((short) 0x83ff, FP16.toHalf(-6.09756e-5f));
++        assertEquals((short) 0x8001, FP16.toHalf(-5.96046e-8f));
++        // Subnormals (flushed to +/-0)
++        assertEquals(FP16.POSITIVE_ZERO, FP16.toHalf(5.96046e-9f));
++        assertEquals(FP16.NEGATIVE_ZERO, FP16.toHalf(-5.96046e-9f));
++        // Test for values that overflow the mantissa bits into exp bits
++        assertEquals(0x1000, FP16.toHalf(Float.intBitsToFloat(0x39fff000)));
++        assertEquals(0x0400, FP16.toHalf(Float.intBitsToFloat(0x387fe000)));
++        // Floats with absolute value above +/-65519 are rounded to +/-inf
++        // when using round-to-even
++        assertEquals(0x7bff, FP16.toHalf(65519.0f));
++        assertEquals(0x7bff, FP16.toHalf(65519.9f));
++        assertEquals(FP16.POSITIVE_INFINITY, FP16.toHalf(65520.0f));
++        assertEquals(FP16.NEGATIVE_INFINITY, FP16.toHalf(-65520.0f));
++        // Check if numbers are rounded to nearest even when they
++        // cannot be accurately represented by Half
++        assertEquals(0x6800, FP16.toHalf(2049.0f));
++        assertEquals(0x6c00, FP16.toHalf(4098.0f));
++        assertEquals(0x7000, FP16.toHalf(8196.0f));
++        assertEquals(0x7400, FP16.toHalf(16392.0f));
++        assertEquals(0x7800, FP16.toHalf(32784.0f));
++
++        // FP16 SNaN/QNaN inputs to float
++        // The most significant bit of mantissa:
++        //                 V
++        // 0xfc01: 1 11111 0000000001 (signaling NaN)
++        // 0xfdff: 1 11111 0111111111 (signaling NaN)
++        // 0xfe00: 1 11111 1000000000 (quiet NaN)
++        // 0xffff: 1 11111 1111111111 (quiet NaN)
++        // This test is inspired by Java implementation of android.util.Half.toFloat(),
++        // where the implementation performs SNaN->QNaN conversion.
++        assert(Float.isNaN(FP16.toFloat((short)0xfc01)));
++        assert(Float.isNaN(FP16.toFloat((short)0xfdff)));
++        assert(Float.isNaN(FP16.toFloat((short)0xfe00)));
++        assert(Float.isNaN(FP16.toFloat((short)0xffff)));
++        assertEquals(0xffc02000, TestFP16ToFloatRawIntBits((short)(0xfc01)));  // SNaN->QNaN
++        assertEquals(0xffffe000, TestFP16ToFloatRawIntBits((short)(0xfdff)));  // SNaN->QNaN
++        assertEquals(0xffc00000, TestFP16ToFloatRawIntBits((short)(0xfe00)));  // QNaN->QNaN
++        assertEquals(0xffffe000, TestFP16ToFloatRawIntBits((short)(0xffff)));  // QNaN->QNaN
++    }
++}
 diff --git a/test/597-deopt-busy-loop/expected.txt b/test/597-deopt-busy-loop/expected.txt
 index f993efcdad..6e2fc8e25e 100644
 --- a/test/597-deopt-busy-loop/expected.txt
@@ -5680,6 +7776,109 @@ index f993efcdad..6e2fc8e25e 100644
 -Finishing
 +Simple loop finishing
 +Float loop finishing
+diff --git a/test/597-deopt-busy-loop/src/FloatLoop.java b/test/597-deopt-busy-loop/src/FloatLoop.java
+new file mode 100644
+index 0000000000..57667a68a4
+--- /dev/null
++++ b/test/597-deopt-busy-loop/src/FloatLoop.java
+@@ -0,0 +1,97 @@
++/*
++ * Copyright (C) 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++// This test checks that FP registers spill offset is correctly recorded in the SlowPath; by causing
++// asynchronous deoptimization in debuggable mode we observe the FP values in the interpreter.
++public class FloatLoop implements Runnable {
++    static final int numberOfThreads = 2;
++    volatile static boolean sExitFlag = false;
++    volatile static boolean sEntered = false;
++    int threadIndex;
++
++    FloatLoop(int index) {
++        threadIndex = index;
++    }
++
++    public static void main() throws Exception {
++        final Thread[] threads = new Thread[numberOfThreads];
++        for (int t = 0; t < threads.length; t++) {
++            threads[t] = new Thread(new FloatLoop(t));
++            threads[t].start();
++        }
++        for (Thread t : threads) {
++            t.join();
++        }
++
++        System.out.println("Float loop finishing");
++    }
++
++    static final float kFloatConst0 = 256.0f;
++    static final float kFloatConst1 = 128.0f;
++    static final int kArraySize = 128;
++    volatile static float floatField;
++
++    public void expectEqualToEither(float value, float expected0, float expected1) {
++        if (value != expected0 && value != expected1) {
++            throw new Error("Expected:  " + expected0 + " or "+ expected1 +
++                            ", found: " + value);
++        }
++    }
++
++    public void $noinline$busyLoop() {
++        Main.assertIsManaged();
++
++        // On Arm64:
++        // This loop is likely to be vectorized which causes the full 16-byte Q-register to be saved
++        // across slow paths.
++        int[] array = new int[kArraySize];
++        for (int i = 0; i < kArraySize; i++) {
++            array[i]++;
++        }
++
++        sEntered = true;
++        float s0 = kFloatConst0;
++        float s1 = kFloatConst1;
++        for (int i = 0; !sExitFlag; i++) {
++            if (i % 2 == 0) {
++                s0 += 2.0;
++                s1 += 2.0;
++            } else {
++                s0 -= 2.0;
++                s1 -= 2.0;
++            }
++            // SuspendCheckSlowPath must record correct stack offset for spilled FP registers.
++        }
++        Main.assertIsInterpreted();
++
++        expectEqualToEither(s0, kFloatConst0, kFloatConst0 + 2.0f);
++        expectEqualToEither(s1, kFloatConst1, kFloatConst1 + 2.0f);
++
++        floatField = s0 + s1;
++    }
++
++    public void run() {
++        if (threadIndex == 0) {
++            while (!sEntered) {
++              Thread.yield();
++            }
++            Main.deoptimizeAll();
++            sExitFlag = true;
++        } else {
++            $noinline$busyLoop();
++        }
++    }
++}
 diff --git a/test/597-deopt-busy-loop/src/Main.java b/test/597-deopt-busy-loop/src/Main.java
 index 46b6bbf4f3..d15c6c7835 100644
 --- a/test/597-deopt-busy-loop/src/Main.java
@@ -5751,6 +7950,74 @@ index 46b6bbf4f3..d15c6c7835 100644
 +        FloatLoop.main();
      }
  }
+diff --git a/test/597-deopt-busy-loop/src/SimpleLoop.java b/test/597-deopt-busy-loop/src/SimpleLoop.java
+new file mode 100644
+index 0000000000..12298a90d9
+--- /dev/null
++++ b/test/597-deopt-busy-loop/src/SimpleLoop.java
+@@ -0,0 +1,62 @@
++/*
++ * Copyright (C) 2017 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++public class SimpleLoop implements Runnable {
++    static final int numberOfThreads = 2;
++    volatile static boolean sExitFlag = false;
++    volatile static boolean sEntered = false;
++    int threadIndex;
++
++    SimpleLoop(int index) {
++        threadIndex = index;
++    }
++
++    public static void main() throws Exception {
++        final Thread[] threads = new Thread[numberOfThreads];
++        for (int t = 0; t < threads.length; t++) {
++            threads[t] = new Thread(new SimpleLoop(t));
++            threads[t].start();
++        }
++        for (Thread t : threads) {
++            t.join();
++        }
++
++        System.out.println("Simple loop finishing");
++    }
++
++    public void $noinline$busyLoop() {
++        Main.assertIsManaged();
++        sEntered = true;
++        for (;;) {
++            if (sExitFlag) {
++                break;
++            }
++        }
++        Main.assertIsInterpreted();
++    }
++
++    public void run() {
++        if (threadIndex == 0) {
++            while (!sEntered) {
++              Thread.yield();
++            }
++            Main.deoptimizeAll();
++            sExitFlag = true;
++        } else {
++            $noinline$busyLoop();
++        }
++    }
++}
 diff --git a/test/624-checker-stringops/smali/Smali.smali b/test/624-checker-stringops/smali/Smali.smali
 index f8b92759c7..3252cde877 100644
 --- a/test/624-checker-stringops/smali/Smali.smali
@@ -5924,6 +8191,280 @@ index 7b6f957b2a..c31b17cefd 100644
    private static int reductionInt(int[] x) {
      int sum = 0;
      for (int i = 0; i < x.length; i++) {
+diff --git a/test/697-checker-string-append/expected.txt b/test/697-checker-string-append/expected.txt
+new file mode 100644
+index 0000000000..b0aad4deb5
+--- /dev/null
++++ b/test/697-checker-string-append/expected.txt
+@@ -0,0 +1 @@
++passed
+diff --git a/test/697-checker-string-append/info.txt b/test/697-checker-string-append/info.txt
+new file mode 100644
+index 0000000000..cb612cb024
+--- /dev/null
++++ b/test/697-checker-string-append/info.txt
+@@ -0,0 +1 @@
++Test for String append pattern recognition.
+diff --git a/test/697-checker-string-append/src/Main.java b/test/697-checker-string-append/src/Main.java
+new file mode 100644
+index 0000000000..4f2fa19bc4
+--- /dev/null
++++ b/test/697-checker-string-append/src/Main.java
+@@ -0,0 +1,254 @@
++/*
++ * Copyright 2019 The Android Open Source Project
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *      http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++public class Main {
++    public static void main(String[] args) {
++        testAppendStringAndLong();
++        testAppendStringAndInt();
++        testAppendStringAndString();
++        testMiscelaneous();
++        testNoArgs();
++        System.out.println("passed");
++    }
++
++    private static final String APPEND_LONG_PREFIX = "Long/";
++    private static final String[] APPEND_LONG_TEST_CASES = {
++        "Long/0",
++        "Long/1",
++        "Long/9",
++        "Long/10",
++        "Long/99",
++        "Long/100",
++        "Long/999",
++        "Long/1000",
++        "Long/9999",
++        "Long/10000",
++        "Long/99999",
++        "Long/100000",
++        "Long/999999",
++        "Long/1000000",
++        "Long/9999999",
++        "Long/10000000",
++        "Long/99999999",
++        "Long/100000000",
++        "Long/999999999",
++        "Long/1000000000",
++        "Long/9999999999",
++        "Long/10000000000",
++        "Long/99999999999",
++        "Long/100000000000",
++        "Long/999999999999",
++        "Long/1000000000000",
++        "Long/9999999999999",
++        "Long/10000000000000",
++        "Long/99999999999999",
++        "Long/100000000000000",
++        "Long/999999999999999",
++        "Long/1000000000000000",
++        "Long/9999999999999999",
++        "Long/10000000000000000",
++        "Long/99999999999999999",
++        "Long/100000000000000000",
++        "Long/999999999999999999",
++        "Long/1000000000000000000",
++        "Long/9223372036854775807",  // Long.MAX_VALUE
++        "Long/-1",
++        "Long/-9",
++        "Long/-10",
++        "Long/-99",
++        "Long/-100",
++        "Long/-999",
++        "Long/-1000",
++        "Long/-9999",
++        "Long/-10000",
++        "Long/-99999",
++        "Long/-100000",
++        "Long/-999999",
++        "Long/-1000000",
++        "Long/-9999999",
++        "Long/-10000000",
++        "Long/-99999999",
++        "Long/-100000000",
++        "Long/-999999999",
++        "Long/-1000000000",
++        "Long/-9999999999",
++        "Long/-10000000000",
++        "Long/-99999999999",
++        "Long/-100000000000",
++        "Long/-999999999999",
++        "Long/-1000000000000",
++        "Long/-9999999999999",
++        "Long/-10000000000000",
++        "Long/-99999999999999",
++        "Long/-100000000000000",
++        "Long/-999999999999999",
++        "Long/-1000000000000000",
++        "Long/-9999999999999999",
++        "Long/-10000000000000000",
++        "Long/-99999999999999999",
++        "Long/-100000000000000000",
++        "Long/-999999999999999999",
++        "Long/-1000000000000000000",
++        "Long/-9223372036854775808",  // Long.MIN_VALUE
++    };
++
++    /// CHECK-START: java.lang.String Main.$noinline$appendStringAndLong(java.lang.String, long) instruction_simplifier (before)
++    /// CHECK-NOT:              StringBuilderAppend
++
++    /// CHECK-START: java.lang.String Main.$noinline$appendStringAndLong(java.lang.String, long) instruction_simplifier (after)
++    /// CHECK:                  StringBuilderAppend
++    public static String $noinline$appendStringAndLong(String s, long l) {
++        return new StringBuilder().append(s).append(l).toString();
++    }
++
++    public static void testAppendStringAndLong() {
++        for (String expected : APPEND_LONG_TEST_CASES) {
++            long l = Long.valueOf(expected.substring(APPEND_LONG_PREFIX.length()));
++            String result = $noinline$appendStringAndLong(APPEND_LONG_PREFIX, l);
++            assertEquals(expected, result);
++        }
++    }
++
++    private static final String APPEND_INT_PREFIX = "Int/";
++    private static final String[] APPEND_INT_TEST_CASES = {
++        "Int/0",
++        "Int/1",
++        "Int/9",
++        "Int/10",
++        "Int/99",
++        "Int/100",
++        "Int/999",
++        "Int/1000",
++        "Int/9999",
++        "Int/10000",
++        "Int/99999",
++        "Int/100000",
++        "Int/999999",
++        "Int/1000000",
++        "Int/9999999",
++        "Int/10000000",
++        "Int/99999999",
++        "Int/100000000",
++        "Int/999999999",
++        "Int/1000000000",
++        "Int/2147483647",  // Integer.MAX_VALUE
++        "Int/-1",
++        "Int/-9",
++        "Int/-10",
++        "Int/-99",
++        "Int/-100",
++        "Int/-999",
++        "Int/-1000",
++        "Int/-9999",
++        "Int/-10000",
++        "Int/-99999",
++        "Int/-100000",
++        "Int/-999999",
++        "Int/-1000000",
++        "Int/-9999999",
++        "Int/-10000000",
++        "Int/-99999999",
++        "Int/-100000000",
++        "Int/-999999999",
++        "Int/-1000000000",
++        "Int/-2147483648",  // Integer.MIN_VALUE
++    };
++
++    /// CHECK-START: java.lang.String Main.$noinline$appendStringAndInt(java.lang.String, int) instruction_simplifier (before)
++    /// CHECK-NOT:              StringBuilderAppend
++
++    /// CHECK-START: java.lang.String Main.$noinline$appendStringAndInt(java.lang.String, int) instruction_simplifier (after)
++    /// CHECK:                  StringBuilderAppend
++    public static String $noinline$appendStringAndInt(String s, int i) {
++        return new StringBuilder().append(s).append(i).toString();
++    }
++
++    public static void testAppendStringAndInt() {
++        for (String expected : APPEND_INT_TEST_CASES) {
++            int i = Integer.valueOf(expected.substring(APPEND_INT_PREFIX.length()));
++            String result = $noinline$appendStringAndInt(APPEND_INT_PREFIX, i);
++            assertEquals(expected, result);
++        }
++    }
++
++    public static String $noinline$appendStringAndString(String s1, String s2) {
++        return new StringBuilder().append(s1).append(s2).toString();
++    }
++
++    public static void testAppendStringAndString() {
++        assertEquals("nullnull", $noinline$appendStringAndString(null, null));
++        assertEquals("nullTEST", $noinline$appendStringAndString(null, "TEST"));
++        assertEquals("TESTnull", $noinline$appendStringAndString("TEST", null));
++        assertEquals("abcDEFGH", $noinline$appendStringAndString("abc", "DEFGH"));
++        // Test with a non-ASCII character.
++        assertEquals("test\u0131", $noinline$appendStringAndString("test", "\u0131"));
++        assertEquals("\u0131test", $noinline$appendStringAndString("\u0131", "test"));
++        assertEquals("\u0131test\u0131", $noinline$appendStringAndString("\u0131", "test\u0131"));
++    }
++
++    /// CHECK-START: java.lang.String Main.$noinline$appendSLILC(java.lang.String, long, int, long, char) instruction_simplifier (before)
++    /// CHECK-NOT:              StringBuilderAppend
++
++    /// CHECK-START: java.lang.String Main.$noinline$appendSLILC(java.lang.String, long, int, long, char) instruction_simplifier (after)
++    /// CHECK:                  StringBuilderAppend
++    public static String $noinline$appendSLILC(String s,
++                                               long l1,
++                                               int i,
++                                               long l2,
++                                               char c) {
++        return new StringBuilder().append(s)
++                                  .append(l1)
++                                  .append(i)
++                                  .append(l2)
++                                  .append(c).toString();
++    }
++
++    public static void testMiscelaneous() {
++        assertEquals("x17-1q",
++                     $noinline$appendSLILC("x", 1L, 7, -1L, 'q'));
++        assertEquals("null17-1q",
++                     $noinline$appendSLILC(null, 1L, 7, -1L, 'q'));
++        assertEquals("x\u013117-1q",
++                     $noinline$appendSLILC("x\u0131", 1L, 7, -1L, 'q'));
++        assertEquals("x427-1q",
++                     $noinline$appendSLILC("x", 42L, 7, -1L, 'q'));
++        assertEquals("x1-42-1q",
++                     $noinline$appendSLILC("x", 1L, -42, -1L, 'q'));
++        assertEquals("x17424242q",
++                     $noinline$appendSLILC("x", 1L, 7, 424242L, 'q'));
++        assertEquals("x17-1\u0131",
++                     $noinline$appendSLILC("x", 1L, 7, -1L, '\u0131'));
++    }
++
++    /// CHECK-START: java.lang.String Main.$noinline$appendNothing() instruction_simplifier (before)
++    /// CHECK-NOT:              StringBuilderAppend
++
++    /// CHECK-START: java.lang.String Main.$noinline$appendNothing() instruction_simplifier (after)
++    /// CHECK-NOT:              StringBuilderAppend
++    public static String $noinline$appendNothing() {
++        return new StringBuilder().toString();
++    }
++
++    public static void testNoArgs() {
++        assertEquals("", $noinline$appendNothing());
++    }
++
++    public static void assertEquals(String expected, String actual) {
++        if (!expected.equals(actual)) {
++            throw new AssertionError("Expected: " + expected + ", actual: " + actual);
++        }
++    }
++}
 diff --git a/test/706-checker-scheduler/src/Main.java b/test/706-checker-scheduler/src/Main.java
 index af18193388..5a66fbbebc 100644
 --- a/test/706-checker-scheduler/src/Main.java
