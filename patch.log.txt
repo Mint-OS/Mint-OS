@@ -1,5 +1,6 @@
 Mintifying LineageOS (Step 2/2)...
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd art && git apply -v $MINTOS_DAT/01-art.patch && echo OK
+OK
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd frameworks/base && git apply -v $MINTOS_DAT/02-frameworks_base.patch && echo OK
 OK
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd frameworks/base && git apply -v $MINTOS_DAT/03-frameworks_base-2.patch && echo OK
@@ -36,9 +37,4 @@ patching file drivers/usb/gadget/function/f_hid_android_mouse.c
 patching file include/linux/usb/android.h
 Hunk #1 succeeded at 42 (offset -1 lines).
 Hunk #2 succeeded at 101 (offset -1 lines).
-patching file init/init_cedric.cpp
-patching file configs/android.hardware.camera.ar.xml
-patching file device.mk
-patching file lineage_cedric.mk
 make[1]: Verzeichnis „/home/kiam001/repofastmaker/android10/MintOS“ wird verlassen
-OK
