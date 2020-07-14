@@ -37,4 +37,9 @@ patching file drivers/usb/gadget/function/f_hid_android_mouse.c
 patching file include/linux/usb/android.h
 Hunk #1 succeeded at 42 (offset -1 lines).
 Hunk #2 succeeded at 101 (offset -1 lines).
+patching file init/init_cedric.cpp
+patching file configs/android.hardware.camera.ar.xml
+patching file device.mk
+patching file lineage_cedric.mk
 make[1]: Verzeichnis „/home/kiam001/repofastmaker/android10/MintOS“ wird verlassen
+OK
