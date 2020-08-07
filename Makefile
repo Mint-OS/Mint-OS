@@ -13,7 +13,6 @@ patch:
 	-export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd art && git apply -v $$MINTOS_DAT/01-art.patch && echo OK
 	-export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd frameworks/base && git apply -v $$MINTOS_DAT/02-frameworks_base.patch && echo OK
 	-export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd frameworks/base && git apply -v $$MINTOS_DAT/03-frameworks_base-2.patch && echo OK
-	-export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd packages/apps/Updater && git apply -v $$MINTOS_DAT/04-updater.patch && echo OK
 	-export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $$MINTOS_DIR && cd packages/apps/Dialer && git apply -v $$MINTOS_DAT/05-dialer.patch && echo OK
 	-make -f device/`cat .makedata2`/device.mk patch && echo OK
 
