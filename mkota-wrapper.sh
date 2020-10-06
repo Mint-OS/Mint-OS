@@ -1,5 +1,6 @@
 #!/bin/bash
-ls $1 || exit 1
+ls $1 || git commit -m "$3: Automatic OTA Update FAILED"
+ls $1 || exit 1 
 IFS=']' read -r -a json < ota/$3.json
 chmod +x mkota.sh
 NEWDATA=`./mkota.sh $1 $2 $4`
