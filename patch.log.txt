@@ -1,8 +1,43 @@
 Mintifying LineageOS (Step 2/2)...
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd art && git apply -v $MINTOS_DAT/01-art.patch && echo OK
+OK
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd frameworks/base && git apply -v $MINTOS_DAT/02-frameworks_base.patch && echo OK
+OK
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd frameworks/base && git apply -v $MINTOS_DAT/03-frameworks_base-2.patch && echo OK
+OK
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd packages/apps/Dialer && git apply -v $MINTOS_DAT/05-dialer.patch && echo OK
+OK
 make -f device/`cat .makedata2`/device.mk patch && echo OK
 make[1]: Verzeichnis „/home/kiam001/repofastmaker/android10/MintOS“ wird betreten
+patching file drivers/usb/gadget/android.c
+Hunk #1 succeeded at 74 with fuzz 2 (offset 5 lines).
+Hunk #2 succeeded at 3160 (offset 303 lines).
+Hunk #3 succeeded at 3446 (offset 386 lines).
+Hunk #4 succeeded at 3487 (offset 391 lines).
+Hunk #5 succeeded at 3776 (offset 371 lines).
+Hunk #6 succeeded at 3819 (offset 370 lines).
+patching file drivers/usb/gadget/function/Makefile
+Hunk #1 succeeded at 48 with fuzz 2 (offset 2 lines).
+patching file drivers/usb/gadget/function/f_hid.c
+Hunk #4 succeeded at 304 (offset 12 lines).
+Hunk #5 succeeded at 323 (offset 12 lines).
+Hunk #6 succeeded at 368 (offset 12 lines).
+Hunk #7 succeeded at 468 (offset 12 lines).
+Hunk #8 succeeded at 485 (offset 12 lines).
+Hunk #9 succeeded at 646 (offset 16 lines).
+Hunk #10 succeeded at 720 (offset 16 lines).
+Hunk #11 succeeded at 741 (offset 16 lines).
+Hunk #12 succeeded at 788 (offset 16 lines).
+Hunk #13 succeeded at 842 (offset 16 lines).
+patching file drivers/usb/gadget/function/f_hid.h
+patching file drivers/usb/gadget/function/f_hid_android_keyboard.c
+patching file drivers/usb/gadget/function/f_hid_android_mouse.c
+patching file include/linux/usb/android.h
+Hunk #1 succeeded at 42 (offset -1 lines).
+Hunk #2 succeeded at 101 (offset -1 lines).
+patching file init/init_cedric.cpp
+patching file configs/android.hardware.camera.ar.xml
+patching file device.mk
+patching file lineage_cedric.mk
 make[1]: Verzeichnis „/home/kiam001/repofastmaker/android10/MintOS“ wird verlassen
+OK
