@@ -368,21 +368,21 @@ Patch java/com/android/incallui/call/CallRecorder.java sauber angewendet
 OK
 make -f device/`cat .makedata2`/device.mk patch && echo OK
 make[1]: Verzeichnis „/home/kiam001/repofastmaker/android10/MintOS“ wird betreten
---2020-10-29 03:14:21--  https://github.com/nift4/android-keyboard-gadget/raw/linux-3.18/generic_kernel_3.18.patch
-Auflösen des Hostnamens github.com (github.com)… 140.82.121.4
-Verbindungsaufbau zu github.com (github.com)|140.82.121.4|:443 … verbunden.
+--2020-10-30 03:13:03--  https://github.com/nift4/android-keyboard-gadget/raw/linux-3.18/generic_kernel_3.18.patch
+Auflösen des Hostnamens github.com (github.com)… 140.82.121.3
+Verbindungsaufbau zu github.com (github.com)|140.82.121.3|:443 … verbunden.
 HTTP-Anforderung gesendet, auf Antwort wird gewartet … 302 Found
 Platz: https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch [folgend]
---2020-10-29 03:14:21--  https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch
+--2020-10-30 03:13:04--  https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch
 Auflösen des Hostnamens raw.githubusercontent.com (raw.githubusercontent.com)… 151.101.112.133
 Verbindungsaufbau zu raw.githubusercontent.com (raw.githubusercontent.com)|151.101.112.133|:443 … verbunden.
 HTTP-Anforderung gesendet, auf Antwort wird gewartet … 200 OK
 Länge: 17370 (17K) [text/plain]
 Wird in »STDOUT« gespeichert.
 
-     0K .......... ......                                     100% 4,53M=0,004s
+     0K .......... ......                                     100% 4,70M=0,004s
 
-2020-10-29 03:14:21 (4,53 MB/s) - auf die Standardausgabe geschrieben [17370/17370]
+2020-10-30 03:13:04 (4,70 MB/s) - auf die Standardausgabe geschrieben [17370/17370]
 
 patching file drivers/usb/gadget/android.c
 Hunk #1 succeeded at 74 with fuzz 2 (offset 5 lines).
@@ -410,28 +410,28 @@ patching file drivers/usb/gadget/function/f_hid_android_mouse.c
 patching file include/linux/usb/android.h
 Hunk #1 succeeded at 42 (offset -1 lines).
 Hunk #2 succeeded at 101 (offset -1 lines).
---2020-10-29 03:14:21--  https://github.com/Sohamlad7/android_device_motorola_cedric/commit/fe1564fb738ec698ade687a43be4e9e3b7270de2.patch
-Auflösen des Hostnamens github.com (github.com)… 140.82.121.4
-Verbindungsaufbau zu github.com (github.com)|140.82.121.4|:443 … verbunden.
+--2020-10-30 03:13:04--  https://github.com/Sohamlad7/android_device_motorola_cedric/commit/fe1564fb738ec698ade687a43be4e9e3b7270de2.patch
+Auflösen des Hostnamens github.com (github.com)… 140.82.121.3
+Verbindungsaufbau zu github.com (github.com)|140.82.121.3|:443 … verbunden.
 HTTP-Anforderung gesendet, auf Antwort wird gewartet … 200 OK
 Länge: 917 [text/plain]
 Wird in »STDOUT« gespeichert.
 
-     0K                                                       100% 17,1M=0s
+     0K                                                       100% 19,8M=0s
 
-2020-10-29 03:14:22 (17,1 MB/s) - auf die Standardausgabe geschrieben [917/917]
+2020-10-30 03:13:04 (19,8 MB/s) - auf die Standardausgabe geschrieben [917/917]
 
 patching file init/init_cedric.cpp
---2020-10-29 03:14:22--  https://github.com/Sohamlad7/android_device_motorola_cedric/commit/851f1323a06cc08a2d77f73d2e2afc9ab2b26357.patch
-Auflösen des Hostnamens github.com (github.com)… 140.82.121.4
-Verbindungsaufbau zu github.com (github.com)|140.82.121.4|:443 … verbunden.
+--2020-10-30 03:13:04--  https://github.com/Sohamlad7/android_device_motorola_cedric/commit/851f1323a06cc08a2d77f73d2e2afc9ab2b26357.patch
+Auflösen des Hostnamens github.com (github.com)… 140.82.121.3
+Verbindungsaufbau zu github.com (github.com)|140.82.121.3|:443 … verbunden.
 HTTP-Anforderung gesendet, auf Antwort wird gewartet … 200 OK
 Länge: 2943 (2,9K) [text/plain]
 Wird in »STDOUT« gespeichert.
 
-     0K ..                                                    100% 30,6M=0s
+     0K ..                                                    100% 37,3M=0s
 
-2020-10-29 03:14:22 (30,6 MB/s) - auf die Standardausgabe geschrieben [2943/2943]
+2020-10-30 03:13:05 (37,3 MB/s) - auf die Standardausgabe geschrieben [2943/2943]
 
 patching file configs/android.hardware.camera.ar.xml
 patching file device.mk
