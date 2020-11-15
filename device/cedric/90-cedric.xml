@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-<!-- LineageOS Dependency Projects -->
-  <project name="LineageOS/android_system_qcom" path="system/qcom" remote="github" revision="lineage-17.1" />
 
-<!-- Moto G5 Cedric Projects -->
-  <project name="nift4/android_device_motorola_cedric" path="device/motorola/cedric" remote="github" revision="lineage-17.1" />
-  <project name="Sohamlad7/android_kernel_motorola_msm8937" path="kernel/motorola/msm8937" remote="github" revision="lineage-17.1" />
-  <project name="Sohamlad7/android_vendor_motorola_cedric" path="vendor/motorola/cedric" remote="github" revision="lineage-17.1" />
-</manifest>
+  <!--Device repos--> 
+  <project path="device/motorola/cedric" name="moto-msm8937/android_device_motorola_cedric" />
+  <project path="device/motorola/hannah" name="moto-msm8937/android_device_motorola_hannah" />
+  <project path="device/motorola/montana" name="moto-msm8937/android_device_motorola_montana" />
+  <project path="device/motorola/msm8937-common" name="moto-msm8937/android_device_motorola_msm8937-common" />
+  <project path="kernel/motorola/msm8953" name="JarlPenguin/android_kernel_motorola_msm8953" revision="rebase" />
+  <project path="vendor/motorola" name="moto-msm8937/proprietary_vendor_motorola" />
+  
+  <!--Dependencies-->
+  <project path="external/bson" name="LineageOS/android_external_bson" />
+  <project path="system/qcom" name="LineageOS/android_system_qcom" />
+
+  <!--Updater-->
+  <remove-project name="LineageOS/android_packages_apps_Updater" />
+  <project path="packages/apps/Updater" name="moto-msm8937/android_packages_apps_Updater" />
+
+</manifest>  
