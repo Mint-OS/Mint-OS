@@ -1,5 +1,5 @@
 #!/bin/bash
-ls $1 || (cd $5; git commit -m "$3: Automatic OTA Update FAILED"; cd -)
+ls $1 || (cd $5; git commit -m "$3: Automatic OTA Update FAILED"; cd ../Mint-OS)
 ls $1 || exit 1 
 IFS=']' read -r -a json < $5/$3.json
 chmod +x mkota.sh
