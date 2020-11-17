@@ -374,21 +374,21 @@ Patch java/com/android/incallui/call/CallRecorder.java sauber angewendet
 OK
 make -f device/`cat .makedata2`/device.mk patch && echo OK
 make[1]: Verzeichnis „/home/kiam001/repofastmaker/android10/MintOS“ wird betreten
---2020-11-16 18:42:27--  https://github.com/nift4/android-keyboard-gadget/raw/linux-3.18/generic_kernel_3.18.patch
+--2020-11-17 03:13:45--  https://github.com/nift4/android-keyboard-gadget/raw/linux-3.18/generic_kernel_3.18.patch
 Auflösen des Hostnamens github.com (github.com)… 140.82.121.4
 Verbindungsaufbau zu github.com (github.com)|140.82.121.4|:443 … verbunden.
 HTTP-Anforderung gesendet, auf Antwort wird gewartet … 302 Found
 Platz: https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch [folgend]
---2020-11-16 18:42:27--  https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch
+--2020-11-17 03:13:45--  https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch
 Auflösen des Hostnamens raw.githubusercontent.com (raw.githubusercontent.com)… 151.101.112.133
 Verbindungsaufbau zu raw.githubusercontent.com (raw.githubusercontent.com)|151.101.112.133|:443 … verbunden.
 HTTP-Anforderung gesendet, auf Antwort wird gewartet … 200 OK
 Länge: 17370 (17K) [text/plain]
 Wird in »STDOUT« gespeichert.
 
-     0K .......... ......                                     100% 89,5M=0s
+     0K .......... ......                                     100%  110M=0s
 
-2020-11-16 18:42:27 (89,5 MB/s) - auf die Standardausgabe geschrieben [17370/17370]
+2020-11-17 03:13:45 (110 MB/s) - auf die Standardausgabe geschrieben [17370/17370]
 
 patching file drivers/usb/gadget/android.c
 Hunk #1 FAILED at 69.
