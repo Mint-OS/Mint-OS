@@ -11,1942 +11,338 @@ export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd art &
 /home/kiam001/jenkins/workspace/MintOS/MintOS/01-art.patch:5376: trailing whitespace.
  
 Prüfe Patch Android.mk ...
-error: bei der Suche nach:
-include $(CLEAR_VARS)
-LOCAL_MODULE := com.android.runtime
-LOCAL_IS_HOST_MODULE := true
-ifneq ($(HOST_OS),darwin)
-  LOCAL_REQUIRED_MODULES += $(APEX_TEST_MODULE)
-endif
-include $(BUILD_PHONY_PACKAGE)
-
-# Create canonical name -> file name symlink in the symbol directory
-
-error: Anwendung des Patches fehlgeschlagen: Android.mk:371
-error: Android.mk: Patch konnte nicht angewendet werden
 Prüfe Patch benchmark/micro-native/micro_native.cc ...
-error: bei der Suche nach:
-static void NativeMethods_emptyJniStaticSynchronizedMethod0(JNIEnv*, jclass) { }
-static void NativeMethods_emptyJniSynchronizedMethod0(JNIEnv*, jclass) { }
-
-static JNINativeMethod gMethods_NormalOnly[] = {
-  NATIVE_METHOD(NativeMethods, emptyJniStaticSynchronizedMethod0, "()V"),
-  NATIVE_METHOD(NativeMethods, emptyJniSynchronizedMethod0, "()V"),
-};
-
-error: Anwendung des Patches fehlgeschlagen: benchmark/micro-native/micro_native.cc:38
-error: benchmark/micro-native/micro_native.cc: Patch konnte nicht angewendet werden
 Prüfe Patch benchmark/stringbuilder-append/info.txt ...
-error: benchmark/stringbuilder-append/info.txt existiert bereits im Arbeitsverzeichnis
 Prüfe Patch benchmark/stringbuilder-append/src/StringBuilderAppendBenchmark.java ...
-error: benchmark/stringbuilder-append/src/StringBuilderAppendBenchmark.java existiert bereits im Arbeitsverzeichnis
 Prüfe Patch compiler/Android.bp ...
-error: bei der Suche nach:
-        "jni/jni_cfi_test.cc",
-        "optimizing/codegen_test.cc",
-        "optimizing/load_store_analysis_test.cc",
-        "optimizing/optimizing_cfi_test.cc",
-        "optimizing/scheduler_test.cc",
-    ],
-
-error: Anwendung des Patches fehlgeschlagen: compiler/Android.bp:388
-error: compiler/Android.bp: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/driver/compiled_method_storage.cc ...
-error: bei der Suche nach:
-  uint32_t custom_value1 = 0u;
-  uint32_t custom_value2 = 0u;
-  switch (linker_patch.GetType()) {
-    case linker::LinkerPatch::Type::kBakerReadBarrierBranch:
-      custom_value1 = linker_patch.GetBakerCustomValue1();
-      custom_value2 = linker_patch.GetBakerCustomValue2();
-
-error: Anwendung des Patches fehlgeschlagen: compiler/driver/compiled_method_storage.cc:216
-error: compiler/driver/compiled_method_storage.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/linker/linker_patch.h ...
-error: bei der Suche nach:
-    kTypeBssEntry,
-    kStringRelative,
-    kStringBssEntry,
-    kBakerReadBarrierBranch,
-  };
-
-
-error: Anwendung des Patches fehlgeschlagen: compiler/linker/linker_patch.h:52
-error: compiler/linker/linker_patch.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator.cc ...
-error: bei der Suche nach:
-#include "ssa_liveness_analysis.h"
-#include "stack_map.h"
-#include "stack_map_stream.h"
-#include "thread-current-inl.h"
-#include "utils/assembler.h"
-
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator.cc:64
-error: compiler/optimizing/code_generator.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator.h ...
-error: bei der Suche nach:
-  virtual Assembler* GetAssembler() = 0;
-  virtual const Assembler& GetAssembler() const = 0;
-  virtual size_t GetWordSize() const = 0;
-  virtual size_t GetFloatingPointSpillSlotSize() const = 0;
-  virtual uintptr_t GetAddressOf(HBasicBlock* block) = 0;
-  void InitializeCodeGeneration(size_t number_of_spill_slots,
-                                size_t maximum_safepoint_spill_size,
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator.h:222
-error: compiler/optimizing/code_generator.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_arm64.cc ...
-error: bei der Suche nach:
-    stack_offset += kXRegSizeInBytes;
-  }
-
-  const uint32_t fp_spills = codegen->GetSlowPathSpills(locations, /* core_registers= */ false);
-  for (uint32_t i : LowToHighBits(fp_spills)) {
-    DCHECK_LT(stack_offset, codegen->GetFrameSize() - codegen->FrameEntrySpillSize());
-    DCHECK_LT(i, kMaximumNumberOfExpectedRegisters);
-    saved_fpu_stack_offsets_[i] = stack_offset;
-    stack_offset += kDRegSizeInBytes;
-  }
-
-  SaveRestoreLiveRegistersHelper(codegen,
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_arm64.cc:224
-error: compiler/optimizing/code_generator_arm64.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_arm64.h ...
-error: bei der Suche nach:
-    return kArm64WordSize;
-  }
-
-  size_t GetFloatingPointSpillSlotSize() const override {
-    return GetGraph()->HasSIMD()
-        ? 2 * kArm64WordSize   // 16 bytes == 2 arm64 words for each spill
-        : 1 * kArm64WordSize;  //  8 bytes == 1 arm64 words for each spill
-  }
-
-  uintptr_t GetAddressOf(HBasicBlock* block) override {
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_arm64.h:435
-error: compiler/optimizing/code_generator_arm64.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_arm_vixl.cc ...
-error: bei der Suche nach:
-using namespace vixl32;  // NOLINT(build/namespaces)
-
-using helpers::DRegisterFrom;
-using helpers::DWARFReg;
-using helpers::HighRegisterFrom;
-using helpers::InputDRegisterAt;
-using helpers::InputOperandAt;
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_arm_vixl.cc:47
-error: compiler/optimizing/code_generator_arm_vixl.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_arm_vixl.h ...
-error: bei der Suche nach:
-
-static const vixl::aarch32::Register kMethodRegister = vixl::aarch32::r0;
-
-static const vixl::aarch32::Register kCoreAlwaysSpillRegister = vixl::aarch32::r5;
-
-// Callee saves core registers r5, r6, r7, r8 (except when emitting Baker
-// read barriers, where it is used as Marking Register), r10, r11, and lr.
-static const vixl::aarch32::RegisterList kCoreCalleeSaves = vixl::aarch32::RegisterList::Union(
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_arm_vixl.h:76
-error: compiler/optimizing/code_generator_arm_vixl.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_mips.cc ...
-error: bei der Suche nach:
-  } else {
-    __ StoreDToOffset(FRegister(reg_id), SP, stack_index);
-  }
-  return GetFloatingPointSpillSlotSize();
-}
-
-size_t CodeGeneratorMIPS::RestoreFloatingPointRegister(size_t stack_index, uint32_t reg_id) {
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_mips.cc:1953
-error: compiler/optimizing/code_generator_mips.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_mips.h ...
-error: bei der Suche nach:
-
-  size_t GetWordSize() const override { return kMipsWordSize; }
-
-  size_t GetFloatingPointSpillSlotSize() const override {
-    return GetGraph()->HasSIMD()
-        ? 2 * kMipsDoublewordSize   // 16 bytes for each spill.
-        : 1 * kMipsDoublewordSize;  //  8 bytes for each spill.
-  }
-
-  uintptr_t GetAddressOf(HBasicBlock* block) override {
-    return assembler_.GetLabelLocation(GetLabelOf(block));
-  }
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_mips.h:385
-error: compiler/optimizing/code_generator_mips.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_mips64.cc ...
-error: bei der Suche nach:
-                      FpuRegister(reg_id),
-                      SP,
-                      stack_index);
-  return GetFloatingPointSpillSlotSize();
-}
-
-size_t CodeGeneratorMIPS64::RestoreFloatingPointRegister(size_t stack_index, uint32_t reg_id) {
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_mips64.cc:1814
-error: compiler/optimizing/code_generator_mips64.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_mips64.h ...
-error: bei der Suche nach:
-
-  size_t GetWordSize() const override { return kMips64DoublewordSize; }
-
-  size_t GetFloatingPointSpillSlotSize() const override {
-    return GetGraph()->HasSIMD()
-        ? 2 * kMips64DoublewordSize   // 16 bytes for each spill.
-        : 1 * kMips64DoublewordSize;  //  8 bytes for each spill.
-  }
-
-  uintptr_t GetAddressOf(HBasicBlock* block) override {
-    return assembler_.GetLabelLocation(GetLabelOf(block));
-  }
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_mips64.h:363
-error: compiler/optimizing/code_generator_mips64.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_x86.cc ...
-error: bei der Suche nach:
-  } else {
-    __ movsd(Address(ESP, stack_index), XmmRegister(reg_id));
-  }
-  return GetFloatingPointSpillSlotSize();
-}
-
-size_t CodeGeneratorX86::RestoreFloatingPointRegister(size_t stack_index, uint32_t reg_id) {
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_x86.cc:987
-error: compiler/optimizing/code_generator_x86.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_x86.h ...
-error: bei der Suche nach:
-    return kX86WordSize;
-  }
-
-  size_t GetFloatingPointSpillSlotSize() const override {
-    return GetGraph()->HasSIMD()
-        ? 4 * kX86WordSize   // 16 bytes == 4 words for each spill
-        : 2 * kX86WordSize;  //  8 bytes == 2 words for each spill
-  }
-
-  HGraphVisitor* GetLocationBuilder() override {
-    return &location_builder_;
-  }
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_x86.h:353
-error: compiler/optimizing/code_generator_x86.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_x86_64.cc ...
-error: bei der Suche nach:
-  } else {
-    __ movsd(Address(CpuRegister(RSP), stack_index), XmmRegister(reg_id));
-  }
-  return GetFloatingPointSpillSlotSize();
-}
-
-size_t CodeGeneratorX86_64::RestoreFloatingPointRegister(size_t stack_index, uint32_t reg_id) {
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_x86_64.cc:1245
-error: compiler/optimizing/code_generator_x86_64.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/code_generator_x86_64.h ...
-error: bei der Suche nach:
-    return kX86_64WordSize;
-  }
-
-  size_t GetFloatingPointSpillSlotSize() const override {
-    return GetGraph()->HasSIMD()
-        ? 2 * kX86_64WordSize   // 16 bytes == 2 x86_64 words for each spill
-        : 1 * kX86_64WordSize;  //  8 bytes == 1 x86_64 words for each spill
-  }
-
-  HGraphVisitor* GetLocationBuilder() override {
-    return &location_builder_;
-  }
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/code_generator_x86_64.h:333
-error: compiler/optimizing/code_generator_x86_64.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/codegen_test.cc ...
-error: bei der Suche nach:
-  EXPECT_TRUE(features->Has(vixl::CPUFeatures::kCRC32));
-  EXPECT_TRUE(features->Has(vixl::CPUFeatures::kDotProduct));
-  EXPECT_TRUE(features->Has(vixl::CPUFeatures::kFPHalf));
-  EXPECT_TRUE(features->Has(vixl::CPUFeatures::kAtomics));
-}
-
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/codegen_test.cc:834
-error: compiler/optimizing/codegen_test.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/common_arm.h ...
-error: bei der Suche nach:
-#ifndef ART_COMPILER_OPTIMIZING_COMMON_ARM_H_
-#define ART_COMPILER_OPTIMIZING_COMMON_ARM_H_
-
-#include "dwarf/register.h"
-#include "instruction_simplifier_shared.h"
-#include "locations.h"
-#include "nodes.h"
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/common_arm.h:17
-error: compiler/optimizing/common_arm.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/common_arm64.h ...
-error: bei der Suche nach:
-  return vixl::aarch64::FPRegister::GetSRegFromCode(location.reg());
-}
-
-inline vixl::aarch64::FPRegister FPRegisterFrom(Location location, DataType::Type type) {
-  DCHECK(DataType::IsFloatingPointType(type)) << type;
-  return type == DataType::Type::kFloat64 ? DRegisterFrom(location) : SRegisterFrom(location);
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/common_arm64.h:107
-error: compiler/optimizing/common_arm64.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/constant_folding.cc ...
-error: bei der Suche nach:
-}
-
-void InstructionWithAbsorbingInputSimplifier::VisitAnd(HAnd* instruction) {
-  HConstant* input_cst = instruction->GetConstantRight();
-  if ((input_cst != nullptr) && input_cst->IsZeroBitPattern()) {
-    // Replace code looking like
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/constant_folding.cc:217
-error: compiler/optimizing/constant_folding.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/instruction_simplifier.cc ...
-error: bei der Suche nach:
-#include "mirror/class-inl.h"
-#include "scoped_thread_state_change-inl.h"
-#include "sharpening.h"
-
-namespace art {
-
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/instruction_simplifier.cc:25
-error: compiler/optimizing/instruction_simplifier.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/intrinsics_arm64.cc ...
-error: bei der Suche nach:
-using helpers::SRegisterFrom;
-using helpers::WRegisterFrom;
-using helpers::XRegisterFrom;
-using helpers::InputRegisterAt;
-using helpers::OutputRegister;
-
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/intrinsics_arm64.cc:54
-error: compiler/optimizing/intrinsics_arm64.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/intrinsics_arm_vixl.cc ...
-error: bei der Suche nach:
-UNIMPLEMENTED_INTRINSIC(ARMVIXL, CRC32Update)
-UNIMPLEMENTED_INTRINSIC(ARMVIXL, CRC32UpdateBytes)
-UNIMPLEMENTED_INTRINSIC(ARMVIXL, CRC32UpdateByteBuffer)
-
-UNIMPLEMENTED_INTRINSIC(ARMVIXL, StringStringIndexOf);
-UNIMPLEMENTED_INTRINSIC(ARMVIXL, StringStringIndexOfAfter);
-UNIMPLEMENTED_INTRINSIC(ARMVIXL, StringBufferAppend);
-UNIMPLEMENTED_INTRINSIC(ARMVIXL, StringBufferLength);
-UNIMPLEMENTED_INTRINSIC(ARMVIXL, StringBufferToString);
-UNIMPLEMENTED_INTRINSIC(ARMVIXL, StringBuilderAppend);
-UNIMPLEMENTED_INTRINSIC(ARMVIXL, StringBuilderLength);
-UNIMPLEMENTED_INTRINSIC(ARMVIXL, StringBuilderToString);
-
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/intrinsics_arm_vixl.cc:3070
-error: compiler/optimizing/intrinsics_arm_vixl.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/intrinsics_mips.cc ...
-error: bei der Suche nach:
-UNIMPLEMENTED_INTRINSIC(MIPS, CRC32Update)
-UNIMPLEMENTED_INTRINSIC(MIPS, CRC32UpdateBytes)
-UNIMPLEMENTED_INTRINSIC(MIPS, CRC32UpdateByteBuffer)
-
-UNIMPLEMENTED_INTRINSIC(MIPS, StringStringIndexOf);
-UNIMPLEMENTED_INTRINSIC(MIPS, StringStringIndexOfAfter);
-UNIMPLEMENTED_INTRINSIC(MIPS, StringBufferAppend);
-UNIMPLEMENTED_INTRINSIC(MIPS, StringBufferLength);
-UNIMPLEMENTED_INTRINSIC(MIPS, StringBufferToString);
-UNIMPLEMENTED_INTRINSIC(MIPS, StringBuilderAppend);
-UNIMPLEMENTED_INTRINSIC(MIPS, StringBuilderLength);
-UNIMPLEMENTED_INTRINSIC(MIPS, StringBuilderToString);
-
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/intrinsics_mips.cc:2707
-error: compiler/optimizing/intrinsics_mips.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/intrinsics_mips64.cc ...
-error: bei der Suche nach:
-UNIMPLEMENTED_INTRINSIC(MIPS64, CRC32Update)
-UNIMPLEMENTED_INTRINSIC(MIPS64, CRC32UpdateBytes)
-UNIMPLEMENTED_INTRINSIC(MIPS64, CRC32UpdateByteBuffer)
-
-UNIMPLEMENTED_INTRINSIC(MIPS64, StringStringIndexOf);
-UNIMPLEMENTED_INTRINSIC(MIPS64, StringStringIndexOfAfter);
-UNIMPLEMENTED_INTRINSIC(MIPS64, StringBufferAppend);
-UNIMPLEMENTED_INTRINSIC(MIPS64, StringBufferLength);
-UNIMPLEMENTED_INTRINSIC(MIPS64, StringBufferToString);
-UNIMPLEMENTED_INTRINSIC(MIPS64, StringBuilderAppend);
-UNIMPLEMENTED_INTRINSIC(MIPS64, StringBuilderLength);
-UNIMPLEMENTED_INTRINSIC(MIPS64, StringBuilderToString);
-
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/intrinsics_mips64.cc:2357
-error: compiler/optimizing/intrinsics_mips64.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/intrinsics_x86.cc ...
-error: bei der Suche nach:
-UNIMPLEMENTED_INTRINSIC(X86, CRC32Update)
-UNIMPLEMENTED_INTRINSIC(X86, CRC32UpdateBytes)
-UNIMPLEMENTED_INTRINSIC(X86, CRC32UpdateByteBuffer)
-
-UNIMPLEMENTED_INTRINSIC(X86, StringStringIndexOf);
-UNIMPLEMENTED_INTRINSIC(X86, StringStringIndexOfAfter);
-UNIMPLEMENTED_INTRINSIC(X86, StringBufferAppend);
-UNIMPLEMENTED_INTRINSIC(X86, StringBufferLength);
-UNIMPLEMENTED_INTRINSIC(X86, StringBufferToString);
-UNIMPLEMENTED_INTRINSIC(X86, StringBuilderAppend);
-UNIMPLEMENTED_INTRINSIC(X86, StringBuilderLength);
-UNIMPLEMENTED_INTRINSIC(X86, StringBuilderToString);
-
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/intrinsics_x86.cc:3081
-error: compiler/optimizing/intrinsics_x86.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/intrinsics_x86_64.cc ...
-error: bei der Suche nach:
-UNIMPLEMENTED_INTRINSIC(X86_64, CRC32Update)
-UNIMPLEMENTED_INTRINSIC(X86_64, CRC32UpdateBytes)
-UNIMPLEMENTED_INTRINSIC(X86_64, CRC32UpdateByteBuffer)
-
-UNIMPLEMENTED_INTRINSIC(X86_64, StringStringIndexOf);
-UNIMPLEMENTED_INTRINSIC(X86_64, StringStringIndexOfAfter);
-UNIMPLEMENTED_INTRINSIC(X86_64, StringBufferAppend);
-UNIMPLEMENTED_INTRINSIC(X86_64, StringBufferLength);
-UNIMPLEMENTED_INTRINSIC(X86_64, StringBufferToString);
-UNIMPLEMENTED_INTRINSIC(X86_64, StringBuilderAppend);
-UNIMPLEMENTED_INTRINSIC(X86_64, StringBuilderLength);
-UNIMPLEMENTED_INTRINSIC(X86_64, StringBuilderToString);
-
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/intrinsics_x86_64.cc:2748
-error: compiler/optimizing/intrinsics_x86_64.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/load_store_elimination.cc ...
-error: bei der Suche nach:
-#include "load_store_analysis.h"
-#include "side_effects_analysis.h"
-
-#include <iostream>
-
-/**
- * The general algorithm of load-store elimination (LSE).
- * Load-store analysis in the previous pass collects a list of heap locations
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/load_store_elimination.cc:23
-error: compiler/optimizing/load_store_elimination.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/load_store_elimination_test.cc ...
-error: compiler/optimizing/load_store_elimination_test.cc existiert bereits im Arbeitsverzeichnis
 Prüfe Patch compiler/optimizing/nodes.h ...
-error: bei der Suche nach:
-  M(Shr, BinaryOperation)                                               \
-  M(StaticFieldGet, Instruction)                                        \
-  M(StaticFieldSet, Instruction)                                        \
-  M(UnresolvedInstanceFieldGet, Instruction)                            \
-  M(UnresolvedInstanceFieldSet, Instruction)                            \
-  M(UnresolvedStaticFieldGet, Instruction)                              \
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/nodes.h:1438
-error: compiler/optimizing/nodes.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/nodes_vector.h ...
-error: bei der Suche nach:
-  // A store needs to stay in place.
-  bool CanBeMoved() const override { return false; }
-
-  DECLARE_INSTRUCTION(VecStore);
-
- protected:
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/nodes_vector.h:1155
-error: compiler/optimizing/nodes_vector.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/register_allocation_resolver.cc ...
-error: bei der Suche nach:
-size_t RegisterAllocationResolver::CalculateMaximumSafepointSpillSize(
-    ArrayRef<HInstruction* const> safepoints) {
-  size_t core_register_spill_size = codegen_->GetWordSize();
-  size_t fp_register_spill_size = codegen_->GetFloatingPointSpillSlotSize();
-  size_t maximum_safepoint_spill_size = 0u;
-  for (HInstruction* instruction : safepoints) {
-    LocationSummary* locations = instruction->GetLocations();
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/register_allocation_resolver.cc:274
-error: compiler/optimizing/register_allocation_resolver.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/scheduler.cc ...
-error: bei der Suche nach:
-  }
-
-  if (is_data_dependency) {
-    if (!HasImmediateDataDependency(node, dependency)) {
-      node->AddDataPredecessor(dependency);
-    }
-  } else if (!HasImmediateOtherDependency(node, dependency)) {
-    node->AddOtherPredecessor(dependency);
-  }
-}
-
-static bool MayHaveReorderingDependency(SideEffects node, SideEffects other) {
-  // Read after write.
-  if (node.MayDependOn(other)) {
-    return true;
-  }
-
-  // Write after read.
-  if (other.MayDependOn(node)) {
-    return true;
-  }
-
-  // Memory write after write.
-  if (node.DoesAnyWrite() && other.DoesAnyWrite()) {
-    return true;
-  }
-
-  return false;
-}
-
-size_t SchedulingGraph::ArrayAccessHeapLocation(HInstruction* instruction) const {
-  DCHECK(heap_location_collector_ != nullptr);
-  size_t heap_loc = heap_location_collector_->GetArrayHeapLocation(instruction);
-  // This array access should be analyzed and added to HeapLocationCollector before.
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/scheduler.cc:43
-error: compiler/optimizing/scheduler.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/scheduler.h ...
-error: bei der Suche nach:
-
-#include "base/scoped_arena_allocator.h"
-#include "base/scoped_arena_containers.h"
-#include "base/time_utils.h"
-#include "code_generator.h"
-#include "load_store_analysis.h"
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/scheduler.h:21
-error: compiler/optimizing/scheduler.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/scheduler_test.cc ...
-error: bei der Suche nach:
-    environment->SetRawEnvAt(1, mul);
-    mul->AddEnvUseAt(div_check->GetEnvironment(), 1);
-
-    SchedulingGraph scheduling_graph(scheduler,
-                                     GetScopedAllocator(),
-                                     /* heap_location_collector= */ nullptr);
-    // Instructions must be inserted in reverse order into the scheduling graph.
-    for (HInstruction* instr : ReverseRange(block_instructions)) {
-      scheduling_graph.AddNode(instr);
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/scheduler_test.cc:146
-error: compiler/optimizing/scheduler_test.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/stack_map_stream.cc ...
-error: bei der Suche nach:
-  core_spill_mask_ = core_spill_mask;
-  fp_spill_mask_ = fp_spill_mask;
-  num_dex_registers_ = num_dex_registers;
-}
-
-void StackMapStream::EndMethod() {
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/stack_map_stream.cc:52
-error: compiler/optimizing/stack_map_stream.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/optimizing/stack_map_stream.h ...
-error: bei der Suche nach:
-
-  ScopedArenaAllocator* allocator_;
-  const InstructionSet instruction_set_;
-  uint32_t packed_frame_size_ = 0;
-  uint32_t core_spill_mask_ = 0;
-  uint32_t fp_spill_mask_ = 0;
-
-error: Anwendung des Patches fehlgeschlagen: compiler/optimizing/stack_map_stream.h:99
-error: compiler/optimizing/stack_map_stream.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/utils/arm/assembler_arm_vixl.h ...
-error: bei der Suche nach:
-#include "base/arena_containers.h"
-#include "base/macros.h"
-#include "constants_arm.h"
-#include "offsets.h"
-#include "utils/arm/assembler_arm_shared.h"
-#include "utils/arm/managed_register_arm.h"
-
-error: Anwendung des Patches fehlgeschlagen: compiler/utils/arm/assembler_arm_vixl.h:22
-error: compiler/utils/arm/assembler_arm_vixl.h: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/utils/arm/jni_macro_assembler_arm_vixl.cc ...
-error: bei der Suche nach:
-  asm_.FinalizeCode();
-}
-
-static dwarf::Reg DWARFReg(vixl32::Register reg) {
-  return dwarf::Reg::ArmCore(static_cast<int>(reg.GetCode()));
-}
-
-static dwarf::Reg DWARFReg(vixl32::SRegister reg) {
-  return dwarf::Reg::ArmFp(static_cast<int>(reg.GetCode()));
-}
-
-static constexpr size_t kFramePointerSize = static_cast<size_t>(kArmPointerSize);
-
-void ArmVIXLJNIMacroAssembler::BuildFrame(size_t frame_size,
-
-error: Anwendung des Patches fehlgeschlagen: compiler/utils/arm/jni_macro_assembler_arm_vixl.cc:68
-error: compiler/utils/arm/jni_macro_assembler_arm_vixl.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/utils/arm64/assembler_arm64.cc ...
-error: bei der Suche nach:
-  }
-  if (art_features->HasFP16()) {
-    features->Combine(vixl::CPUFeatures::kFPHalf);
-  }
-  if (art_features->HasLSE()) {
-    features->Combine(vixl::CPUFeatures::kAtomics);
-
-error: Anwendung des Patches fehlgeschlagen: compiler/utils/arm64/assembler_arm64.cc:49
-error: compiler/utils/arm64/assembler_arm64.cc: Patch konnte nicht angewendet werden
 Prüfe Patch compiler/utils/arm64/assembler_arm64.h ...
-error: bei der Suche nach:
-
-#include "base/arena_containers.h"
-#include "base/macros.h"
-#include "offsets.h"
-#include "utils/arm64/managed_register_arm64.h"
-#include "utils/assembler.h"
-
-error: Anwendung des Patches fehlgeschlagen: compiler/utils/arm64/assembler_arm64.h:25
-error: compiler/utils/arm64/assembler_arm64.h: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/arm/relative_patcher_arm_base.cc ...
-error: bei der Suche nach:
-  return ThunkKey(ThunkType::kMethodCall);
-}
-
-ArmBaseRelativePatcher::ThunkKey ArmBaseRelativePatcher::GetBakerThunkKey(
-    const LinkerPatch& patch) {
-  DCHECK_EQ(patch.GetType(), LinkerPatch::Type::kBakerReadBarrierBranch);
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/arm/relative_patcher_arm_base.cc:386
-error: dex2oat/linker/arm/relative_patcher_arm_base.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/arm/relative_patcher_arm_base.h ...
-error: bei der Suche nach:
-
-  enum class ThunkType {
-    kMethodCall,              // Method call thunk.
-    kBakerReadBarrier,        // Baker read barrier.
-  };
-
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/arm/relative_patcher_arm_base.h:44
-error: dex2oat/linker/arm/relative_patcher_arm_base.h: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/arm/relative_patcher_thumb2.cc ...
-error: bei der Suche nach:
-                                      uint32_t literal_offset,
-                                      uint32_t patch_offset,
-                                      uint32_t target_offset) {
-  DCHECK_LE(literal_offset + 4u, code->size());
-  DCHECK_EQ(literal_offset & 1u, 0u);
-  DCHECK_EQ(patch_offset & 1u, 0u);
-  DCHECK_EQ(target_offset & 1u, 1u);  // Thumb2 mode bit.
-  uint32_t displacement = CalculateMethodCallDisplacement(patch_offset, target_offset & ~1u);
-  displacement -= kPcDisplacement;  // The base PC is at the end of the 4-byte patch.
-  DCHECK_EQ(displacement & 1u, 0u);
-  DCHECK((displacement >> 24) == 0u || (displacement >> 24) == 255u);  // 25-bit signed.
-  uint32_t signbit = (displacement >> 31) & 0x1;
-  uint32_t i1 = (displacement >> 23) & 0x1;
-  uint32_t i2 = (displacement >> 22) & 0x1;
-  uint32_t imm10 = (displacement >> 12) & 0x03ff;
-  uint32_t imm11 = (displacement >> 1) & 0x07ff;
-  uint32_t j1 = i1 ^ (signbit ^ 1);
-  uint32_t j2 = i2 ^ (signbit ^ 1);
-  uint32_t value = (signbit << 26) | (j1 << 13) | (j2 << 11) | (imm10 << 16) | imm11;
-  value |= 0xf000d000;  // BL
-
-  // Check that we're just overwriting an existing BL.
-  DCHECK_EQ(GetInsn32(code, literal_offset) & 0xf800d000, 0xf000d000);
-  // Write the new BL.
-  SetInsn32(code, literal_offset, value);
-}
-
-void Thumb2RelativePatcher::PatchPcRelativeReference(std::vector<uint8_t>* code,
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/arm/relative_patcher_thumb2.cc:58
-error: dex2oat/linker/arm/relative_patcher_thumb2.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/arm/relative_patcher_thumb2.h ...
-error: bei der Suche nach:
-                                const LinkerPatch& patch,
-                                uint32_t patch_offset,
-                                uint32_t target_offset) override;
-  void PatchBakerReadBarrierBranch(std::vector<uint8_t>* code,
-                                   const LinkerPatch& patch,
-                                   uint32_t patch_offset) override;
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/arm/relative_patcher_thumb2.h:42
-error: dex2oat/linker/arm/relative_patcher_thumb2.h: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/arm/relative_patcher_thumb2_test.cc ...
-error: bei der Suche nach:
-
-    // Make sure the ThunkProvider has all the necessary thunks.
-    for (const LinkerPatch& patch : patches) {
-      if (patch.GetType() == LinkerPatch::Type::kBakerReadBarrierBranch ||
-          patch.GetType() == LinkerPatch::Type::kCallRelative) {
-        std::string debug_name;
-        std::vector<uint8_t> thunk_code = CompileThunk(patch, &debug_name);
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/arm/relative_patcher_thumb2_test.cc:225
-error: dex2oat/linker/arm/relative_patcher_thumb2_test.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/arm64/relative_patcher_arm64.cc ...
-error: bei der Suche nach:
-inline bool IsAdrpPatch(const LinkerPatch& patch) {
-  switch (patch.GetType()) {
-    case LinkerPatch::Type::kCallRelative:
-    case LinkerPatch::Type::kBakerReadBarrierBranch:
-      return false;
-    case LinkerPatch::Type::kIntrinsicReference:
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/arm64/relative_patcher_arm64.cc:58
-error: dex2oat/linker/arm64/relative_patcher_arm64.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/arm64/relative_patcher_arm64.h ...
-error: bei der Suche nach:
-                                const LinkerPatch& patch,
-                                uint32_t patch_offset,
-                                uint32_t target_offset) override;
-  void PatchBakerReadBarrierBranch(std::vector<uint8_t>* code,
-                                   const LinkerPatch& patch,
-                                   uint32_t patch_offset) override;
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/arm64/relative_patcher_arm64.h:47
-error: dex2oat/linker/arm64/relative_patcher_arm64.h: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/arm64/relative_patcher_arm64_test.cc ...
-error: bei der Suche nach:
-
-    // Make sure the ThunkProvider has all the necessary thunks.
-    for (const LinkerPatch& patch : patches) {
-      if (patch.GetType() == LinkerPatch::Type::kBakerReadBarrierBranch ||
-          patch.GetType() == LinkerPatch::Type::kCallRelative) {
-        std::string debug_name;
-        std::vector<uint8_t> thunk_code = CompileThunk(patch, &debug_name);
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/arm64/relative_patcher_arm64_test.cc:198
-error: dex2oat/linker/arm64/relative_patcher_arm64_test.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/mips/relative_patcher_mips.cc ...
-error: bei der Suche nach:
-  }
-}
-
-void MipsRelativePatcher::PatchBakerReadBarrierBranch(std::vector<uint8_t>* code ATTRIBUTE_UNUSED,
-                                                      const LinkerPatch& patch ATTRIBUTE_UNUSED,
-                                                      uint32_t patch_offset ATTRIBUTE_UNUSED) {
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/mips/relative_patcher_mips.cc:86
-error: dex2oat/linker/mips/relative_patcher_mips.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/mips/relative_patcher_mips.h ...
-error: bei der Suche nach:
-                                const LinkerPatch& patch,
-                                uint32_t patch_offset,
-                                uint32_t target_offset) override;
-  void PatchBakerReadBarrierBranch(std::vector<uint8_t>* code,
-                                   const LinkerPatch& patch,
-                                   uint32_t patch_offset) override;
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/mips/relative_patcher_mips.h:41
-error: dex2oat/linker/mips/relative_patcher_mips.h: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/mips64/relative_patcher_mips64.cc ...
-error: bei der Suche nach:
-  }
-}
-
-void Mips64RelativePatcher::PatchBakerReadBarrierBranch(std::vector<uint8_t>* code ATTRIBUTE_UNUSED,
-                                                        const LinkerPatch& patch ATTRIBUTE_UNUSED,
-                                                        uint32_t patch_offset ATTRIBUTE_UNUSED) {
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/mips64/relative_patcher_mips64.cc:84
-error: dex2oat/linker/mips64/relative_patcher_mips64.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/mips64/relative_patcher_mips64.h ...
-error: bei der Suche nach:
-                                const LinkerPatch& patch,
-                                uint32_t patch_offset,
-                                uint32_t target_offset) override;
-  void PatchBakerReadBarrierBranch(std::vector<uint8_t>* code,
-                                   const LinkerPatch& patch,
-                                   uint32_t patch_offset) override;
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/mips64/relative_patcher_mips64.h:39
-error: dex2oat/linker/mips64/relative_patcher_mips64.h: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/multi_oat_relative_patcher.h ...
-error: bei der Suche nach:
-    relative_patcher_->PatchPcRelativeReference(code, patch, patch_offset, target_offset);
-  }
-
-  void PatchBakerReadBarrierBranch(std::vector<uint8_t>* code,
-                                   const LinkerPatch& patch,
-                                   uint32_t patch_offset) {
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/multi_oat_relative_patcher.h:114
-error: dex2oat/linker/multi_oat_relative_patcher.h: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/multi_oat_relative_patcher_test.cc ...
-error: bei der Suche nach:
-      last_target_offset_ = target_offset;
-    }
-
-    void PatchBakerReadBarrierBranch(std::vector<uint8_t>* code ATTRIBUTE_UNUSED,
-                                     const LinkerPatch& patch ATTRIBUTE_UNUSED,
-                                     uint32_t patch_offset ATTRIBUTE_UNUSED) override {
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/multi_oat_relative_patcher_test.cc:94
-error: dex2oat/linker/multi_oat_relative_patcher_test.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/oat_writer.cc ...
-error: bei der Suche nach:
-                                                                   target_offset);
-              break;
-            }
-            case LinkerPatch::Type::kBakerReadBarrierBranch: {
-              writer_->relative_patcher_->PatchBakerReadBarrierBranch(&patched_code_,
-                                                                      patch,
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/oat_writer.cc:1812
-error: dex2oat/linker/oat_writer.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/oat_writer_test.cc ...
-error: bei der Suche nach:
-  EXPECT_EQ(56U, sizeof(OatHeader));
-  EXPECT_EQ(4U, sizeof(OatMethodOffsets));
-  EXPECT_EQ(8U, sizeof(OatQuickMethodHeader));
-  EXPECT_EQ(166 * static_cast<size_t>(GetInstructionSetPointerSize(kRuntimeISA)),
-            sizeof(QuickEntryPoints));
-}
-
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/oat_writer_test.cc:469
-error: dex2oat/linker/oat_writer_test.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/relative_patcher.cc ...
-error: bei der Suche nach:
-      LOG(FATAL) << "Unexpected relative dex cache array patch.";
-    }
-
-    void PatchBakerReadBarrierBranch(std::vector<uint8_t>* code ATTRIBUTE_UNUSED,
-                                     const LinkerPatch& patch ATTRIBUTE_UNUSED,
-                                     uint32_t patch_offset ATTRIBUTE_UNUSED) override {
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/relative_patcher.cc:77
-error: dex2oat/linker/relative_patcher.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/relative_patcher.h ...
-error: bei der Suche nach:
-                                        uint32_t patch_offset,
-                                        uint32_t target_offset) = 0;
-
-  // Patch a branch to a Baker read barrier thunk.
-  virtual void PatchBakerReadBarrierBranch(std::vector<uint8_t>* code,
-                                           const LinkerPatch& patch,
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/relative_patcher.h:137
-error: dex2oat/linker/relative_patcher.h: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/relative_patcher_test.h ...
-error: bei der Suche nach:
-            auto result = method_offset_map_.FindMethodOffset(patch.TargetMethod());
-            uint32_t target_offset =
-                result.first ? result.second : kTrampolineOffset + compiled_method->CodeDelta();
-            patcher_->PatchCall(&patched_code_, patch.LiteralOffset(),
-                                offset + patch.LiteralOffset(), target_offset);
-          } else if (patch.GetType() == LinkerPatch::Type::kStringBssEntry) {
-            uint32_t target_offset =
-                bss_begin_ + string_index_to_offset_map_.Get(patch.TargetStringIndex().index_);
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/relative_patcher_test.h:174
-error: dex2oat/linker/relative_patcher_test.h: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/x86/relative_patcher_x86.cc ...
-error: bei der Suche nach:
-  (*code)[literal_offset + 3u] = static_cast<uint8_t>(diff >> 24);
-}
-
-void X86RelativePatcher::PatchBakerReadBarrierBranch(std::vector<uint8_t>* code ATTRIBUTE_UNUSED,
-                                                     const LinkerPatch& patch ATTRIBUTE_UNUSED,
-                                                     uint32_t patch_offset ATTRIBUTE_UNUSED) {
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/x86/relative_patcher_x86.cc:57
-error: dex2oat/linker/x86/relative_patcher_x86.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/x86/relative_patcher_x86.h ...
-error: bei der Suche nach:
-                                const LinkerPatch& patch,
-                                uint32_t patch_offset,
-                                uint32_t target_offset) override;
-  void PatchBakerReadBarrierBranch(std::vector<uint8_t>* code,
-                                   const LinkerPatch& patch,
-                                   uint32_t patch_offset) override;
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/x86/relative_patcher_x86.h:30
-error: dex2oat/linker/x86/relative_patcher_x86.h: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/x86_64/relative_patcher_x86_64.cc ...
-error: bei der Suche nach:
-  reinterpret_cast<unaligned_int32_t*>(&(*code)[patch.LiteralOffset()])[0] = displacement;
-}
-
-void X86_64RelativePatcher::PatchBakerReadBarrierBranch(std::vector<uint8_t>* code ATTRIBUTE_UNUSED,
-                                                        const LinkerPatch& patch ATTRIBUTE_UNUSED,
-                                                        uint32_t patch_offset ATTRIBUTE_UNUSED) {
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/x86_64/relative_patcher_x86_64.cc:35
-error: dex2oat/linker/x86_64/relative_patcher_x86_64.cc: Patch konnte nicht angewendet werden
 Prüfe Patch dex2oat/linker/x86_64/relative_patcher_x86_64.h ...
-error: bei der Suche nach:
-                                const LinkerPatch& patch,
-                                uint32_t patch_offset,
-                                uint32_t target_offset) override;
-  void PatchBakerReadBarrierBranch(std::vector<uint8_t>* code,
-                                   const LinkerPatch& patch,
-                                   uint32_t patch_offset) override;
-
-error: Anwendung des Patches fehlgeschlagen: dex2oat/linker/x86_64/relative_patcher_x86_64.h:30
-error: dex2oat/linker/x86_64/relative_patcher_x86_64.h: Patch konnte nicht angewendet werden
 Prüfe Patch libartbase/base/bit_memory_region.h ...
-error: bei der Suche nach:
-    return x;
-  }
-
- private:
-  // Represents all of the bits which were read so far. There is no upper bound.
-  // Therefore, by definition, the "cursor" is always at the end of the region.
-
-error: Anwendung des Patches fehlgeschlagen: libartbase/base/bit_memory_region.h:252
-error: libartbase/base/bit_memory_region.h: Patch konnte nicht angewendet werden
 Prüfe Patch libartbase/base/bit_table.h ...
-error: bei der Suche nach:
-    // Decode row count and column sizes from the table header.
-    num_rows_ = reader.ReadVarint();
-    if (num_rows_ != 0) {
-      column_offset_[0] = 0;
-      for (uint32_t i = 0; i < kNumColumns; i++) {
-        size_t column_end = column_offset_[i] + reader.ReadVarint();
-        column_offset_[i + 1] = dchecked_integral_cast<uint16_t>(column_end);
-      }
-    }
-
-error: Anwendung des Patches fehlgeschlagen: libartbase/base/bit_table.h:51
-error: libartbase/base/bit_table.h: Patch konnte nicht angewendet werden
 Prüfe Patch libdexfile/dex/dex_file_verifier.cc ...
-error: bei der Suche nach:
-
-#include <inttypes.h>
-
-#include <memory>
-
-#include "android-base/stringprintf.h"
-
-error: Anwendung des Patches fehlgeschlagen: libdexfile/dex/dex_file_verifier.cc:18
-error: libdexfile/dex/dex_file_verifier.cc: Patch konnte nicht angewendet werden
 Prüfe Patch libelffile/dwarf/debug_frame_opcode_writer.h ...
-error: bei der Suche nach:
-  }
-
-  // Custom alias - spill many registers based on bitmask.
-  void ALWAYS_INLINE RelOffsetForMany(Reg reg_base, int offset,
-                                      uint32_t reg_mask, int reg_size) {
-    DCHECK(reg_size == 4 || reg_size == 8);
-    if (UNLIKELY(enabled_)) {
-      for (int i = 0; reg_mask != 0u; reg_mask >>= 1, i++) {
-
-error: Anwendung des Patches fehlgeschlagen: libelffile/dwarf/debug_frame_opcode_writer.h:80
-error: libelffile/dwarf/debug_frame_opcode_writer.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/Android.bp ...
-error: bei der Suche nach:
-        "signal_catcher.cc",
-        "stack.cc",
-        "stack_map.cc",
-        "thread.cc",
-        "thread_list.cc",
-        "thread_pool.cc",
-
-error: Anwendung des Patches fehlgeschlagen: runtime/Android.bp:195
-error: runtime/Android.bp: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/arch/arm/quick_entrypoints_arm.S ...
-error: bei der Suche nach:
-    pop   {pc}
-END art_quick_l2f
-
-.macro CONDITIONAL_CBZ reg, reg_if, dest
-.ifc \reg, \reg_if
-    cbz \reg, \dest
-
-error: Anwendung des Patches fehlgeschlagen: runtime/arch/arm/quick_entrypoints_arm.S:2215
-error: runtime/arch/arm/quick_entrypoints_arm.S: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/arch/arm64/quick_entrypoints_arm64.S ...
-error: bei der Suche nach:
-#endif
-END art_quick_indexof
-
-    /*
-     * Create a function `name` calling the ReadBarrier::Mark routine,
-     * getting its argument and returning its result through W register
-
-error: Anwendung des Patches fehlgeschlagen: runtime/arch/arm64/quick_entrypoints_arm64.S:2468
-error: runtime/arch/arm64/quick_entrypoints_arm64.S: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/arch/mips/quick_entrypoints_mips.S ...
-error: bei der Suche nach:
-    subu   $v0, $t0, $t1  # return (this.charAt(i) - anotherString.charAt(i))
-END art_quick_string_compareto
-
-    /*
-     * Create a function `name` calling the ReadBarrier::Mark routine,
-     * getting its argument and returning its result through register
-
-error: Anwendung des Patches fehlgeschlagen: runtime/arch/mips/quick_entrypoints_mips.S:2694
-error: runtime/arch/mips/quick_entrypoints_mips.S: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/arch/mips64/quick_entrypoints_mips64.S ...
-error: bei der Suche nach:
-#endif
-END art_quick_indexof
-
-    /*
-     * Create a function `name` calling the ReadBarrier::Mark routine,
-     * getting its argument and returning its result through register
-
-error: Anwendung des Patches fehlgeschlagen: runtime/arch/mips64/quick_entrypoints_mips64.S:2476
-error: runtime/arch/mips64/quick_entrypoints_mips64.S: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/arch/x86/quick_entrypoints_x86.S ...
-error: bei der Suche nach:
-    ret
-END_FUNCTION art_quick_string_compareto
-
-// Create a function `name` calling the ReadBarrier::Mark routine,
-// getting its argument and returning its result through register
-// `reg`, saving and restoring all caller-save registers.
-
-error: Anwendung des Patches fehlgeschlagen: runtime/arch/x86/quick_entrypoints_x86.S:2246
-error: runtime/arch/x86/quick_entrypoints_x86.S: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/arch/x86_64/quick_entrypoints_x86_64.S ...
-error: bei der Suche nach:
-    ret
-END_FUNCTION art_quick_instance_of
-
-// Create a function `name` calling the ReadBarrier::Mark routine,
-// getting its argument and returning its result through register
-// `reg`, saving and restoring all caller-save registers.
-
-error: Anwendung des Patches fehlgeschlagen: runtime/arch/x86_64/quick_entrypoints_x86_64.S:2201
-error: runtime/arch/x86_64/quick_entrypoints_x86_64.S: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/class_loader_context.cc.rej ...
-error: runtime/class_loader_context.cc.rej existiert bereits im Arbeitsverzeichnis
 Prüfe Patch runtime/class_loader_context_test.cc.rej ...
-error: runtime/class_loader_context_test.cc.rej existiert bereits im Arbeitsverzeichnis
 Prüfe Patch runtime/entrypoints/entrypoint_utils.cc ...
-error: bei der Suche nach:
-      const OatQuickMethodHeader* current_code = outer_method->GetOatQuickMethodHeader(caller_pc);
-      DCHECK(current_code != nullptr);
-      DCHECK(current_code->IsOptimized());
-      uintptr_t native_pc_offset = current_code->NativeQuickPcOffset(caller_pc);
-      CodeInfo code_info(current_code, CodeInfo::DecodeFlags::InlineInfoOnly);
-      StackMap stack_map = code_info.GetStackMapForNativePcOffset(native_pc_offset);
-      DCHECK(stack_map.IsValid());
-      BitTableRange<InlineInfo> inline_infos = code_info.GetInlineInfosOf(stack_map);
-      if (!inline_infos.empty()) {
-        caller = GetResolvedMethod(outer_method, code_info, inline_infos);
-      }
-    }
-    if (kIsDebugBuild && do_caller_check) {
-
-error: Anwendung des Patches fehlgeschlagen: runtime/entrypoints/entrypoint_utils.cc:203
-error: runtime/entrypoints/entrypoint_utils.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/entrypoints/quick/quick_default_init_entrypoints.h ...
-error: bei der Suche nach:
-
-  // Deoptimize
-  qpoints->pDeoptimize = art_quick_deoptimize_from_compiled_code;
-}
-
-}  // namespace art
-
-error: Anwendung des Patches fehlgeschlagen: runtime/entrypoints/quick/quick_default_init_entrypoints.h:121
-error: runtime/entrypoints/quick/quick_default_init_entrypoints.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/entrypoints/quick/quick_entrypoints.h ...
-error: bei der Suche nach:
-class Class;
-template<class MirrorType> class CompressedReference;
-class Object;
-}  // namespace mirror
-
-class ArtMethod;
-
-error: Anwendung des Patches fehlgeschlagen: runtime/entrypoints/quick/quick_entrypoints.h:34
-error: runtime/entrypoints/quick/quick_entrypoints.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/entrypoints/quick/quick_entrypoints_list.h ...
-error: bei der Suche nach:
-  V(NewStringFromString, void, void) \
-  V(NewStringFromStringBuffer, void, void) \
-  V(NewStringFromStringBuilder, void, void) \
-\
-  V(ReadBarrierJni, void, mirror::CompressedReference<mirror::Object>*, Thread*) \
-  V(ReadBarrierMarkReg00, mirror::Object*, mirror::Object*) \
-
-error: Anwendung des Patches fehlgeschlagen: runtime/entrypoints/quick/quick_entrypoints_list.h:168
-error: runtime/entrypoints/quick/quick_entrypoints_list.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/entrypoints/quick/quick_string_builder_append_entrypoints.cc ...
-error: runtime/entrypoints/quick/quick_string_builder_append_entrypoints.cc existiert bereits im Arbeitsverzeichnis
 Prüfe Patch runtime/entrypoints/runtime_asm_entrypoints.h ...
-error: bei der Suche nach:
-  return reinterpret_cast<const void*>(art_quick_instrumentation_exit);
-}
-
-}  // namespace art
-
-#endif  // ART_RUNTIME_ENTRYPOINTS_RUNTIME_ASM_ENTRYPOINTS_H_
-
-error: Anwendung des Patches fehlgeschlagen: runtime/entrypoints/runtime_asm_entrypoints.h:87
-error: runtime/entrypoints/runtime_asm_entrypoints.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/entrypoints_order_test.cc ...
-error: bei der Suche nach:
-                         sizeof(void*));
-    EXPECT_OFFSET_DIFFNP(QuickEntryPoints, pNewStringFromStringBuffer, pNewStringFromStringBuilder,
-                         sizeof(void*));
-    EXPECT_OFFSET_DIFFNP(QuickEntryPoints, pNewStringFromStringBuilder, pReadBarrierJni,
-                         sizeof(void*));
-    EXPECT_OFFSET_DIFFNP(QuickEntryPoints, pReadBarrierJni, pReadBarrierMarkReg00, sizeof(void*));
-    EXPECT_OFFSET_DIFFNP(QuickEntryPoints, pReadBarrierMarkReg00, pReadBarrierMarkReg01,
-
-error: Anwendung des Patches fehlgeschlagen: runtime/entrypoints_order_test.cc:331
-error: runtime/entrypoints_order_test.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/gc/collector/concurrent_copying.cc ...
-error: bei der Suche nach:
-        << thread->GetState() << " thread " << thread << " self " << self;
-    thread->SetIsGcMarkingAndUpdateEntrypoints(true);
-    if (use_tlab_ && thread->HasTlab()) {
-      if (ConcurrentCopying::kEnableFromSpaceAccountingCheck) {
-        // This must come before the revoke.
-        size_t thread_local_objects = thread->GetThreadLocalObjectsAllocated();
-        concurrent_copying_->region_space_->RevokeThreadLocalBuffers(thread);
-        reinterpret_cast<Atomic<size_t>*>(
-            &concurrent_copying_->from_space_num_objects_at_first_pause_)->
-                fetch_add(thread_local_objects, std::memory_order_relaxed);
-      } else {
-        concurrent_copying_->region_space_->RevokeThreadLocalBuffers(thread);
-      }
-    }
-    if (kUseThreadLocalAllocationStack) {
-
-error: Anwendung des Patches fehlgeschlagen: runtime/gc/collector/concurrent_copying.cc:446
-error: runtime/gc/collector/concurrent_copying.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/gc/heap.cc ...
-error: bei der Suche nach:
-// If true, we log all GCs in the both the foreground and background. Used for debugging.
-static constexpr bool kLogAllGCs = false;
-
-// How much we grow the TLAB if we can do it.
-static constexpr size_t kPartialTlabSize = 16 * KB;
-static constexpr bool kUsePartialTlabs = true;
-
-// Use Max heap for 2 seconds, this is smaller than the usual 5s window since we don't want to leave
-// allocate with relaxed ergonomics for that long.
-static constexpr size_t kPostForkMaxHeapDurationMS = 2000;
-
-error: Anwendung des Patches fehlgeschlagen: runtime/gc/heap.cc:145
-error: runtime/gc/heap.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/gc/heap.h ...
-error: bei der Suche nach:
-
-class Heap {
- public:
-  static constexpr size_t kDefaultStartingSize = kPageSize;
-  static constexpr size_t kDefaultInitialSize = 2 * MB;
-  static constexpr size_t kDefaultMaximumSize = 256 * MB;
-
-error: Anwendung des Patches fehlgeschlagen: runtime/gc/heap.h:127
-error: runtime/gc/heap.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/gc/space/region_space-inl.h ...
-error: bei der Suche nach:
-    DCHECK_LE(begin_, Top());
-    size_t bytes;
-    if (is_a_tlab_) {
-      bytes = thread_->GetThreadLocalBytesAllocated();
-    } else {
-      bytes = static_cast<size_t>(Top() - begin_);
-    }
-
-error: Anwendung des Patches fehlgeschlagen: runtime/gc/space/region_space-inl.h:503
-error: runtime/gc/space/region_space-inl.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/gc/space/region_space.cc ...
-error: bei der Suche nach:
-    rb_table->SetAll();
-  }
-  MutexLock mu(Thread::Current(), region_lock_);
-  // Counter for the number of expected large tail regions following a large region.
-  size_t num_expected_large_tails = 0U;
-  // Flag to store whether the previously seen large region has been evacuated.
-
-error: Anwendung des Patches fehlgeschlagen: runtime/gc/space/region_space.cc:337
-error: runtime/gc/space/region_space.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/gc/space/region_space.h ...
-error: bei der Suche nach:
-#include "space.h"
-#include "thread.h"
-
-namespace art {
-namespace gc {
-
-
-error: Anwendung des Patches fehlgeschlagen: runtime/gc/space/region_space.h:22
-error: runtime/gc/space/region_space.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/hidden_api.h ...
-error: bei der Suche nach:
-      case Intrinsics::kVarHandleWeakCompareAndSetRelease:
-        return 0u;
-      case Intrinsics::kUnsafeGetLong:
-        return kAccCorePlatformApi;
-      default:
-        // Remaining intrinsics are public API. We DCHECK that in SetIntrinsic().
-
-error: Anwendung des Patches fehlgeschlagen: runtime/hidden_api.h:356
-error: runtime/hidden_api.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/image.cc ...
-error: bei der Suche nach:
-namespace art {
-
-const uint8_t ImageHeader::kImageMagic[] = { 'a', 'r', 't', '\n' };
-const uint8_t ImageHeader::kImageVersion[] = { '0', '7', '4', '\0' };  // CRC32UpdateBB intrinsic
-
-ImageHeader::ImageHeader(uint32_t image_reservation_size,
-                         uint32_t component_count,
-
-error: Anwendung des Patches fehlgeschlagen: runtime/image.cc:29
-error: runtime/image.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/interpreter/interpreter_intrinsics.cc ...
-error: bei der Suche nach:
-    UNIMPLEMENTED_CASE(StringBufferAppend /* (Ljava/lang/String;)Ljava/lang/StringBuffer; */)
-    UNIMPLEMENTED_CASE(StringBufferLength /* ()I */)
-    UNIMPLEMENTED_CASE(StringBufferToString /* ()Ljava/lang/String; */)
-    UNIMPLEMENTED_CASE(StringBuilderAppend /* (Ljava/lang/String;)Ljava/lang/StringBuilder; */)
-    UNIMPLEMENTED_CASE(StringBuilderLength /* ()I */)
-    UNIMPLEMENTED_CASE(StringBuilderToString /* ()Ljava/lang/String; */)
-    UNIMPLEMENTED_CASE(UnsafeCASInt /* (Ljava/lang/Object;JII)Z */)
-
-error: Anwendung des Patches fehlgeschlagen: runtime/interpreter/interpreter_intrinsics.cc:526
-error: runtime/interpreter/interpreter_intrinsics.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/interpreter/interpreter_switch_impl-inl.h ...
-error: bei der Suche nach:
-  Thread* self = ctx->self;
-  const CodeItemDataAccessor& accessor = ctx->accessor;
-  ShadowFrame& shadow_frame = ctx->shadow_frame;
-  if (UNLIKELY(!shadow_frame.HasReferenceArray())) {
-    LOG(FATAL) << "Invalid shadow frame for interpreter use";
-    ctx->result = JValue();
-    return;
-  }
-  self->VerifyStack();
-
-  uint32_t dex_pc = shadow_frame.GetDexPC();
-
-error: Anwendung des Patches fehlgeschlagen: runtime/interpreter/interpreter_switch_impl-inl.h:2626
-error: runtime/interpreter/interpreter_switch_impl-inl.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/interpreter/shadow_frame-inl.h ...
-error: bei der Suche nach:
-  ReadBarrier::MaybeAssertToSpaceInvariant(val.Ptr());
-  uint32_t* vreg = &vregs_[i];
-  reinterpret_cast<StackReference<mirror::Object>*>(vreg)->Assign(val);
-  if (HasReferenceArray()) {
-    References()[i].Assign(val);
-  }
-}
-
-}  // namespace art
-
-error: Anwendung des Patches fehlgeschlagen: runtime/interpreter/shadow_frame-inl.h:33
-error: runtime/interpreter/shadow_frame-inl.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/interpreter/shadow_frame.h ...
-error: bei der Suche nach:
-
-  ~ShadowFrame() {}
-
-  // TODO(iam): Clean references array up since they're always there,
-  // we don't need to do conditionals.
-  bool HasReferenceArray() const {
-    return true;
-  }
-
-  uint32_t NumberOfVRegs() const {
-    return number_of_vregs_;
-  }
-
-error: Anwendung des Patches fehlgeschlagen: runtime/interpreter/shadow_frame.h:92
-error: runtime/interpreter/shadow_frame.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/intrinsics_list.h ...
-error: bei der Suche nach:
-  V(MemoryPokeIntNative, kStatic, kNeedsEnvironmentOrCache, kWriteSideEffects, kCanThrow, "Llibcore/io/Memory;", "pokeIntNative", "(JI)V") \
-  V(MemoryPokeLongNative, kStatic, kNeedsEnvironmentOrCache, kWriteSideEffects, kCanThrow, "Llibcore/io/Memory;", "pokeLongNative", "(JJ)V") \
-  V(MemoryPokeShortNative, kStatic, kNeedsEnvironmentOrCache, kWriteSideEffects, kCanThrow, "Llibcore/io/Memory;", "pokeShortNative", "(JS)V") \
-  V(StringCharAt, kVirtual, kNeedsEnvironmentOrCache, kReadSideEffects, kCanThrow, "Ljava/lang/String;", "charAt", "(I)C") \
-  V(StringCompareTo, kVirtual, kNeedsEnvironmentOrCache, kReadSideEffects, kCanThrow, "Ljava/lang/String;", "compareTo", "(Ljava/lang/String;)I") \
-  V(StringEquals, kVirtual, kNeedsEnvironmentOrCache, kReadSideEffects, kCanThrow, "Ljava/lang/String;", "equals", "(Ljava/lang/Object;)Z") \
-
-error: Anwendung des Patches fehlgeschlagen: runtime/intrinsics_list.h:165
-error: runtime/intrinsics_list.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/mirror/string.h ...
-error: bei der Suche nach:
-
-template<class T> class Handle;
-template<class MirrorType> class ObjPtr;
-struct StringOffsets;
-class StubTest_ReadBarrierForRoot_Test;
-
-
-error: Anwendung des Patches fehlgeschlagen: runtime/mirror/string.h:27
-error: runtime/mirror/string.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/dalvik_system_DexFile.cc ...
-error: bei der Suche nach:
-  }
-}
-
-static JNINativeMethod gMethods[] = {
-  NATIVE_METHOD(DexFile, closeDexFile, "(Ljava/lang/Object;)Z"),
-  NATIVE_METHOD(DexFile,
-                defineClassNative,
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/dalvik_system_DexFile.cc:897
-error: runtime/native/dalvik_system_DexFile.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/dalvik_system_VMDebug.cc ...
-error: bei der Suche nach:
-  }
-}
-
-static JNINativeMethod gMethods[] = {
-  NATIVE_METHOD(VMDebug, countInstancesOfClass, "(Ljava/lang/Class;Z)J"),
-  NATIVE_METHOD(VMDebug, countInstancesOfClasses, "([Ljava/lang/Class;Z)[J"),
-  NATIVE_METHOD(VMDebug, crash, "()V"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/dalvik_system_VMDebug.cc:623
-error: runtime/native/dalvik_system_VMDebug.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/dalvik_system_VMRuntime.cc ...
-error: bei der Suche nach:
-  return Runtime::Current()->GetHeap()->HasBootImageSpace() ? JNI_TRUE : JNI_FALSE;
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(VMRuntime, addressOf, "(Ljava/lang/Object;)J"),
-  NATIVE_METHOD(VMRuntime, bootClassPath, "()Ljava/lang/String;"),
-  NATIVE_METHOD(VMRuntime, clampGrowthLimit, "()V"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/dalvik_system_VMRuntime.cc:723
-error: runtime/native/dalvik_system_VMRuntime.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/dalvik_system_VMStack.cc ...
-error: bei der Suche nach:
-  return GetThreadStack(soa, javaThread, fn);
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(VMStack, fillStackTraceElements, "(Ljava/lang/Thread;[Ljava/lang/StackTraceElement;)I"),
-  FAST_NATIVE_METHOD(VMStack, getCallingClassLoader, "()Ljava/lang/ClassLoader;"),
-  FAST_NATIVE_METHOD(VMStack, getClosestUserClassLoader, "()Ljava/lang/ClassLoader;"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/dalvik_system_VMStack.cc:169
-error: runtime/native/dalvik_system_VMStack.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/dalvik_system_ZygoteHooks.cc ...
-error: bei der Suche nach:
-  Runtime::Current()->SetZygoteNoThreadSection(false);
-}
-
-static JNINativeMethod gMethods[] = {
-  NATIVE_METHOD(ZygoteHooks, nativePreFork, "()J"),
-  NATIVE_METHOD(ZygoteHooks, nativePostZygoteFork, "()V"),
-  NATIVE_METHOD(ZygoteHooks, nativePostForkSystemServer, "()V"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/dalvik_system_ZygoteHooks.cc:420
-error: runtime/native/dalvik_system_ZygoteHooks.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_Class.cc ...
-error: bei der Suche nach:
-  return soa.AddLocalReference<jobject>(receiver.Get());
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Class, classForName,
-                "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;"),
-  FAST_NATIVE_METHOD(Class, getDeclaredAnnotation,
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_Class.cc:870
-error: runtime/native/java_lang_Class.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_Object.cc ...
-error: bei der Suche nach:
-  return static_cast<jint>(o->IdentityHashCode());
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Object, internalClone, "()Ljava/lang/Object;"),
-  FAST_NATIVE_METHOD(Object, notify, "()V"),
-  FAST_NATIVE_METHOD(Object, notifyAll, "()V"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_Object.cc:52
-error: runtime/native/java_lang_Object.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_String.cc ...
-error: bei der Suche nach:
-  return soa.AddLocalReference<jcharArray>(s->ToCharArray(soa.Self()));
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(String, charAt, "(I)C"),
-  FAST_NATIVE_METHOD(String, compareTo, "(Ljava/lang/String;)I"),
-  FAST_NATIVE_METHOD(String, concat, "(Ljava/lang/String;)Ljava/lang/String;"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_String.cc:109
-error: runtime/native/java_lang_String.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_StringFactory.cc ...
-error: bei der Suche nach:
-  return soa.AddLocalReference<jstring>(result);
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(StringFactory, newStringFromBytes, "([BIII)Ljava/lang/String;"),
-  FAST_NATIVE_METHOD(StringFactory, newStringFromChars, "(II[C)Ljava/lang/String;"),
-  FAST_NATIVE_METHOD(StringFactory, newStringFromString, "(Ljava/lang/String;)Ljava/lang/String;"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_StringFactory.cc:89
-error: runtime/native/java_lang_StringFactory.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_System.cc ...
-error: bei der Suche nach:
-      javaDst, dstPos, count);
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(System, arraycopy, "(Ljava/lang/Object;ILjava/lang/Object;II)V"),
-  FAST_NATIVE_METHOD(System, arraycopyCharUnchecked, "([CI[CII)V"),
-  FAST_NATIVE_METHOD(System, arraycopyByteUnchecked, "([BI[BII)V"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_System.cc:239
-error: runtime/native/java_lang_System.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_Thread.cc ...
-error: bei der Suche nach:
-  sched_yield();
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Thread, currentThread, "()Ljava/lang/Thread;"),
-  FAST_NATIVE_METHOD(Thread, interrupted, "()Z"),
-  FAST_NATIVE_METHOD(Thread, isInterrupted, "()Z"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_Thread.cc:194
-error: runtime/native/java_lang_Thread.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_Throwable.cc ...
-error: bei der Suche nach:
-  return Thread::InternalStackTraceToStackTraceElementArray(soa, javaStackState);
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Throwable, nativeFillInStackTrace, "()Ljava/lang/Object;"),
-  FAST_NATIVE_METHOD(Throwable, nativeGetStackTrace, "(Ljava/lang/Object;)[Ljava/lang/StackTraceElement;"),
-};
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_Throwable.cc:38
-error: runtime/native/java_lang_Throwable.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_VMClassLoader.cc ...
-error: bei der Suche nach:
-  return array;
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(VMClassLoader, findLoadedClass, "(Ljava/lang/ClassLoader;Ljava/lang/String;)Ljava/lang/Class;"),
-  NATIVE_METHOD(VMClassLoader, getBootClassPathEntries, "()[Ljava/lang/String;"),
-};
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_VMClassLoader.cc:155
-error: runtime/native/java_lang_VMClassLoader.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_invoke_MethodHandleImpl.cc ...
-error: bei der Suche nach:
-  return soa.AddLocalReference<jobject>(h_object.Get());
-}
-
-static JNINativeMethod gMethods[] = {
-  NATIVE_METHOD(MethodHandleImpl, getMemberInternal, "()Ljava/lang/reflect/Member;"),
-};
-
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_invoke_MethodHandleImpl.cc:68
-error: runtime/native/java_lang_invoke_MethodHandleImpl.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_ref_FinalizerReference.cc ...
-error: bei der Suche nach:
-  return soa.AddLocalReference<jobject>(referent);
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(FinalizerReference, makeCircularListIfUnenqueued, "()Z"),
-  FAST_NATIVE_METHOD(FinalizerReference, getReferent, "()Ljava/lang/Object;"),
-};
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_ref_FinalizerReference.cc:42
-error: runtime/native/java_lang_ref_FinalizerReference.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_ref_Reference.cc ...
-error: bei der Suche nach:
-  Runtime::Current()->GetHeap()->GetReferenceProcessor()->ClearReferent(ref);
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Reference, getReferent, "()Ljava/lang/Object;"),
-  FAST_NATIVE_METHOD(Reference, clearReferent, "()V"),
-};
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_ref_Reference.cc:42
-error: runtime/native/java_lang_ref_Reference.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_reflect_Array.cc ...
-error: bei der Suche nach:
-  return soa.AddLocalReference<jobject>(new_array);
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Array, createMultiArray, "(Ljava/lang/Class;[I)Ljava/lang/Object;"),
-  FAST_NATIVE_METHOD(Array, createObjectArray, "(Ljava/lang/Class;I)Ljava/lang/Object;"),
-};
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_reflect_Array.cc:74
-error: runtime/native/java_lang_reflect_Array.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_reflect_Constructor.cc ...
-error: bei der Suche nach:
-    return env->NewObject(allocClass, ctor);
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Constructor, getExceptionTypes, "()[Ljava/lang/Class;"),
-  FAST_NATIVE_METHOD(Constructor, newInstance0, "([Ljava/lang/Object;)Ljava/lang/Object;"),
-  FAST_NATIVE_METHOD(Constructor, newInstanceFromSerialization, "(Ljava/lang/Class;Ljava/lang/Class;)Ljava/lang/Object;"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_reflect_Constructor.cc:128
-error: runtime/native/java_lang_reflect_Constructor.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_reflect_Executable.cc ...
-error: bei der Suche nach:
-}
-
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Executable, compareMethodParametersInternal,
-                     "(Ljava/lang/reflect/Method;)I"),
-  FAST_NATIVE_METHOD(Executable, getAnnotationNative,
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_reflect_Executable.cc:383
-error: runtime/native/java_lang_reflect_Executable.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_reflect_Field.cc ...
-error: bei der Suche nach:
-  return annotations::IsFieldAnnotationPresent(field, klass);
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Field, get,        "(Ljava/lang/Object;)Ljava/lang/Object;"),
-  FAST_NATIVE_METHOD(Field, getBoolean, "(Ljava/lang/Object;)Z"),
-  FAST_NATIVE_METHOD(Field, getByte,    "(Ljava/lang/Object;)B"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_reflect_Field.cc:505
-error: runtime/native/java_lang_reflect_Field.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_reflect_Method.cc ...
-error: bei der Suche nach:
-  return InvokeMethod(soa, javaMethod, javaReceiver, javaArgs);
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Method, getDefaultValue, "()Ljava/lang/Object;"),
-  FAST_NATIVE_METHOD(Method, getExceptionTypes, "()[Ljava/lang/Class;"),
-  FAST_NATIVE_METHOD(Method, invoke, "(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_reflect_Method.cc:84
-error: runtime/native/java_lang_reflect_Method.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_reflect_Parameter.cc ...
-error: bei der Suche nach:
-      annotations::GetAnnotationForMethodParameter(method, parameterIndex, klass));
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(
-      Parameter,
-      getAnnotationNative,
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_reflect_Parameter.cc:98
-error: runtime/native/java_lang_reflect_Parameter.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_lang_reflect_Proxy.cc ...
-error: bei der Suche nach:
-      soa, name, interfaces, loader, methods, throws));
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Proxy, generateProxy, "(Ljava/lang/String;[Ljava/lang/Class;Ljava/lang/ClassLoader;[Ljava/lang/reflect/Method;[[Ljava/lang/Class;)Ljava/lang/Class;"),
-};
-
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_lang_reflect_Proxy.cc:37
-error: runtime/native/java_lang_reflect_Proxy.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/java_util_concurrent_atomic_AtomicLong.cc ...
-error: bei der Suche nach:
-  return QuasiAtomic::LongAtomicsUseMutexes(kRuntimeISA) ? JNI_FALSE : JNI_TRUE;
-}
-
-static JNINativeMethod gMethods[] = {
-  NATIVE_METHOD(AtomicLong, VMSupportsCS8, "()Z"),
-};
-
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/java_util_concurrent_atomic_AtomicLong.cc:30
-error: runtime/native/java_util_concurrent_atomic_AtomicLong.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/libcore_util_CharsetUtils.cc ...
-error: bei der Suche nach:
-  return out.toByteArray();
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(CharsetUtils, asciiBytesToChars, "([BII[C)V"),
-  FAST_NATIVE_METHOD(CharsetUtils, isoLatin1BytesToChars, "([BII[C)V"),
-  FAST_NATIVE_METHOD(CharsetUtils, toAsciiBytes, "(Ljava/lang/String;II)[B"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/libcore_util_CharsetUtils.cc:252
-error: runtime/native/libcore_util_CharsetUtils.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/org_apache_harmony_dalvik_ddmc_DdmServer.cc ...
-error: bei der Suche nach:
-  Runtime::Current()->GetRuntimeCallbacks()->DdmPublishChunk(static_cast<uint32_t>(type), chunk);
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(DdmServer, nativeSendChunk, "(I[BII)V"),
-};
-
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/org_apache_harmony_dalvik_ddmc_DdmServer.cc:38
-error: runtime/native/org_apache_harmony_dalvik_ddmc_DdmServer.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/org_apache_harmony_dalvik_ddmc_DdmVmInternal.cc ...
-error: bei der Suche nach:
-  Dbg::DdmSetThreadNotification(enable);
-}
-
-static JNINativeMethod gMethods[] = {
-  NATIVE_METHOD(DdmVmInternal, enableRecentAllocations, "(Z)V"),
-  FAST_NATIVE_METHOD(DdmVmInternal, getRecentAllocations, "()[B"),
-  FAST_NATIVE_METHOD(DdmVmInternal, getRecentAllocationStatus, "()Z"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/org_apache_harmony_dalvik_ddmc_DdmVmInternal.cc:175
-error: runtime/native/org_apache_harmony_dalvik_ddmc_DdmVmInternal.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/native/sun_misc_Unsafe.cc ...
-error: bei der Suche nach:
-  }
-}
-
-static JNINativeMethod gMethods[] = {
-  FAST_NATIVE_METHOD(Unsafe, compareAndSwapInt, "(Ljava/lang/Object;JII)Z"),
-  FAST_NATIVE_METHOD(Unsafe, compareAndSwapLong, "(Ljava/lang/Object;JJJ)Z"),
-  FAST_NATIVE_METHOD(Unsafe, compareAndSwapObject, "(Ljava/lang/Object;JLjava/lang/Object;Ljava/lang/Object;)Z"),
-
-error: Anwendung des Patches fehlgeschlagen: runtime/native/sun_misc_Unsafe.cc:541
-error: runtime/native/sun_misc_Unsafe.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/oat.h ...
-error: bei der Suche nach:
-class PACKED(4) OatHeader {
- public:
-  static constexpr std::array<uint8_t, 4> kOatMagic { { 'o', 'a', 't', '\n' } };
-  // Last oat version changed reason: Remove unused trampoline entrypoints.
-  static constexpr std::array<uint8_t, 4> kOatVersion { { '1', '7', '0', '\0' } };
-
-  static constexpr const char* kDex2OatCmdLineKey = "dex2oat-cmdline";
-  static constexpr const char* kDebuggableKey = "debuggable";
-
-error: Anwendung des Patches fehlgeschlagen: runtime/oat.h:32
-error: runtime/oat.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/stack.cc ...
-error: bei der Suche nach:
-        if ((walk_kind_ == StackWalkKind::kIncludeInlinedFrames)
-            && (cur_oat_quick_method_header_ != nullptr)
-            && cur_oat_quick_method_header_->IsOptimized()
-            // JNI methods cannot have any inlined frames.
-            && !method->IsNative()) {
-          DCHECK_NE(cur_quick_frame_pc_, 0u);
-          current_code_info_ = CodeInfo(cur_oat_quick_method_header_,
-                                        CodeInfo::DecodeFlags::InlineInfoOnly);
-
-error: Anwendung des Patches fehlgeschlagen: runtime/stack.cc:813
-error: runtime/stack.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/stack_map.cc ...
-error: bei der Suche nach:
-template<typename Accessor>
-ALWAYS_INLINE static bool DecodeTable(BitTable<Accessor>& table, BitMemoryReader& reader) {
-  bool is_deduped = reader.ReadBit();
-  if (is_deduped) {
-    ssize_t bit_offset = reader.NumberOfReadBits() - reader.ReadVarint();
-    BitMemoryReader reader2(reader.data(), bit_offset);  // The offset is negative.
-    table.Decode(reader2);
-
-error: Anwendung des Patches fehlgeschlagen: runtime/stack_map.cc:35
-error: runtime/stack_map.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/stack_map.h ...
-error: bei der Suche nach:
-  // Accumulate code info size statistics into the given Stats tree.
-  static void CollectSizeStats(const uint8_t* code_info, /*out*/ Stats* parent);
-
-  ALWAYS_INLINE static QuickMethodFrameInfo DecodeFrameInfo(const uint8_t* data) {
-    BitMemoryReader reader(data);
-    return QuickMethodFrameInfo(
-        reader.ReadVarint() * kStackAlignment,  // Decode packed_frame_size_ and unpack.
-        reader.ReadVarint(),  // core_spill_mask_.
-        reader.ReadVarint());  // fp_spill_mask_.
-  }
-
- private:
-
-error: Anwendung des Patches fehlgeschlagen: runtime/stack_map.h:438
-error: runtime/stack_map.h: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/string_builder_append.cc ...
-error: runtime/string_builder_append.cc existiert bereits im Arbeitsverzeichnis
 Prüfe Patch runtime/string_builder_append.h ...
-error: runtime/string_builder_append.h existiert bereits im Arbeitsverzeichnis
 Prüfe Patch runtime/thread.cc ...
-error: bei der Suche nach:
-    VisitDeclaringClass(m);
-    DCHECK(m != nullptr);
-    size_t num_regs = shadow_frame->NumberOfVRegs();
-    DCHECK(m->IsNative() || shadow_frame->HasReferenceArray());
-    // handle scope for JNI or References for interpreter.
-    for (size_t reg = 0; reg < num_regs; ++reg) {
-      mirror::Object* ref = shadow_frame->GetVRegReference(reg);
-
-error: Anwendung des Patches fehlgeschlagen: runtime/thread.cc:3708
-error: runtime/thread.cc: Patch konnte nicht angewendet werden
 Prüfe Patch runtime/thread.h ...
-error: bei der Suche nach:
-  uint8_t* GetTlabPos() {
-    return tlsPtr_.thread_local_pos;
-  }
-
-  // Remove the suspend trigger for this thread by making the suspend_trigger_ TLS value
-  // equal to a valid pointer.
-  // TODO: does this need to atomic?  I don't think so.
-
-error: Anwendung des Patches fehlgeschlagen: runtime/thread.h:1130
-error: runtime/thread.h: Patch konnte nicht angewendet werden
 Prüfe Patch test/004-JniTest/jni_test.cc ...
-error: bei der Suche nach:
-static jint Java_Main_intFastNativeMethod(JNIEnv*, jclass, jint a, jint b, jint c);
-static jint Java_Main_intCriticalNativeMethod(jint a, jint b, jint c);
-
-static JNINativeMethod sMainMethods[] = {
-  {"intFastNativeMethod", "(III)I", reinterpret_cast<void*>(Java_Main_intFastNativeMethod) },
-  {"intCriticalNativeMethod", "(III)I", reinterpret_cast<void*>(Java_Main_intCriticalNativeMethod) },
-};
-
-error: Anwendung des Patches fehlgeschlagen: test/004-JniTest/jni_test.cc:33
-error: test/004-JniTest/jni_test.cc: Patch konnte nicht angewendet werden
 Prüfe Patch test/139-register-natives/regnative.cc ...
-error: bei der Suche nach:
-static void foo(JNIEnv*, jclass) {
-}
-
-static JNINativeMethod gMethods[] = {
-    { "foo", "()V", reinterpret_cast<void*>(foo) }
-};
-
-
-error: Anwendung des Patches fehlgeschlagen: test/139-register-natives/regnative.cc:22
-error: test/139-register-natives/regnative.cc: Patch konnte nicht angewendet werden
 Prüfe Patch test/1960-checker-bounds-codegen/expected.txt ...
-error: test/1960-checker-bounds-codegen/expected.txt existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/1960-checker-bounds-codegen/info.txt ...
-error: test/1960-checker-bounds-codegen/info.txt existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/1960-checker-bounds-codegen/src/Main.java ...
-error: test/1960-checker-bounds-codegen/src/Main.java existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/442-checker-constant-folding/src/Main.java ...
-error: bei der Suche nach:
-    return lhs & rhs;
-  }
-
-
-  /**
-   * Exercise constant folding on logical or.
-
-error: Anwendung des Patches fehlgeschlagen: test/442-checker-constant-folding/src/Main.java:864
-error: test/442-checker-constant-folding/src/Main.java: Patch konnte nicht angewendet werden
 Prüfe Patch test/521-checker-array-set-null/src/Main.java ...
-error: bei der Suche nach:
-  }
-
-  /// CHECK-START: void Main.testWithNull(java.lang.Object[]) disassembly (after)
-  /// CHECK-NOT:      pAputObject
-  public static void testWithNull(Object[] o) {
-    o[0] = null;
-  }
-
-  /// CHECK-START: void Main.testWithUnknown(java.lang.Object[], java.lang.Object) disassembly (after)
-  /// CHECK:          pAputObject
-  public static void testWithUnknown(Object[] o, Object obj) {
-    o[0] = obj;
-  }
-
-  /// CHECK-START: void Main.testWithSame(java.lang.Object[]) disassembly (after)
-  /// CHECK-NOT:      pAputObject
-  public static void testWithSame(Object[] o) {
-    o[0] = o[1];
-  }
-
-error: Anwendung des Patches fehlgeschlagen: test/521-checker-array-set-null/src/Main.java:22
-error: test/521-checker-array-set-null/src/Main.java: Patch konnte nicht angewendet werden
 Prüfe Patch test/530-checker-lse-simd/expected.txt ...
-error: test/530-checker-lse-simd/expected.txt existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/530-checker-lse-simd/info.txt ...
-error: test/530-checker-lse-simd/info.txt existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/530-checker-lse-simd/src/Main.java ...
-error: test/530-checker-lse-simd/src/Main.java existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/536-checker-intrinsic-optimization/src/Main.java ...
-error: bei der Suche nach:
-
-public class Main {
-  public static boolean doThrow = false;
-
-  public static void assertIntEquals(int expected, int result) {
-    if (expected != result) {
-
-error: Anwendung des Patches fehlgeschlagen: test/536-checker-intrinsic-optimization/src/Main.java:18
-error: test/536-checker-intrinsic-optimization/src/Main.java: Patch konnte nicht angewendet werden
 Prüfe Patch test/580-fp16/expected.txt ...
-error: test/580-fp16/expected.txt existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/580-fp16/info.txt ...
-error: test/580-fp16/info.txt existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/580-fp16/src-art/Main.java ...
-error: test/580-fp16/src-art/Main.java existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/597-deopt-busy-loop/expected.txt ...
-error: bei der Suche nach:
-JNI_OnLoad called
-Finishing
-
-error: Anwendung des Patches fehlgeschlagen: test/597-deopt-busy-loop/expected.txt:1
-error: test/597-deopt-busy-loop/expected.txt: Patch konnte nicht angewendet werden
 Prüfe Patch test/597-deopt-busy-loop/src/FloatLoop.java ...
-error: test/597-deopt-busy-loop/src/FloatLoop.java existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/597-deopt-busy-loop/src/Main.java ...
-error: bei der Suche nach:
- * limitations under the License.
- */
-
-public class Main implements Runnable {
-    static final int numberOfThreads = 2;
-    volatile static boolean sExitFlag = false;
-    volatile static boolean sEntered = false;
-    int threadIndex;
-
-    private static native void deoptimizeAll();
-    private static native void assertIsInterpreted();
-    private static native void assertIsManaged();
-    private static native void ensureJitCompiled(Class<?> cls, String methodName);
-
-    Main(int index) {
-        threadIndex = index;
-    }
-
-    public static void main(String[] args) throws Exception {
-        System.loadLibrary(args[0]);
-
-        final Thread[] threads = new Thread[numberOfThreads];
-        for (int t = 0; t < threads.length; t++) {
-            threads[t] = new Thread(new Main(t));
-            threads[t].start();
-        }
-        for (Thread t : threads) {
-            t.join();
-        }
-        System.out.println("Finishing");
-    }
-
-    public void $noinline$busyLoop() {
-        assertIsManaged();
-        sEntered = true;
-        for (;;) {
-            if (sExitFlag) {
-                break;
-            }
-        }
-        assertIsInterpreted();
-    }
-
-    public void run() {
-        if (threadIndex == 0) {
-            while (!sEntered) {
-              Thread.yield();
-            }
-            deoptimizeAll();
-            sExitFlag = true;
-        } else {
-            ensureJitCompiled(Main.class, "$noinline$busyLoop");
-            $noinline$busyLoop();
-        }
-    }
-}
-
-error: Anwendung des Patches fehlgeschlagen: test/597-deopt-busy-loop/src/Main.java:14
-error: test/597-deopt-busy-loop/src/Main.java: Patch konnte nicht angewendet werden
 Prüfe Patch test/597-deopt-busy-loop/src/SimpleLoop.java ...
-error: test/597-deopt-busy-loop/src/SimpleLoop.java existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/624-checker-stringops/smali/Smali.smali ...
-error: bei der Suche nach:
-## CHECK-START: int Smali.builderLen2() instruction_simplifier (before)
-## CHECK-DAG: <<New:l\d+>>     NewInstance
-## CHECK-DAG: <<String1:l\d+>> LoadString
-## CHECK-DAG: <<Append1:l\d+>> InvokeVirtual [<<New>>,<<String1>>]     intrinsic:StringBuilderAppend
-## CHECK-DAG: <<String2:l\d+>> LoadString
-## CHECK-DAG: <<Append2:l\d+>> InvokeVirtual [<<Append1>>,<<String2>>] intrinsic:StringBuilderAppend
-## CHECK-DAG:                  InvokeVirtual [<<Append2>>]             intrinsic:StringBuilderLength
-
-## CHECK-START: int Smali.builderLen2() instruction_simplifier (after)
-## CHECK-DAG: <<New:l\d+>>     NewInstance
-## CHECK-DAG: <<String1:l\d+>> LoadString
-## CHECK-DAG: <<Append1:l\d+>> InvokeVirtual [<<New>>,<<String1>>] intrinsic:StringBuilderAppend
-## CHECK-DAG: <<String2:l\d+>> LoadString
-## CHECK-DAG: <<Append2:l\d+>> InvokeVirtual [<<New>>,<<String2>>] intrinsic:StringBuilderAppend
-## CHECK-DAG:                  InvokeVirtual [<<New>>]             intrinsic:StringBuilderLength
-.method public static builderLen2()I
-    .registers 3
-
-error: Anwendung des Patches fehlgeschlagen: test/624-checker-stringops/smali/Smali.smali:47
-error: test/624-checker-stringops/smali/Smali.smali: Patch konnte nicht angewendet werden
 Prüfe Patch test/624-checker-stringops/src/Main.java ...
-error: bei der Suche nach:
-  /// CHECK-START: int Main.builderLen2() instruction_simplifier (before)
-  /// CHECK-DAG: <<New:l\d+>>     NewInstance
-  /// CHECK-DAG: <<String1:l\d+>> LoadString
-  /// CHECK-DAG: <<Append1:l\d+>> InvokeVirtual [<<New>>,<<String1>>]  intrinsic:StringBuilderAppend
-  /// CHECK-DAG: <<String2:l\d+>> LoadString
-  /// CHECK-DAG: <<Append2:l\d+>> InvokeVirtual [{{l\d+}},<<String2>>] intrinsic:StringBuilderAppend
-  /// CHECK-DAG:                  InvokeVirtual [{{l\d+}}]             intrinsic:StringBuilderLength
-  //
-  /// CHECK-START: int Main.builderLen2() instruction_simplifier (after)
-  /// CHECK-DAG: <<New:l\d+>>     NewInstance
-  /// CHECK-DAG: <<String1:l\d+>> LoadString
-  /// CHECK-DAG: <<Append1:l\d+>> InvokeVirtual [<<New>>,<<String1>>] intrinsic:StringBuilderAppend
-  /// CHECK-DAG: <<String2:l\d+>> LoadString
-  /// CHECK-DAG: <<Append2:l\d+>> InvokeVirtual [<<New>>,<<String2>>] intrinsic:StringBuilderAppend
-  /// CHECK-DAG:                  InvokeVirtual [<<New>>]             intrinsic:StringBuilderLength
-  static int builderLen2() {
-    StringBuilder s = new StringBuilder();
-
-error: Anwendung des Patches fehlgeschlagen: test/624-checker-stringops/src/Main.java:136
-error: test/624-checker-stringops/src/Main.java: Patch konnte nicht angewendet werden
 Prüfe Patch test/661-checker-simd-reduc/src/Main.java ...
-error: bei der Suche nach:
-  /// CHECK-DAG:                 Add [<<I>>,<<Cons>>]          loop:<<Loop>>      outer_loop:none
-  /// CHECK-DAG: <<Red:d\d+>>    VecReduce [<<Phi>>]           loop:none
-  /// CHECK-DAG: <<Extr:i\d+>>   VecExtractScalar [<<Red>>]    loop:none
-  private static int reductionInt(int[] x) {
-    int sum = 0;
-    for (int i = 0; i < x.length; i++) {
-
-error: Anwendung des Patches fehlgeschlagen: test/661-checker-simd-reduc/src/Main.java:71
-error: test/661-checker-simd-reduc/src/Main.java: Patch konnte nicht angewendet werden
 Prüfe Patch test/697-checker-string-append/expected.txt ...
-error: test/697-checker-string-append/expected.txt existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/697-checker-string-append/info.txt ...
-error: test/697-checker-string-append/info.txt existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/697-checker-string-append/src/Main.java ...
-error: test/697-checker-string-append/src/Main.java existiert bereits im Arbeitsverzeichnis
 Prüfe Patch test/706-checker-scheduler/src/Main.java ...
-error: bei der Suche nach:
-  // but has more complex chains of transforming the original references:
-  // ParameterValue --> BoundType --> NullCheck --> ArrayGet.
-  // ParameterValue --> BoundType --> NullCheck --> IntermediateAddress --> ArraySet.
-  // After using LSA to analyze the orginal references, the scheduler should be able
-  // to find out that 'a' and 'b' may alias, hence unable to schedule these ArraGet/Set.
-
-  /// CHECK-START-ARM64: void Main.CrossOverLoop2(java.lang.Object, java.lang.Object) scheduler (before)
-
-error: Anwendung des Patches fehlgeschlagen: test/706-checker-scheduler/src/Main.java:322
-error: test/706-checker-scheduler/src/Main.java: Patch konnte nicht angewendet werden
 Prüfe Patch test/knownfailures.json ...
-error: bei der Suche nach:
-          "574-irreducible-and-constant-area",
-          "575-checker-string-init-alias",
-          "580-checker-string-fact-intrinsics",
-          "585-inline-unresolved",
-          "586-checker-null-array-get",
-          "587-inline-class-error",
-
-error: Anwendung des Patches fehlgeschlagen: test/knownfailures.json:942
-error: test/knownfailures.json: Patch konnte nicht angewendet werden
-make: [Makefile:14: patch] Fehler 1 (ignoriert)
+Patch Android.mk sauber angewendet
+Patch benchmark/micro-native/micro_native.cc sauber angewendet
+Patch benchmark/stringbuilder-append/info.txt sauber angewendet
+Patch benchmark/stringbuilder-append/src/StringBuilderAppendBenchmark.java sauber angewendet
+Patch compiler/Android.bp sauber angewendet
+Patch compiler/driver/compiled_method_storage.cc sauber angewendet
+Patch compiler/linker/linker_patch.h sauber angewendet
+Patch compiler/optimizing/code_generator.cc sauber angewendet
+Patch compiler/optimizing/code_generator.h sauber angewendet
+Patch compiler/optimizing/code_generator_arm64.cc sauber angewendet
+Patch compiler/optimizing/code_generator_arm64.h sauber angewendet
+Patch compiler/optimizing/code_generator_arm_vixl.cc sauber angewendet
+Patch compiler/optimizing/code_generator_arm_vixl.h sauber angewendet
+Patch compiler/optimizing/code_generator_mips.cc sauber angewendet
+Patch compiler/optimizing/code_generator_mips.h sauber angewendet
+Patch compiler/optimizing/code_generator_mips64.cc sauber angewendet
+Patch compiler/optimizing/code_generator_mips64.h sauber angewendet
+Patch compiler/optimizing/code_generator_x86.cc sauber angewendet
+Patch compiler/optimizing/code_generator_x86.h sauber angewendet
+Patch compiler/optimizing/code_generator_x86_64.cc sauber angewendet
+Patch compiler/optimizing/code_generator_x86_64.h sauber angewendet
+Patch compiler/optimizing/codegen_test.cc sauber angewendet
+Patch compiler/optimizing/common_arm.h sauber angewendet
+Patch compiler/optimizing/common_arm64.h sauber angewendet
+Patch compiler/optimizing/constant_folding.cc sauber angewendet
+Patch compiler/optimizing/instruction_simplifier.cc sauber angewendet
+Patch compiler/optimizing/intrinsics_arm64.cc sauber angewendet
+Patch compiler/optimizing/intrinsics_arm_vixl.cc sauber angewendet
+Patch compiler/optimizing/intrinsics_mips.cc sauber angewendet
+Patch compiler/optimizing/intrinsics_mips64.cc sauber angewendet
+Patch compiler/optimizing/intrinsics_x86.cc sauber angewendet
+Patch compiler/optimizing/intrinsics_x86_64.cc sauber angewendet
+Patch compiler/optimizing/load_store_elimination.cc sauber angewendet
+Patch compiler/optimizing/load_store_elimination_test.cc sauber angewendet
+Patch compiler/optimizing/nodes.h sauber angewendet
+Patch compiler/optimizing/nodes_vector.h sauber angewendet
+Patch compiler/optimizing/register_allocation_resolver.cc sauber angewendet
+Patch compiler/optimizing/scheduler.cc sauber angewendet
+Patch compiler/optimizing/scheduler.h sauber angewendet
+Patch compiler/optimizing/scheduler_test.cc sauber angewendet
+Patch compiler/optimizing/stack_map_stream.cc sauber angewendet
+Patch compiler/optimizing/stack_map_stream.h sauber angewendet
+Patch compiler/utils/arm/assembler_arm_vixl.h sauber angewendet
+Patch compiler/utils/arm/jni_macro_assembler_arm_vixl.cc sauber angewendet
+Patch compiler/utils/arm64/assembler_arm64.cc sauber angewendet
+Patch compiler/utils/arm64/assembler_arm64.h sauber angewendet
+Patch dex2oat/linker/arm/relative_patcher_arm_base.cc sauber angewendet
+Patch dex2oat/linker/arm/relative_patcher_arm_base.h sauber angewendet
+Patch dex2oat/linker/arm/relative_patcher_thumb2.cc sauber angewendet
+Patch dex2oat/linker/arm/relative_patcher_thumb2.h sauber angewendet
+Patch dex2oat/linker/arm/relative_patcher_thumb2_test.cc sauber angewendet
+Patch dex2oat/linker/arm64/relative_patcher_arm64.cc sauber angewendet
+Patch dex2oat/linker/arm64/relative_patcher_arm64.h sauber angewendet
+Patch dex2oat/linker/arm64/relative_patcher_arm64_test.cc sauber angewendet
+Patch dex2oat/linker/mips/relative_patcher_mips.cc sauber angewendet
+Patch dex2oat/linker/mips/relative_patcher_mips.h sauber angewendet
+Patch dex2oat/linker/mips64/relative_patcher_mips64.cc sauber angewendet
+Patch dex2oat/linker/mips64/relative_patcher_mips64.h sauber angewendet
+Patch dex2oat/linker/multi_oat_relative_patcher.h sauber angewendet
+Patch dex2oat/linker/multi_oat_relative_patcher_test.cc sauber angewendet
+Patch dex2oat/linker/oat_writer.cc sauber angewendet
+Patch dex2oat/linker/oat_writer_test.cc sauber angewendet
+Patch dex2oat/linker/relative_patcher.cc sauber angewendet
+Patch dex2oat/linker/relative_patcher.h sauber angewendet
+Patch dex2oat/linker/relative_patcher_test.h sauber angewendet
+Patch dex2oat/linker/x86/relative_patcher_x86.cc sauber angewendet
+Patch dex2oat/linker/x86/relative_patcher_x86.h sauber angewendet
+Patch dex2oat/linker/x86_64/relative_patcher_x86_64.cc sauber angewendet
+Patch dex2oat/linker/x86_64/relative_patcher_x86_64.h sauber angewendet
+Patch libartbase/base/bit_memory_region.h sauber angewendet
+Patch libartbase/base/bit_table.h sauber angewendet
+Patch libdexfile/dex/dex_file_verifier.cc sauber angewendet
+Patch libelffile/dwarf/debug_frame_opcode_writer.h sauber angewendet
+Patch runtime/Android.bp sauber angewendet
+Patch runtime/arch/arm/quick_entrypoints_arm.S sauber angewendet
+Patch runtime/arch/arm64/quick_entrypoints_arm64.S sauber angewendet
+Patch runtime/arch/mips/quick_entrypoints_mips.S sauber angewendet
+Patch runtime/arch/mips64/quick_entrypoints_mips64.S sauber angewendet
+Patch runtime/arch/x86/quick_entrypoints_x86.S sauber angewendet
+Patch runtime/arch/x86_64/quick_entrypoints_x86_64.S sauber angewendet
+Patch runtime/class_loader_context.cc.rej sauber angewendet
+Patch runtime/class_loader_context_test.cc.rej sauber angewendet
+Patch runtime/entrypoints/entrypoint_utils.cc sauber angewendet
+Patch runtime/entrypoints/quick/quick_default_init_entrypoints.h sauber angewendet
+Patch runtime/entrypoints/quick/quick_entrypoints.h sauber angewendet
+Patch runtime/entrypoints/quick/quick_entrypoints_list.h sauber angewendet
+Patch runtime/entrypoints/quick/quick_string_builder_append_entrypoints.cc sauber angewendet
+Patch runtime/entrypoints/runtime_asm_entrypoints.h sauber angewendet
+Patch runtime/entrypoints_order_test.cc sauber angewendet
+Patch runtime/gc/collector/concurrent_copying.cc sauber angewendet
+Patch runtime/gc/heap.cc sauber angewendet
+Patch runtime/gc/heap.h sauber angewendet
+Patch runtime/gc/space/region_space-inl.h sauber angewendet
+Patch runtime/gc/space/region_space.cc sauber angewendet
+Patch runtime/gc/space/region_space.h sauber angewendet
+Patch runtime/hidden_api.h sauber angewendet
+Patch runtime/image.cc sauber angewendet
+Patch runtime/interpreter/interpreter_intrinsics.cc sauber angewendet
+Patch runtime/interpreter/interpreter_switch_impl-inl.h sauber angewendet
+Patch runtime/interpreter/shadow_frame-inl.h sauber angewendet
+Patch runtime/interpreter/shadow_frame.h sauber angewendet
+Patch runtime/intrinsics_list.h sauber angewendet
+Patch runtime/mirror/string.h sauber angewendet
+Patch runtime/native/dalvik_system_DexFile.cc sauber angewendet
+Patch runtime/native/dalvik_system_VMDebug.cc sauber angewendet
+Patch runtime/native/dalvik_system_VMRuntime.cc sauber angewendet
+Patch runtime/native/dalvik_system_VMStack.cc sauber angewendet
+Patch runtime/native/dalvik_system_ZygoteHooks.cc sauber angewendet
+Patch runtime/native/java_lang_Class.cc sauber angewendet
+Patch runtime/native/java_lang_Object.cc sauber angewendet
+Patch runtime/native/java_lang_String.cc sauber angewendet
+Patch runtime/native/java_lang_StringFactory.cc sauber angewendet
+Patch runtime/native/java_lang_System.cc sauber angewendet
+Patch runtime/native/java_lang_Thread.cc sauber angewendet
+Patch runtime/native/java_lang_Throwable.cc sauber angewendet
+Patch runtime/native/java_lang_VMClassLoader.cc sauber angewendet
+Patch runtime/native/java_lang_invoke_MethodHandleImpl.cc sauber angewendet
+Patch runtime/native/java_lang_ref_FinalizerReference.cc sauber angewendet
+Patch runtime/native/java_lang_ref_Reference.cc sauber angewendet
+Patch runtime/native/java_lang_reflect_Array.cc sauber angewendet
+Patch runtime/native/java_lang_reflect_Constructor.cc sauber angewendet
+Patch runtime/native/java_lang_reflect_Executable.cc sauber angewendet
+Patch runtime/native/java_lang_reflect_Field.cc sauber angewendet
+Patch runtime/native/java_lang_reflect_Method.cc sauber angewendet
+Patch runtime/native/java_lang_reflect_Parameter.cc sauber angewendet
+Patch runtime/native/java_lang_reflect_Proxy.cc sauber angewendet
+Patch runtime/native/java_util_concurrent_atomic_AtomicLong.cc sauber angewendet
+Patch runtime/native/libcore_util_CharsetUtils.cc sauber angewendet
+Patch runtime/native/org_apache_harmony_dalvik_ddmc_DdmServer.cc sauber angewendet
+Patch runtime/native/org_apache_harmony_dalvik_ddmc_DdmVmInternal.cc sauber angewendet
+Patch runtime/native/sun_misc_Unsafe.cc sauber angewendet
+Patch runtime/oat.h sauber angewendet
+Patch runtime/stack.cc sauber angewendet
+Patch runtime/stack_map.cc sauber angewendet
+Patch runtime/stack_map.h sauber angewendet
+Patch runtime/string_builder_append.cc sauber angewendet
+Patch runtime/string_builder_append.h sauber angewendet
+Patch runtime/thread.cc sauber angewendet
+Patch runtime/thread.h sauber angewendet
+Patch test/004-JniTest/jni_test.cc sauber angewendet
+Patch test/139-register-natives/regnative.cc sauber angewendet
+Patch test/1960-checker-bounds-codegen/expected.txt sauber angewendet
+Patch test/1960-checker-bounds-codegen/info.txt sauber angewendet
+Patch test/1960-checker-bounds-codegen/src/Main.java sauber angewendet
+Patch test/442-checker-constant-folding/src/Main.java sauber angewendet
+Patch test/521-checker-array-set-null/src/Main.java sauber angewendet
+Patch test/530-checker-lse-simd/expected.txt sauber angewendet
+Patch test/530-checker-lse-simd/info.txt sauber angewendet
+Patch test/530-checker-lse-simd/src/Main.java sauber angewendet
+Patch test/536-checker-intrinsic-optimization/src/Main.java sauber angewendet
+Patch test/580-fp16/expected.txt sauber angewendet
+Patch test/580-fp16/info.txt sauber angewendet
+Patch test/580-fp16/src-art/Main.java sauber angewendet
+Patch test/597-deopt-busy-loop/expected.txt sauber angewendet
+Patch test/597-deopt-busy-loop/src/FloatLoop.java sauber angewendet
+Patch test/597-deopt-busy-loop/src/Main.java sauber angewendet
+Patch test/597-deopt-busy-loop/src/SimpleLoop.java sauber angewendet
+Patch test/624-checker-stringops/smali/Smali.smali sauber angewendet
+Patch test/624-checker-stringops/src/Main.java sauber angewendet
+Patch test/661-checker-simd-reduc/src/Main.java sauber angewendet
+Patch test/697-checker-string-append/expected.txt sauber angewendet
+Patch test/697-checker-string-append/info.txt sauber angewendet
+Patch test/697-checker-string-append/src/Main.java sauber angewendet
+Patch test/706-checker-scheduler/src/Main.java sauber angewendet
+Patch test/knownfailures.json sauber angewendet
+warning: unterdrückte 3 Whitespace-Fehler
+warning: 8 Zeilen fügen Whitespace-Fehler hinzu.
+OK
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd frameworks/base && git apply -v $MINTOS_DAT/02-frameworks_base.patch && echo OK
 Prüfe Patch core/java/android/util/Half.java ...
 Patch core/java/android/util/Half.java sauber angewendet
@@ -1978,21 +374,21 @@ Patch java/com/android/incallui/call/CallRecorder.java sauber angewendet
 OK
 make -f device/`cat .makedata2`/device.mk patch && echo OK
 make[1]: Verzeichnis „/home/kiam001/jenkins/workspace/MintOS/MintOS“ wird betreten
---2020-11-18 01:45:46--  https://github.com/nift4/android-keyboard-gadget/raw/linux-3.18/generic_kernel_3.18.patch
-Auflösen des Hostnamens github.com (github.com)… 140.82.121.3
-Verbindungsaufbau zu github.com (github.com)|140.82.121.3|:443 … verbunden.
+--2020-11-18 02:06:10--  https://github.com/nift4/android-keyboard-gadget/raw/linux-3.18/generic_kernel_3.18.patch
+Auflösen des Hostnamens github.com (github.com)… 140.82.121.4
+Verbindungsaufbau zu github.com (github.com)|140.82.121.4|:443 … verbunden.
 HTTP-Anforderung gesendet, auf Antwort wird gewartet … 302 Found
 Platz: https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch [folgend]
---2020-11-18 01:45:46--  https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch
-Auflösen des Hostnamens raw.githubusercontent.com (raw.githubusercontent.com)… 151.101.12.133
-Verbindungsaufbau zu raw.githubusercontent.com (raw.githubusercontent.com)|151.101.12.133|:443 … verbunden.
+--2020-11-18 02:06:10--  https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch
+Auflösen des Hostnamens raw.githubusercontent.com (raw.githubusercontent.com)… 151.101.112.133
+Verbindungsaufbau zu raw.githubusercontent.com (raw.githubusercontent.com)|151.101.112.133|:443 … verbunden.
 HTTP-Anforderung gesendet, auf Antwort wird gewartet … 200 OK
 Länge: 17370 (17K) [text/plain]
 Wird in »STDOUT« gespeichert.
 
-     0K .......... ......                                     100%  131M=0s
+     0K .......... ......                                     100% 89,8M=0s
 
-2020-11-18 01:45:46 (131 MB/s) - auf die Standardausgabe geschrieben [17370/17370]
+2020-11-18 02:06:10 (89,8 MB/s) - auf die Standardausgabe geschrieben [17370/17370]
 
 patching file drivers/usb/gadget/android.c
 Hunk #1 FAILED at 69.
