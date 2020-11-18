@@ -1,14 +1,14 @@
 Mintifying LineageOS (Step 2/2)...
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd art && git apply -v $MINTOS_DAT/01-art.patch && echo OK
-/mnt/jenkins/jenkins-data/mintos/MintOS/01-art.patch:5299: trailing whitespace.
+/home/kiam001/jenkins/workspace/MintOS/MintOS/01-art.patch:5299: trailing whitespace.
  
-/mnt/jenkins/jenkins-data/mintos/MintOS/01-art.patch:5323: trailing whitespace.
+/home/kiam001/jenkins/workspace/MintOS/MintOS/01-art.patch:5323: trailing whitespace.
  
-/mnt/jenkins/jenkins-data/mintos/MintOS/01-art.patch:5358: trailing whitespace.
+/home/kiam001/jenkins/workspace/MintOS/MintOS/01-art.patch:5358: trailing whitespace.
  
-/mnt/jenkins/jenkins-data/mintos/MintOS/01-art.patch:5374: trailing whitespace.
+/home/kiam001/jenkins/workspace/MintOS/MintOS/01-art.patch:5374: trailing whitespace.
  
-/mnt/jenkins/jenkins-data/mintos/MintOS/01-art.patch:5376: trailing whitespace.
+/home/kiam001/jenkins/workspace/MintOS/MintOS/01-art.patch:5376: trailing whitespace.
  
 Prüfe Patch Android.mk ...
 error: bei der Suche nach:
@@ -1949,17 +1949,8 @@ error: test/knownfailures.json: Patch konnte nicht angewendet werden
 make: [Makefile:14: patch] Fehler 1 (ignoriert)
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd frameworks/base && git apply -v $MINTOS_DAT/02-frameworks_base.patch && echo OK
 Prüfe Patch core/java/android/util/Half.java ...
-error: bei der Suche nach:
-import android.annotation.NonNull;
-import android.annotation.Nullable;
-
-/**
- * <p>The {@code Half} class is a wrapper and a utility class to manipulate half-precision 16-bit
- * <a href="https://en.wikipedia.org/wiki/Half-precision_floating-point_format">IEEE 754</a>
-
-error: Anwendung des Patches fehlgeschlagen: core/java/android/util/Half.java:20
-error: core/java/android/util/Half.java: Patch konnte nicht angewendet werden
-make: [Makefile:15: patch] Fehler 1 (ignoriert)
+Patch core/java/android/util/Half.java sauber angewendet
+OK
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd frameworks/base && git apply -v $MINTOS_DAT/03-frameworks_base-2.patch && echo OK
 Prüfe Patch core/res/AndroidManifest.xml ...
 Patch-Bereich #1 erfolgreich angewendet bei 2655 (27 Zeilen versetzt)
@@ -1983,81 +1974,52 @@ error: services/core/java/com/android/server/pm/PackageManagerService.java: Patc
 make: [Makefile:16: patch] Fehler 1 (ignoriert)
 export MINTOS_DIR=`cat .makedata` MINTOS_DAT=`pwd` && cd $MINTOS_DIR && cd packages/apps/Dialer && git apply -v $MINTOS_DAT/05-dialer.patch && echo OK
 Prüfe Patch java/com/android/incallui/call/CallRecorder.java ...
-error: bei der Suche nach:
-      if (!isEnabled()) {
-          return false;
-      }
-      if (RECORD_ALLOWED_STATE_BY_COUNTRY.isEmpty()) {
-          loadAllowedStates();
-      }
-
-      String currentCountryIso = GeoUtil.getCurrentCountryIso(context);
-      Boolean allowedState = RECORD_ALLOWED_STATE_BY_COUNTRY.get(currentCountryIso);
-
-      return allowedState != null && allowedState;
-  }
-
-  private CallRecorder() {
-
-error: Anwendung des Patches fehlgeschlagen: java/com/android/incallui/call/CallRecorder.java:98
-error: java/com/android/incallui/call/CallRecorder.java: Patch konnte nicht angewendet werden
-make: [Makefile:17: patch] Fehler 1 (ignoriert)
+Patch java/com/android/incallui/call/CallRecorder.java sauber angewendet
+OK
 make -f device/`cat .makedata2`/device.mk patch && echo OK
-make[1]: Verzeichnis „/mnt/jenkins/jenkins-data/mintos/MintOS“ wird betreten
---2020-11-17 22:13:40--  https://github.com/nift4/android-keyboard-gadget/raw/linux-3.18/generic_kernel_3.18.patch
+make[1]: Verzeichnis „/home/kiam001/jenkins/workspace/MintOS/MintOS“ wird betreten
+--2020-11-18 01:45:46--  https://github.com/nift4/android-keyboard-gadget/raw/linux-3.18/generic_kernel_3.18.patch
 Auflösen des Hostnamens github.com (github.com)… 140.82.121.3
 Verbindungsaufbau zu github.com (github.com)|140.82.121.3|:443 … verbunden.
 HTTP-Anforderung gesendet, auf Antwort wird gewartet … 302 Found
 Platz: https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch [folgend]
---2020-11-17 22:13:40--  https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch
-Auflösen des Hostnamens raw.githubusercontent.com (raw.githubusercontent.com)… 151.101.112.133
-Verbindungsaufbau zu raw.githubusercontent.com (raw.githubusercontent.com)|151.101.112.133|:443 … verbunden.
+--2020-11-18 01:45:46--  https://raw.githubusercontent.com/nift4/android-keyboard-gadget/linux-3.18/generic_kernel_3.18.patch
+Auflösen des Hostnamens raw.githubusercontent.com (raw.githubusercontent.com)… 151.101.12.133
+Verbindungsaufbau zu raw.githubusercontent.com (raw.githubusercontent.com)|151.101.12.133|:443 … verbunden.
 HTTP-Anforderung gesendet, auf Antwort wird gewartet … 200 OK
 Länge: 17370 (17K) [text/plain]
 Wird in »STDOUT« gespeichert.
 
-     0K .......... ......                                     100%  103M=0s
+     0K .......... ......                                     100%  131M=0s
 
-2020-11-17 22:13:40 (103 MB/s) - auf die Standardausgabe geschrieben [17370/17370]
+2020-11-18 01:45:46 (131 MB/s) - auf die Standardausgabe geschrieben [17370/17370]
 
 patching file drivers/usb/gadget/android.c
 Hunk #1 FAILED at 69.
-Hunk #2 succeeded at 3241 with fuzz 2 (offset 387 lines).
-Hunk #3 FAILED at 3057.
-Hunk #4 FAILED at 3092.
-Hunk #5 FAILED at 3400.
-Hunk #6 FAILED at 3444.
-5 out of 6 hunks FAILED -- saving rejects to file drivers/usb/gadget/android.c.rej
+Hunk #2 succeeded at 3171 (offset 317 lines).
+Hunk #3 succeeded at 3487 (offset 430 lines).
+Hunk #4 succeeded at 3531 with fuzz 2 (offset 438 lines).
+Hunk #5 succeeded at 3820 (offset 418 lines).
+Hunk #6 succeeded at 3863 (offset 417 lines).
+1 out of 6 hunks FAILED -- saving rejects to file drivers/usb/gadget/android.c.rej
 patching file drivers/usb/gadget/function/Makefile
-Reversed (or previously applied) patch detected!  Assume -R? [n] 
-Apply anyway? [n] 
-Skipping patch.
-1 out of 1 hunk ignored -- saving rejects to file drivers/usb/gadget/function/Makefile.rej
+Hunk #1 succeeded at 50 with fuzz 2 (offset 4 lines).
 patching file drivers/usb/gadget/function/f_hid.c
-Reversed (or previously applied) patch detected!  Assume -R? [n] 
-Apply anyway? [n] 
-Skipping patch.
-13 out of 13 hunks ignored -- saving rejects to file drivers/usb/gadget/function/f_hid.c.rej
-The next patch would create the file drivers/usb/gadget/function/f_hid.h,
-which already exists!  Assume -R? [n] 
-Apply anyway? [n] 
-Skipping patch.
-1 out of 1 hunk ignored
-The next patch would create the file drivers/usb/gadget/function/f_hid_android_keyboard.c,
-which already exists!  Assume -R? [n] 
-Apply anyway? [n] 
-Skipping patch.
-1 out of 1 hunk ignored
-The next patch would create the file drivers/usb/gadget/function/f_hid_android_mouse.c,
-which already exists!  Assume -R? [n] 
-Apply anyway? [n] 
-Skipping patch.
-1 out of 1 hunk ignored
+Hunk #4 succeeded at 304 (offset 12 lines).
+Hunk #5 succeeded at 323 (offset 12 lines).
+Hunk #6 succeeded at 368 (offset 12 lines).
+Hunk #7 succeeded at 468 (offset 12 lines).
+Hunk #8 succeeded at 485 (offset 12 lines).
+Hunk #9 succeeded at 646 (offset 16 lines).
+Hunk #10 succeeded at 720 (offset 16 lines).
+Hunk #11 succeeded at 741 (offset 16 lines).
+Hunk #12 succeeded at 788 (offset 16 lines).
+Hunk #13 succeeded at 842 (offset 16 lines).
+patching file drivers/usb/gadget/function/f_hid.h
+patching file drivers/usb/gadget/function/f_hid_android_keyboard.c
+patching file drivers/usb/gadget/function/f_hid_android_mouse.c
 patching file include/linux/usb/android.h
-Reversed (or previously applied) patch detected!  Assume -R? [n] 
-Apply anyway? [n] 
-Skipping patch.
-2 out of 2 hunks ignored -- saving rejects to file include/linux/usb/android.h.rej
+Hunk #2 succeeded at 105 with fuzz 1 (offset 3 lines).
 make[1]: *** [device/cedric/device.mk:7: patch] Fehler 1
-make[1]: Verzeichnis „/mnt/jenkins/jenkins-data/mintos/MintOS“ wird verlassen
+make[1]: Verzeichnis „/home/kiam001/jenkins/workspace/MintOS/MintOS“ wird verlassen
 make: [Makefile:18: patch] Fehler 2 (ignoriert)
