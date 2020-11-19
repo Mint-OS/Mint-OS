@@ -15,6 +15,9 @@
 
 	<remove-project name="platform/libcore"/>
 	<project path="libcore" name="mvaisakh/libcore" revision="ten" remote="github"/>
+
+        <project path="external/motorola/faceunlock" name="external_motorola_faceunlock" remote="pixel-gitlab" />
+        <project path="external/motorola/faceunlock-res" name="external_motorola_faceunlock-res" remote="pixel" />
 	
 	<project name="nift4/android_vendor_extra" path="vendor/extra" remote="github" revision="lineage-17.1" />
 </manifest>
