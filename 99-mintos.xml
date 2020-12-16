@@ -31,7 +31,8 @@
         <project path="external/motorola/faceunlock-res" name="external_motorola_faceunlock-res" remote="pixel" />
 	
 	<!-- vendor/extra -->
-	<project name="nift4/android_vendor_extra" path="vendor/extra" remote="github" revision="lineage-17.1" />
+	<project name="nift4/android_vendor_extra" path="vendor/extra" remote="github" />
+	<project name="nift4/Mint-OS" path="vendor/ota" remote="github" revision="master" />
 	
 	<!-- device PL2 -->
   	<project path="vendor/nokia" name="TheMuppets/proprietary_vendor_nokia" />
