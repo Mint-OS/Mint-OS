@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-	<remote name="opengapps" fetch="https://github.com/opengapps/"  />
-	<remote name="opengapps-gitlab" fetch="https://gitlab.opengapps.org/opengapps/"  />
+	<!-- remotes -->
+	<remote name="opengapps" fetch="https://github.com/opengapps/" revision="master" />
+	<remote name="opengapps-gitlab" fetch="https://gitlab.opengapps.org/opengapps/" revision="master" />
         <remote name="pixel" fetch="https://github.com/PixelExperience" revision="ten" review="gerrit.pixelexperience.org" />
         <remote name="pixel-gitlab" fetch="https://gitlab.pixelexperience.org/android" revision="ten" />
         
-        <project path="vendor/opengapps/build" name="aosp_build" revision="master" remote="opengapps" />
+	<!-- gapps -->
+        <project path="vendor/opengapps/build" name="aosp_build" remote="opengapps" />
+	<project path="vendor/opengapps/sources/all" name="all" clone-depth="1" remote="opengapps-gitlab" />
+	<project path="vendor/opengapps/sources/arm" name="arm" clone-depth="1" remote="opengapps-gitlab" />
+	<project path="vendor/opengapps/sources/arm64" name="arm64" clone-depth="1" remote="opengapps-gitlab" />
 
-	<project path="vendor/opengapps/sources/all" name="all" clone-depth="1" revision="master" remote="opengapps-gitlab" />
-
-	<!-- arm64 depends on arm -->
-	<project path="vendor/opengapps/sources/arm" name="arm" clone-depth="1" revision="master" remote="opengapps-gitlab" />
-	<project path="vendor/opengapps/sources/arm64" name="arm64" clone-depth="1" revision="master" remote="opengapps-gitlab" />
-
-	<remove-project name="platform/libcore"/>
-	<project path="libcore" name="mvaisakh/libcore" revision="ten" remote="github"/>
-
+	<!-- core system -->
+	<remove-project name="platform/libcore" />
+	<remove-project name="LineageOS/android_frameworks_base" />
+	<remove-project name="LineageOS/android_packages_apps_PackageInstaller" />
+	<remove-project name="LineageOS/android_art" />
+	<remove-project name="LineageOS/android_packages_apps_Dialer" />
+	<remove-project name="LineageOS/android_packages_apps_Settings" />
+	<project path="libcore" name="Mint-OS/android_libcore" groups="pdk" />
+	<project path="frameworks/base" name="Mint-OS/android_frameworks_base" groups="pdk-cw-fs,pdk-fs" />
+	<project path="packages/apps/PermissionController" name="Mint-OS/android_packages_apps_PackageInstaller" groups="pdk-cw-fs,pdk-fs" />
+	<project path="art" name="Mint-OS/android_art" groups="pdk" />
+	<project path="packages/apps/Dialer" name="Mint-OS/android_packages_apps_Dialer" groups="pdk-fs" />
+	<project path="packages/apps/Settings" name="Mint-OS/android_packages_apps_Settings" groups="pdk-fs" />
+	
+	<!-- faceunlock -->
         <project path="external/motorola/faceunlock" name="external_motorola_faceunlock" remote="pixel-gitlab" />
         <project path="external/motorola/faceunlock-res" name="external_motorola_faceunlock-res" remote="pixel" />
 	
+	<!-- vendor/extra -->
 	<project name="nift4/android_vendor_extra" path="vendor/extra" remote="github" revision="lineage-17.1" />
 </manifest>
