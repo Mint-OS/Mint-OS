@@ -14,7 +14,4 @@ More to come :D
 - Open an second terminal in the directory where this README is located
 - Type `make setup MINTOS_DIR=<replace this placeholder with the path to your LineageOS directory> MINTOS_DEVICE=<device codename>`
 - Type `make prepare`
-- Do the repo sync from the Lineage building instructions in another terminal
-- Type `make patch`
 - Continue with the Lineage build instructions in the other terminal
-- (Optional, only if you want to make your build ota-installable) Run `make genota` and `git push`
