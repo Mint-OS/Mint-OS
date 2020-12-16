@@ -4,7 +4,7 @@
 	<remote name="opengapps" fetch="https://github.com/opengapps/" revision="master" />
 	<remote name="opengapps-gitlab" fetch="https://gitlab.opengapps.org/opengapps/" revision="master" />
         <remote name="pixel" fetch="https://github.com/PixelExperience" revision="ten" review="gerrit.pixelexperience.org" />
-        <remote name="pixel-gitlab" fetch="https://gitlab.pixelexperience.org/android" revision="ten" />#
+        <remote name="pixel-gitlab" fetch="https://gitlab.pixelexperience.org/android" revision="ten" />
 	<remote  name="github-ssh" fetch="ssh://git@github.com" />
         
 	<!-- gapps -->
