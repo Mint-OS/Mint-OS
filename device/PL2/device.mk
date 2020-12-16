@@ -1,0 +1,4 @@
+all: prepare
+
+prepare:
+	true
