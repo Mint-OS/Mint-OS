@@ -32,7 +32,7 @@
 	
 	<!-- vendor/extra -->
 	<project name="nift4/android_vendor_extra" path="vendor/extra" remote="github" />
-	<project name="nift4/Mint-OS" path="vendor/ota" remote="github" revision="master" />
+	<project name="nift4/Mint-OS" path="vendor/ota" remote="github" revision="ota" />
 	
 	<!-- device PL2 -->
   	<project path="vendor/nokia" name="TheMuppets/proprietary_vendor_nokia" />
