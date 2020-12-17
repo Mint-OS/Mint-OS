@@ -5,7 +5,7 @@
 	<remote name="opengapps-gitlab" fetch="https://gitlab.opengapps.org/opengapps/" revision="master" />
         <remote name="pixel" fetch="https://github.com/PixelExperience" revision="ten" review="gerrit.pixelexperience.org" />
         <remote name="pixel-gitlab" fetch="https://gitlab.pixelexperience.org/android" revision="ten" />
-	<remote  name="github-ssh" fetch="ssh://git@github.com" />
+	<remote name="github-ssh" fetch="ssh://git@github.com" />
         
 	<!-- gapps -->
         <project path="vendor/opengapps/build" name="aosp_build" remote="opengapps" />
@@ -32,7 +32,7 @@
         <project path="external/motorola/faceunlock-res" name="external_motorola_faceunlock-res" remote="pixel" />
 	
 	<!-- vendor/extra -->
-	<project name="nift4/android_vendor_extra" path="vendor/extra" remote="github" />
+	<project name="Mint-OS/android_vendor_extra" path="vendor/extra" remote="github" />
 	<project name="nift4/Mint-OS" path="vendor/ota" remote="github-ssh" revision="ota" />
 	
 	<!-- device PL2 -->
