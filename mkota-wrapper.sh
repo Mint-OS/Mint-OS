@@ -7,4 +7,4 @@ echo "${json[0]},${NEWDATA}]${json[1]}" > $3.json
 git add $3.json
 git pull
 git commit -m "$3: Automatic OTA Update"
-git push github HEAD:ota
+git push github-ssh HEAD:ota
