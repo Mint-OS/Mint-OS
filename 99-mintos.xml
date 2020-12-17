@@ -5,6 +5,7 @@
 	<remote name="opengapps-gitlab" fetch="https://gitlab.opengapps.org/opengapps/" revision="master" />
         <remote name="pixel" fetch="https://github.com/PixelExperience" revision="ten" review="gerrit.pixelexperience.org" />
         <remote name="pixel-gitlab" fetch="https://gitlab.pixelexperience.org/android" revision="ten" />
+	<remote  name="github-ssh" fetch="ssh://git@github.com" />
         
 	<!-- gapps -->
         <project path="vendor/opengapps/build" name="aosp_build" remote="opengapps" />
@@ -32,7 +33,7 @@
 	
 	<!-- vendor/extra -->
 	<project name="nift4/android_vendor_extra" path="vendor/extra" remote="github" />
-	<project name="nift4/Mint-OS" path="vendor/ota" remote="github" revision="ota" />
+	<project name="nift4/Mint-OS" path="vendor/ota" remote="github-ssh" revision="ota" />
 	
 	<!-- device PL2 -->
   	<project path="vendor/nokia" name="TheMuppets/proprietary_vendor_nokia" />
