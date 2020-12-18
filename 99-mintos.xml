@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
 	<!-- remotes -->
-	<remote name="opengapps" fetch="https://github.com/opengapps/" revision="master" />
-	<remote name="opengapps-gitlab" fetch="https://gitlab.opengapps.org/opengapps/" revision="master" />
         <remote name="pixel" fetch="https://github.com/PixelExperience" revision="ten" review="gerrit.pixelexperience.org" />
         <remote name="pixel-gitlab" fetch="https://gitlab.pixelexperience.org/android" revision="ten" />
+	<remote name="gitlab-pixel" fetch="https://gitlab.com/PixelExperience" revision="ten" />
 	<remote name="github-ssh" fetch="ssh://git@github.com" />
         
-	<!-- gapps -->
-        <project path="vendor/opengapps/build" name="aosp_build" remote="opengapps" />
-	<project path="vendor/opengapps/sources/all" name="all" clone-depth="1" remote="opengapps-gitlab" />
-	<project path="vendor/opengapps/sources/arm" name="arm" clone-depth="1" remote="opengapps-gitlab" />
-	<project path="vendor/opengapps/sources/arm64" name="arm64" clone-depth="1" remote="opengapps-gitlab" />
-
 	<!-- core system -->
 	<remove-project name="platform/libcore" />
 	<remove-project name="LineageOS/android_frameworks_base" />
@@ -26,6 +19,7 @@
 	<project path="art" name="Mint-OS/android_art" groups="pdk" />
 	<project path="packages/apps/Dialer" name="Mint-OS/android_packages_apps_Dialer" groups="pdk-fs" />
 	<project path="packages/apps/Settings" name="Mint-OS/android_packages_apps_Settings" groups="pdk-fs" />
+	<project path="vendor/gapps" name="vendor_gapps" remote="gitlab-pixel" />
 	
 	<!-- faceunlock -->
         <project path="external/motorola/faceunlock" name="external_motorola_faceunlock" remote="pixel-gitlab" />
