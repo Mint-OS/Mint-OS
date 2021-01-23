@@ -41,7 +41,7 @@
         <project path="vendor/volla/yggdrasil" name="wikomeme/android_vendor_volla_yggdrasil" remote="github" revision="master" /> -->
 	
 	<!-- device msm8937-common -->
-        <project path="kernel/motorola/msm8953" name="Mint-OS/android_kernel_motorola_msm8953" />
+	<project path="kernel/motorola/msm8953" name="JarlPenguin/android_kernel_motorola_msm8953" revision="d54400f9dfe4e14851d761be2453886b0449c4c4"/>
   	<project path="vendor/motorola" name="TheMuppets/proprietary_vendor_motorola" />
 
   	<!-- updater fork -->
