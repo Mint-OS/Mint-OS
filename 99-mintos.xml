@@ -43,8 +43,4 @@
 	<!-- device msm8937-common 
 	<project path="kernel/motorola/msm8953" name="Mint-OS/android_kernel_motorola_msm8953" />-->
   	<project path="vendor/motorola" name="TheMuppets/proprietary_vendor_motorola" />
-
-  	<!-- updater fork -->
-  	<remove-project name="LineageOS/android_packages_apps_Updater" />
-  	<project path="packages/apps/Updater" name="moto-msm8937/android_packages_apps_Updater" />
-</manifest>
+        </manifest>
