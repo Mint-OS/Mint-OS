@@ -7,16 +7,12 @@
 	<remote name="github-ssh" fetch="ssh://git@github.com" />
         
 	<!-- core system -->
-	<remove-project name="LineageOS/android_libcore" />
 	<remove-project name="LineageOS/android_frameworks_base" />
 	<remove-project name="LineageOS/android_packages_apps_PackageInstaller" />
-	<remove-project name="LineageOS/android_art" />
 	<remove-project name="LineageOS/android_packages_apps_Dialer" />
 	<remove-project name="LineageOS/android_packages_apps_Settings" />
-	<project path="libcore" name="Mint-OS/android_libcore" groups="pdk" />
 	<project path="frameworks/base" name="Mint-OS/android_frameworks_base" groups="pdk-cw-fs,pdk-fs" />
 	<project path="packages/apps/PermissionController" name="Mint-OS/android_packages_apps_PackageInstaller" groups="pdk-cw-fs,pdk-fs" />
-	<project path="art" name="Mint-OS/android_art" groups="pdk" />
 	<project path="packages/apps/Dialer" name="Mint-OS/android_packages_apps_Dialer" groups="pdk-fs" />
 	<project path="packages/apps/Settings" name="Mint-OS/android_packages_apps_Settings" groups="pdk-fs" />
 	<project path="vendor/gapps" name="vendor_gapps" remote="gitlab-pixel" />
