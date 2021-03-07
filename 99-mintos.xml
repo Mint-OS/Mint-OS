@@ -47,6 +47,11 @@
     	<project path="vendor/motorola" name="moto-msm8937/proprietary_vendor_motorola" revision="de61633f3a27bc2e08a20159bd96185e14b7b5df" />
 	<project path="kernel/motorola/msm8953" name="Mint-OS/android_kernel_motorola_msm8953" />
 
+        <!-- Dependencies of msm8937-common -->
+        <project path="external/bson" name="LineageOS/android_external_bson" />
+        <project path="system/qcom" name="LineageOS/android_system_qcom" />
+
+
   	<!-- updater fork -->
   	<remove-project name="LineageOS/android_packages_apps_Updater" />
   	<project path="packages/apps/Updater" name="moto-msm8937/android_packages_apps_Updater" />
