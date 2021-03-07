@@ -18,8 +18,8 @@
 	<project path="vendor/gapps" name="vendor_gapps" remote="gitlab-pixel" />
 	
 	<!-- faceunlock -->
-        <project path="external/faceunlock" name="external_faceunlock" remote="pixel-gitlab" />
-	<project path="packages/apps/FaceUnlockService" name="packages_apps_FaceUnlockService" remote="pixel" />
+        <project path="external/faceunlock" name="external_faceunlock" remote="pixel-gitlab" revision="eleven" />
+	<project path="packages/apps/FaceUnlockService" name="packages_apps_FaceUnlockService" remote="pixel" revision="eleven" />
 	
 	<!-- vendor/extra -->
 	<project name="Mint-OS/android_vendor_extra" path="vendor/extra" remote="github" />
