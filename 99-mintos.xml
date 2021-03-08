@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
 	<!-- remotes -->
-        <remote name="pixel" fetch="https://github.com/PixelExperience" revision="ten" review="gerrit.pixelexperience.org" />
-        <remote name="pixel-gitlab" fetch="https://gitlab.pixelexperience.org/android" revision="ten" />
-	<remote name="gitlab-pixel" fetch="https://gitlab.com/PixelExperience" revision="ten" />
+        <remote name="pixel" fetch="https://github.com/PixelExperience" revision="eleven" review="gerrit.pixelexperience.org" />
+        <remote name="pixel-gitlab" fetch="https://gitlab.pixelexperience.org/android" revision="eleven" />
+	<remote name="gitlab-pixel" fetch="https://gitlab.com/PixelExperience" revision="eleven" />
 	<remote name="github-ssh" fetch="ssh://git@github.com" />
         
 	<!-- core system -->
@@ -18,8 +18,8 @@
 	<project path="vendor/gapps" name="vendor_gapps" remote="gitlab-pixel" />
 	
 	<!-- faceunlock -->
-        <project path="external/faceunlock" name="external_faceunlock" remote="pixel-gitlab" revision="eleven" />
-	<project path="packages/apps/FaceUnlockService" name="packages_apps_FaceUnlockService" remote="pixel" revision="eleven" />
+        <project path="external/faceunlock" name="external_faceunlock" remote="pixel-gitlab" />
+	<project path="packages/apps/FaceUnlockService" name="packages_apps_FaceUnlockService" remote="pixel" />
 	
 	<!-- vendor/extra -->
 	<project name="Mint-OS/android_vendor_extra" path="vendor/extra" remote="github" />
