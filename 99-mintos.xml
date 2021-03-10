@@ -4,6 +4,7 @@
         <remote name="pixel" fetch="https://github.com/PixelExperience" revision="eleven" review="gerrit.pixelexperience.org" />
         <remote name="pixel-gitlab" fetch="https://gitlab.pixelexperience.org/android" revision="eleven" />
 	<remote name="gitlab-pixel" fetch="https://gitlab.com/PixelExperience" revision="eleven" />
+	<remote name="gitlab-nift4" fetch="https://gitlab.com/nift4" revision="eleven" />
 	<remote name="github-ssh" fetch="ssh://git@github.com" />
         
 	<!-- core system -->
@@ -38,7 +39,7 @@
 	<project path="bionic" name="LineageOSMod/android_bionic" groups="pdk" />
 	<project path="external/zlib" name="LineageOSMod/android_external_zlib" groups="pdk" />
 	<project path="art" name="LineageOSMod/android_art" groups="pdk" />
-	<project path="vendor/gapps" name="vendor_gapps" remote="gitlab-pixel" />
+	<project path="vendor/gapps" name="vendor_gapps" remote="gitlab-nift4" />
 	
 	<!-- faceunlock -->
         <project path="external/faceunlock" name="external_faceunlock" remote="pixel-gitlab" />
