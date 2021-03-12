@@ -28,7 +28,7 @@
 	<project path="packages/apps/Dialer" name="Mint-OS/android_packages_apps_Dialer" groups="pdk-fs" />
 	<project path="packages/apps/Settings" name="Mint-OS/android_packages_apps_Settings" groups="pdk-fs" />
 	<project path="external/sqlite" name="LineageOSMod/android_external_sqlite" groups="pdk" />
-	<project path="external/arm-optimized-routines" name="LineageOSMod/android_external_arm-optimized-routines" groups="pdk" />
+	<project path="external/arm-optimized-routines" name="Mint-OS/android_external_arm-optimized-routines" groups="pdk" />
 	<project path="prebuilts/abi-dumps/vndk" name="LineageOSMod/android_prebuilts_abi-dumps_vndk" groups="pdk-fs" clone-depth="1" />
 	<project path="frameworks/native" name="Mint-OS/android_frameworks_native" groups="pdk" />
 	<project path="system/core" name="Mint-OS/android_system_core" groups="pdk" />
@@ -41,6 +41,7 @@
 	<project path="external/zlib" name="LineageOSMod/android_external_zlib" groups="pdk" />
 	<project path="art" name="Mint-OS/android_art" groups="pdk" />
 	<project path="system/vold" name="ForkLineageOS/android_system_vold" groups="pdk" />
+	<project path="external/asus/stitchimage" name="syberia-project/platform_external_asus_stitchimage" remote="github" revision="11.0" />
 	<project path="vendor/gapps" name="vendor_gapps" remote="gitlab-nift4" />
 	
 	<!-- faceunlock -->
