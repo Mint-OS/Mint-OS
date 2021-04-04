@@ -29,33 +29,12 @@
 	<project name="Mint-OS/android_vendor_extra" path="vendor/extra" remote="github" />
 	<project name="nift4/Mint-OS" path="vendor/ota" remote="github-ssh" revision="ota" />
 	
-	<!-- device PL2 -->
-  	<project path="vendor/nokia" name="TheMuppets/proprietary_vendor_nokia" />
+        <!-- Moto G5 Cedric Projects -->
+        <project name="Sohamlad7/android_device_motorola_cedric" path="device/motorola/cedric" remote="github" revision="lineage-17.1" />
+        <project name="Sohamlad7/android_kernel_motorola_msm8937" path="kernel/motorola/msm8937" remote="github" revision="lineage-17.1" />
+        <project name="Sohamlad7/android_vendor_motorola_cedric" path="vendor/motorola/cedric" remote="github" revision="lineage-17.1" />
 
-        <!-- device pro1 -->
-        <project path="vendor/fxtec" name="TheMuppets/proprietary_vendor_fxtec" />
-
-        <!-- device yggdrasil
-        <project path="device/volla/yggdrasil" name="wikomeme/android_device_volla_yggdrasil" remote="github" revision="staging/lineage-17.1" />
-        <project path="kernel/volla/mt6763" name="wikomeme/android_kernel_volla_mt6763" remote="github" />
-        <project path="vendor/volla/yggdrasil" name="wikomeme/android_vendor_volla_yggdrasil" remote="github" revision="master" /> -->
-	
-	<!-- device msm8937-common -->
-  <project path="device/motorola/ahannah" name="moto-msm8937/android_device_motorola_ahannah" />
-  <project path="device/motorola/cedric" name="moto-msm8937/android_device_motorola_cedric" />
-  <project path="device/motorola/hannah" name="moto-msm8937/android_device_motorola_hannah" />
-  <project path="device/motorola/hannah-common" name="moto-msm8937/android_device_motorola_hannah-common" />
-  <project path="device/motorola/montana" name="moto-msm8937/android_device_motorola_montana" />
-  <project path="device/motorola/msm8937-common" name="moto-msm8937/android_device_motorola_msm8937-common" revision="e54741e7e88feb90d5c92311ef740684a9943c45" />
-  <project path="device/motorola/rhannah" name="moto-msm8937/android_device_motorola_rhannah" />
-  <project path="kernel/motorola/msm8953" name="Mint-OS/android_kernel_motorola_msm8953" />
-  <project path="vendor/motorola" name="moto-msm8937/proprietary_vendor_motorola" />
-  
-  <!--Dependencies-->
-  <project path="external/bson" name="LineageOS/android_external_bson" />
-  <project path="system/qcom" name="LineageOS/android_system_qcom" />
-
-  	<!-- updater fork -->
-  	<remove-project name="LineageOS/android_packages_apps_Updater" />
-  	<project path="packages/apps/Updater" name="moto-msm8937/android_packages_apps_Updater" />
+        <!--Dependencies-->
+        <project path="external/bson" name="LineageOS/android_external_bson" />
+        <project path="system/qcom" name="LineageOS/android_system_qcom" />
 </manifest>
