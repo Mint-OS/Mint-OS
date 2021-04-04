@@ -26,7 +26,7 @@
         <project path="external/motorola/faceunlock-res" name="external_motorola_faceunlock-res" remote="pixel" />
 	
 	<!-- vendor/extra -->
-	<project name="Mint-OS/android_vendor_extra" path="vendor/extra" remote="github" />
+	<project name="Mint-OS/android_vendor_extra" path="vendor/extra" revision="mint2se" remote="github" />
 	<project name="nift4/Mint-OS" path="vendor/ota" remote="github-ssh" revision="ota" />
 	
         <!-- Moto G5 Cedric Projects -->
